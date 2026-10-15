@@ -499,3 +499,9 @@ html { scroll-padding-top: 64px; }
 .ob-text b { font: 700 17px var(--f-display); }
 .ob-text span:not(.sr-only) { font-size: 13px; color: var(--n500); }
 @media (max-width: 767px) { .ob-list li { flex-wrap: wrap; } .ob-list li .btn { width: 100%; } }
+
+/* ---- google sign-in ---- */
+.btn.google { width: 100%; gap: 12px; background: var(--paper); color: var(--ink); }
+.btn.google:active { background: var(--ink); color: var(--paper); }
+.auth-or { display: flex; align-items: center; gap: 12px; margin: 18px 0; font: 500 10px var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--n500); }
+.auth-or::before, .auth-or::after { content: ''; flex: 1; height: 1px; background: var(--ink); }

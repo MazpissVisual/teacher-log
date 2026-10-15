@@ -12,6 +12,7 @@ describe('friendly auth errors', () => {
     expect(friendly('New password should be different from the old password.')).toMatch(/berbeda/);
     expect(friendly('Unable to validate email address: invalid format')).toBe('Format email tidak valid.');
     expect(friendly('Failed to fetch')).toMatch(/koneksi/);
+    expect(friendly('Unsupported provider: provider is not enabled')).toMatch(/Google belum diaktifkan/);
     expect(friendly('Token has expired or is invalid')).toMatch(/kedaluwarsa/);
   });
 
