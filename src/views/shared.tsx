@@ -30,12 +30,12 @@ export function TaskRow({ t, today }: { t: Task; today: string }) {
         <div class="task-title">{t.title}</div>
         <div class="task-meta">
           <span>{!t.done && relativeDay(t.date, today) ? relativeDay(t.date, today) + ' · ' : ''}{dateText(t.date)}</span>
-          <span>· Prioritas {prioLabel(t.priority)}</span>
+          <span>Prioritas {prioLabel(t.priority)}</span>
           {overdue && <span class="pill peach">Terlambat</span>}
         </div>
       </div>
       <button class="link" onClick={() => openTask(t)}>Ubah</button>
-      <button class="icon-btn" style="width:36px;height:36px" aria-label={`Hapus tugas: ${t.title}`} onClick={() => removeWithUndo('tasks', t, 'Tugas dihapus')}><Icon as={Trash2} size={16} /></button>
+      <button class="icon-btn compact" aria-label={`Hapus tugas: ${t.title}`} onClick={() => removeWithUndo('tasks', t, 'Tugas dihapus')}><Icon as={Trash2} size={16} /></button>
     </div>
   );
 }
@@ -50,7 +50,7 @@ export function JournalCard({ j }: { j: Journal }) {
         {j.className && <span class="tag">{j.className}</span>}
         {j.pinned && <span class="tag"><Icon as={Pin} size={12} /> Disematkan</span>}
       </div>
-      <h3>{j.title}</h3>
+      <h2 class="card-title">{j.title}</h2>
       <p>{j.content}</p>
       {j.worked && <p style="font-size:13px"><strong>Yang berhasil:</strong> {j.worked}</p>}
       <div class="card-actions">
@@ -67,7 +67,7 @@ export function PlanCard({ p }: { p: Plan }) {
   return (
     <article class={'journal-card' + (leaving ? ' leaving' : '')}>
       <div class="journal-meta"><span>{dateText(p.date)}{p.time && ` · ${p.time}`}</span><span class="tag">{p.className || 'Pribadi'}</span></div>
-      <h3>{p.title}</h3>
+      <h2 class="card-title">{p.title}</h2>
       <p>{p.objective || 'Belum ada tujuan khusus'}</p>
       <div class="card-actions">
         <button class="btn sm secondary" onClick={() => openPlan(p)}><Icon as={Pencil} size={14} /> Ubah</button>
@@ -84,7 +84,7 @@ export function ResourceCard({ r }: { r: Resource }) {
     <article class={'resource-card' + (leaving ? ' leaving' : '')}>
       <span class="resource-icon"><Icon as={RICON[r.type] ?? BookOpen} size={20} /></span>
       <span class="tag" style="width:max-content">{r.type}</span>
-      <h3>{r.title}</h3>
+      <h2 class="card-title">{r.title}</h2>
       <p>{r.description}</p>
       <div class="card-actions">
         {r.url && isHttpUrl(r.url) && <a class="btn sm secondary" href={r.url} target="_blank" rel="noopener noreferrer">Buka <Icon as={ExternalLink} size={14} /></a>}

@@ -54,7 +54,7 @@ export function Journey() {
               {weeks.map((n, i) => (
                 <div style="display:flex;gap:14px;align-items:center;margin:15px 0">
                   <span class="muted small" style="min-width:60px">{i === 3 ? 'Minggu ini' : `${3 - i} mgg lalu`}</span>
-                  <div class="progress" style="flex:1" role="progressbar" aria-valuemin={0} aria-valuemax={max} aria-valuenow={n}><span style={`width:${(n / max) * 100}%`} /></div>
+                  <div class="progress" style="flex:1" role="progressbar" aria-label={(i === 3 ? 'Minggu ini' : (3 - i) + ' minggu lalu') + ': ' + n + ' catatan'} aria-valuemin={0} aria-valuemax={max} aria-valuenow={n}><span style={`width:${(n / max) * 100}%`} /></div>
                   <b>{n}</b>
                 </div>
               ))}

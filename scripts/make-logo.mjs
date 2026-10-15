@@ -104,3 +104,18 @@ export const MONOGRAM = { viewBox: '0 0 512 512', ink: '${mono.ink}', dot: '${mo
 `
 );
 console.log(`wordmark ${wmW}x${wmH}`);
+
+// ---------- social preview (1200x630), used for og:image ----------
+{
+  const scale = 1.02;
+  const w = wmW * scale, h = wmH * scale;
+  const x = (1200 - w) / 2, y = (630 - h) / 2 - 6;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+<rect width="1200" height="630" fill="${PAPER}"/>
+<rect x="60" y="70" width="1080" height="8" fill="${INK}"/><rect x="60" y="86" width="1080" height="2" fill="${INK}"/>
+<g transform="translate(${x} ${y}) scale(${scale})"><path fill="${INK}" d="${wmInk}"/><path fill="${RED}" d="${wmDot}"/></g>
+<rect x="60" y="542" width="1080" height="2" fill="${INK}"/><rect x="60" y="552" width="1080" height="8" fill="${INK}"/>
+</svg>`;
+  await sharp(Buffer.from(svg), { density: 96 }).png().toFile('public/og.png');
+  console.log('wrote public/og.png');
+}

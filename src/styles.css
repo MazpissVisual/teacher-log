@@ -505,3 +505,28 @@ html { scroll-padding-top: 64px; }
 .btn.google:active { background: var(--ink); color: var(--paper); }
 .auth-or { display: flex; align-items: center; gap: 12px; margin: 18px 0; font: 500 10px var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--n500); }
 .auth-or::before, .auth-or::after { content: ''; flex: 1; height: 1px; background: var(--ink); }
+
+/* ---- pre-launch polish ---- */
+.link { white-space: nowrap; }
+.panel-head h2, .panel-head h3 { min-width: 0; }
+.card-title { font-size: 1.35rem; font-weight: 700; letter-spacing: -.01em; line-height: 1.1; }
+.journal-card .card-title { margin: 0 0 8px; font-size: 1.5rem; }
+.resource-card .card-title { margin: 0; }
+.ticker-toggle { min-height: 44px; }
+@media (pointer: coarse) {
+  .link, .btn.sm { min-width: 44px; }
+  .chip button { width: 40px; height: 40px; }
+}
+@media (max-width: 767px) {
+  /* rows: give the title the full width; badge hidden, date drops under the title */
+  .schedule-item { flex-wrap: wrap; row-gap: 2px; }
+  .schedule-item .pill { display: none; }
+  .schedule-item > .label { order: 3; flex-basis: 100%; padding-left: 78px; margin-top: -6px; }
+  .stat-top span:first-child { font-size: 10px; letter-spacing: .06em; }
+  .stat-icon { width: 28px; height: 28px; }
+}
+.icon-btn.compact { width: 36px; height: 36px; }
+@media (pointer: coarse) {
+  .icon-btn.compact { width: 44px; height: 44px; }
+  .chip button { width: 44px; height: 44px; }
+}

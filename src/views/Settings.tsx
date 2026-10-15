@@ -1,6 +1,6 @@
 import { useRef, useState } from 'preact/hooks';
 import { actions, exportJSON, useDB } from '../store';
-import { download, toast } from '../ui';
+import { closeModal, download, openModal, toast } from '../ui';
 import { cloudEnabled } from '../supabase';
 import { signOut, useAuth } from '../auth';
 import { syncNow, useSyncStatus } from '../sync';
@@ -32,6 +32,39 @@ function ListEditor({ kind, label, items }: { kind: 'classes' | 'subjects'; labe
         <button class="btn secondary" type="submit">Tambah</button>
       </form>
     </div>
+  );
+}
+
+/** Typing the word makes wiping data a deliberate act, not a mis-tap on a confirm() box. */
+function WipeConfirm({ cloud }: { cloud: boolean }) {
+  const [v, setV] = useState('');
+  const ok = v.trim().toUpperCase() === 'HAPUS';
+  const submit = (e: Event) => {
+    e.preventDefault();
+    if (!ok) return;
+    actions.clearAll();
+    closeModal();
+    toast('Semua data dihapus');
+  };
+  return (
+    <form onSubmit={submit}>
+      <p>
+        {cloud
+          ? 'Semua jurnal, rencana, sumber, dan tugas di akunmu akan terhapus permanen, di semua perangkat.'
+          : 'Semua jurnal, rencana, sumber, dan tugas di perangkat ini akan terhapus permanen.'}{' '}
+        Tindakan ini tidak bisa dibatalkan.
+      </p>
+      <p class="muted small">Sebaiknya ekspor dulu sebagai cadangan.</p>
+      <div class="form-group">
+        <label for="wipe">Ketik <b>HAPUS</b> untuk melanjutkan</label>
+        <input id="wipe" class="field" autocomplete="off" autocapitalize="characters" spellcheck={false} value={v} onInput={(e) => setV(e.currentTarget.value)} />
+      </div>
+      <div class="compact-actions">
+        <button class="btn danger" type="submit" disabled={!ok}>Hapus semua data</button>
+        <button class="btn secondary" type="button" onClick={() => { download('gurulog-cadangan.json', exportJSON()); toast('Cadangan diunduh'); }}>Ekspor dulu</button>
+        <button class="btn ghost" type="button" onClick={closeModal}>Batal</button>
+      </div>
+    </form>
   );
 }
 
@@ -122,8 +155,8 @@ export function Settings() {
             <input ref={file} type="file" accept="application/json,.json" class="hidden" onChange={onImport} />
           </div>
           <div class="compact-actions" style="margin-top:12px">
-            <button class="btn danger" onClick={() => { if (confirm('Kembalikan data contoh? Semua perubahan akan hilang.')) { actions.reset(); setName('Guru'); toast('Data contoh dikembalikan'); } }}><Icon as={RotateCcw} size={16} /> Reset ke data contoh</button>
-            <button class="btn danger" onClick={() => { if (confirm('Hapus SEMUA data? Tindakan ini tidak bisa dibatalkan.')) { actions.clearAll(); toast('Semua data dihapus'); } }}><Icon as={Trash2} size={16} /> Hapus semua</button>
+            {!cloudEnabled && <button class="btn danger" onClick={() => { if (confirm('Kembalikan data contoh? Semua perubahan akan hilang.')) { actions.reset(); setName('Guru'); toast('Data contoh dikembalikan'); } }}><Icon as={RotateCcw} size={16} /> Reset ke data contoh</button>}
+            <button class="btn danger" onClick={() => openModal('Hapus semua data?', <WipeConfirm cloud={cloudEnabled} />)}><Icon as={Trash2} size={16} /> Hapus semua</button>
           </div>
         </div>
       </div>

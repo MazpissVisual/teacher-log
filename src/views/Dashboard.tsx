@@ -85,7 +85,7 @@ export function Dashboard() {
       <div class="grid-main">
         <div class="stack">
           <section class="panel">
-            <div class="panel-head"><h2>Rencana mendatang</h2><button class="link" onClick={() => go('planner')}>Lihat perencana →</button></div>
+            <div class="panel-head"><h2>Rencana mendatang</h2><button class="link" onClick={() => go('planner')}>Lihat semua →</button></div>
             {upcoming.slice(0, 3).length ? upcoming.slice(0, 3).map((p) => (
               <div class="schedule-item"><span class="time">{p.time || '--:--'}</span><div class="details"><strong>{p.title}</strong><p>{dateText(p.date)} · {p.className || 'Rencana pribadi'}</p></div><span class="pill lilac">Terencana</span></div>
             )) : <Empty title="Belum ada rencana mendatang" />}

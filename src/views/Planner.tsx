@@ -47,10 +47,11 @@ export function Planner() {
               const key = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
               const dayPlans = db.plans.filter((p) => p.date === key);
               return (
-                <button class={`day cell ${key === today ? 'today' : ''}`} aria-label={`${d} ${title}${dayPlans.length ? `, ${dayPlans.length} rencana` : ''}. Tambah rencana`} onClick={() => openPlan(undefined, key)}>
+                <button class={`day cell ${key === today ? 'today' : ''}`} onClick={() => openPlan(undefined, key)}>
                   <strong>{d}</strong>
-                  {dayPlans.slice(0, 2).map((x) => <span class="dot" title={x.title}>{excerpt(x.title, 9)}</span>)}
-                  {dayPlans.length > 2 && <span class="dot more">+{dayPlans.length - 2}</span>}
+                  {dayPlans.slice(0, 2).map((x) => <span class="dot" aria-hidden="true">{excerpt(x.title, 9)}</span>)}
+                  {dayPlans.length > 2 && <span class="dot more" aria-hidden="true">+{dayPlans.length - 2}</span>}
+                  <span class="sr-only">{dayPlans.length ? dayPlans.map((x) => x.title).join(', ') + '. ' : ''}Tambah rencana</span>
                 </button>
               );
             })}
