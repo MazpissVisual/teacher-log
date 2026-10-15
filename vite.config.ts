@@ -27,8 +27,8 @@ export default defineConfig({
           { src: 'icon.svg', sizes: 'any', type: 'image/svg+xml' },
         ],
         shortcuts: [
-          { name: 'Catatan baru', short_name: 'Catat', url: '/#/journal' },
-          { name: 'Tugas', short_name: 'Tugas', url: '/#/tasks' },
+          { name: 'Catatan baru', short_name: 'Catat', url: '/journal' },
+          { name: 'Tugas', short_name: 'Tugas', url: '/tasks' },
         ],
       },
     }),

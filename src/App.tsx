@@ -64,7 +64,7 @@ function Shell() {
 
   return (
     <div class="layout">
-      <a class="skip" href="#main">Lompat ke konten</a>
+      <a class="skip" href="#main" onClick={(e) => { e.preventDefault(); document.getElementById('main')?.focus(); }}>Lompat ke konten</a>
       <header class="masthead">
         <div class="edition-bar">
           <span class="label">Vol. 1 · {dateLong}</span>
@@ -74,7 +74,7 @@ function Shell() {
           </span>
         </div>
         <div class="nameplate">
-          <a class="nameplate-title" href="#/dashboard" onClick={() => go('dashboard')}><Wordmark /></a>
+          <a class="nameplate-title" href="/" onClick={(e) => { e.preventDefault(); go('dashboard'); }}><Wordmark /></a>
           <p class="nameplate-sub">Catatan kecil, perjalanan mengajar yang berarti</p>
         </div>
       </header>

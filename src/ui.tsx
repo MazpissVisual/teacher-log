@@ -25,17 +25,35 @@ function atom<T>(initial: T) {
   };
 }
 
-// ---------- navigation ----------
+// ---------- navigation (clean URLs via the History API: /journal, /tasks, …) ----------
 const PAGES: Page[] = ['dashboard', 'journal', 'planner', 'library', 'tasks', 'journey', 'search', 'settings'];
-const fromHash = (): Page => {
-  const h = location.hash.replace(/^#\/?/, '') as Page;
-  return PAGES.includes(h) ? h : 'dashboard';
+const pathOf = (p: Page) => (p === 'dashboard' ? '/' : '/' + p);
+const segment = () => location.pathname.replace(/^\/+|\/+$/g, '');
+const fromPath = (): Page => {
+  const seg = segment();
+  return PAGES.includes(seg as Page) ? (seg as Page) : 'dashboard';
 };
-export const pageAtom = atom<Page>(fromHash());
-export const searchAtom = atom('');
-window.addEventListener('hashchange', () => pageAtom.set(fromHash()));
+
+// Old "#/journal" links (bookmarks, installed-app shortcuts) become "/journal". Auth tokens ("#access_token=…") are left alone.
+if (/^#\/[a-z]+$/.test(location.hash)) {
+  const old = location.hash.slice(2) as Page;
+  history.replaceState(null, '', PAGES.includes(old) ? pathOf(old) : '/');
+} else if (segment() && !PAGES.includes(segment() as Page)) {
+  history.replaceState(null, '', '/'); // unknown path → home
+}
+
+export const pageAtom = atom<Page>(fromPath());
+export const searchAtom = atom(fromPath() === 'search' ? new URLSearchParams(location.search).get('q') ?? '' : '');
+
+window.addEventListener('popstate', () => {
+  searchAtom.set(fromPath() === 'search' ? new URLSearchParams(location.search).get('q') ?? '' : '');
+  pageAtom.set(fromPath());
+  window.scrollTo({ top: 0 });
+});
+
 export function go(p: Page) {
-  location.hash = '/' + p;
+  const url = p === 'search' ? '/search?q=' + encodeURIComponent(searchAtom.get().trim()) : pathOf(p);
+  if (location.pathname + location.search !== url) history.pushState(null, '', url);
   pageAtom.set(p);
   window.scrollTo({ top: 0 });
 }

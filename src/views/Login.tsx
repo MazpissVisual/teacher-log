@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { Eye, EyeOff, MailCheck } from 'lucide-preact';
 import { supabase, supabaseKey, supabaseUrl } from '../supabase';
-import { toast } from '../ui';
+import { go, toast } from '../ui';
 import { Wordmark } from '../Logo';
 import { Icon } from '../icons';
 import { endRecovery } from '../auth';
@@ -115,7 +115,7 @@ export function Login({ recovery }: { recovery: boolean }) {
       } else {
         const { error } = await supabase.auth.updateUser({ password });
         if (error) throw error;
-        location.hash = '/dashboard';
+        go('dashboard');
         endRecovery();
         toast('Kata sandi diperbarui');
       }
