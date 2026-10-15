@@ -38,3 +38,15 @@ form.panel{display:block}
   .filters .field{max-width:none;flex:1 1 140px}
 }
 @media(max-width:420px){.bottom-nav .nav .nav-text{font-size:9px}}
+
+/* auth + sync */
+.auth-wrap{min-height:100vh;display:grid;place-items:center;padding:20px}
+.auth-card{width:min(420px,100%)}
+.auth-links{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:16px}
+.notice.error{background:#fff2f2;color:#9b2c3d}
+.btn:disabled{opacity:.6;cursor:progress;transform:none}
+.sync-chip{display:inline-flex;gap:6px;align-items:center;font-size:12px;font-weight:700;color:#127a5c;background:#e9f8f2;border-radius:30px;padding:6px 11px;white-space:nowrap}
+.sync-chip.syncing{color:#5b52c9;background:#f1efff}
+.sync-chip.offline{color:#8a5a14;background:#fff1e5}
+.sync-chip.error{color:#9b2c3d;background:#fff2f2}
+@media(max-width:760px){.sync-label{display:none}}

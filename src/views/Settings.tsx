@@ -1,6 +1,9 @@
 import { useRef, useState } from 'preact/hooks';
 import { actions, exportJSON, useDB } from '../store';
 import { download, toast } from '../ui';
+import { cloudEnabled } from '../supabase';
+import { signOut, useAuth } from '../auth';
+import { syncNow, useSyncStatus } from '../sync';
 import { todayIn } from '../util';
 import { PageHead } from './shared';
 
@@ -34,6 +37,8 @@ export function Settings() {
   const [name, setName] = useState(db.profile.name);
   const [tz, setTz] = useState(db.profile.tz);
   const file = useRef<HTMLInputElement>(null);
+  const auth = useAuth();
+  const sync = useSyncStatus();
 
   const onImport = async (e: Event) => {
     const input = e.currentTarget as HTMLInputElement;
@@ -54,6 +59,20 @@ export function Settings() {
       <PageHead title="Pengaturan ⚙️" sub="Atur ruang kerja sesuai caramu mengajar." />
       <div class="grid-main">
         <div class="stack">
+          {cloudEnabled && (
+            <div class="panel">
+              <h2>Akun</h2>
+              <p class="muted" style="margin-bottom:6px">Masuk sebagai</p>
+              <p><b>{auth.session?.user.email}</b></p>
+              <p class="legend" style="margin:8px 0 16px">
+                {sync.state === 'syncing' ? 'Sedang menyinkronkan…' : sync.state === 'offline' ? 'Offline — perubahan akan dikirim saat tersambung.' : sync.state === 'error' ? `Gagal sinkron: ${sync.error}` : sync.pending ? `${sync.pending} perubahan menunggu dikirim.` : sync.lastSync ? `Terakhir sinkron ${new Date(sync.lastSync).toLocaleTimeString('id-ID')}.` : 'Siap.'}
+              </p>
+              <div class="compact-actions">
+                <button class="btn secondary" onClick={() => { void syncNow(); }}>⟳ Sinkronkan</button>
+                <button class="btn danger" onClick={() => { void signOut(); }}>Keluar</button>
+              </div>
+            </div>
+          )}
           <form class="panel" onSubmit={(e) => { e.preventDefault(); actions.setProfile({ name: name.trim() || 'Guru', tz }); toast('Profil diperbarui'); }}>
             <h2>Profil</h2>
             <div class="form-group"><label for="s-name">Nama panggilan</label><input id="s-name" class="field" value={name} onInput={(e) => setName(e.currentTarget.value)} placeholder="Nama atau panggilanmu" /></div>
@@ -75,7 +94,7 @@ export function Settings() {
         </div>
         <div class="panel" style="align-self:start">
           <h2>Data &amp; Privasi</h2>
-          <p class="muted" style="line-height:1.8">Saat ini semua data disimpan di browser perangkat ini (localStorage). Belum ada akun atau sinkronisasi. Ekspor secara berkala sebagai cadangan.</p>
+          <p class="muted" style="line-height:1.8">{cloudEnabled ? 'Datamu tersimpan di akunmu (terlindungi per pengguna) dan di-cache di perangkat ini agar bisa dipakai offline. Ekspor secara berkala sebagai cadangan tambahan.' : 'Data disimpan di browser perangkat ini (localStorage) tanpa akun. Ekspor secara berkala sebagai cadangan.'}</p>
           <div class="compact-actions">
             <button class="btn secondary" onClick={() => { download(`gurulog-data-${todayIn(db.profile.tz)}.json`, exportJSON()); toast('Data berhasil diekspor'); }}>↓ Ekspor JSON</button>
             <button class="btn secondary" onClick={() => file.current?.click()}>↑ Impor JSON</button>

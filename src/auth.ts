@@ -1,0 +1,75 @@
+import { useEffect, useState } from 'preact/hooks';
+import type { Session } from '@supabase/supabase-js';
+import { actions, clearUserCache, getDB, hasUserCache, readLocalOnly, switchUser } from './store';
+import { clearOutbox, flush, pendingCount, pull, startSync, stopSync } from './sync';
+import { supabase } from './supabase';
+
+export interface AuthState { ready: boolean; session: Session | null; recovery: boolean }
+let state: AuthState = { ready: false, session: null, recovery: false };
+const subs = new Set<() => void>();
+const set = (p: Partial<AuthState>) => { state = { ...state, ...p }; subs.forEach((s) => s()); };
+
+export function useAuth(): AuthState {
+  const [, force] = useState(0);
+  useEffect(() => {
+    const s = () => force((n) => n + 1);
+    subs.add(s);
+    return () => { subs.delete(s); };
+  }, []);
+  return state;
+}
+
+let activeUser: string | null = null;
+
+/** Load the user's cache, push anything pending, then pull. Handles first-login migration of local-only data. */
+async function bootstrap(session: Session) {
+  const uid = session.user.id;
+  if (activeUser === uid) return;
+  activeUser = uid;
+  const hadCache = hasUserCache(uid);
+  switchUser(uid);
+  startSync(uid);
+  await flush();
+  const existed = await pull();
+
+  if (!existed && !hadCache) {
+    // Brand-new account: offer to carry over data created on this device before cloud sync existed.
+    const local = readLocalOnly();
+    const hasLocal = local && (local.journals.length || local.plans.length || local.resources.length || local.tasks.length);
+    if (hasLocal && confirm('Unggah data yang ada di perangkat ini ke akun barumu?')) {
+      actions.adopt({ ...local!, profile: { ...local!.profile, name: local!.profile.name } });
+    } else {
+      const name = session.user.email?.split('@')[0] ?? 'Guru';
+      actions.setProfile({ ...getDB().profile, name });
+    }
+  }
+}
+
+function teardown() {
+  activeUser = null;
+  stopSync();
+  switchUser(null);
+}
+
+export function initAuth() {
+  if (!supabase) return set({ ready: true });
+  supabase.auth.onAuthStateChange((event, session) => {
+    // Never await supabase calls inside this callback (deadlocks the auth lock) — defer.
+    setTimeout(() => {
+      if (event === 'PASSWORD_RECOVERY') set({ recovery: true });
+      set({ session, ready: true });
+      if (session) void bootstrap(session);
+      else if (activeUser) teardown();
+    }, 0);
+  });
+}
+
+export async function signOut(): Promise<boolean> {
+  if (!supabase) return true;
+  await flush();
+  if (pendingCount() > 0 && !confirm('Ada perubahan yang belum tersinkron dan akan hilang jika keluar. Tetap keluar?')) return false;
+  const uid = activeUser;
+  await supabase.auth.signOut();
+  if (uid) { clearUserCache(uid); clearOutbox(uid); } // don't leave a teacher's data on a shared device
+  return true;
+}

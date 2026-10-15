@@ -3,6 +3,8 @@ import preact from '@preact/preset-vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  // .env uses the NEXT_PUBLIC_ prefix; expose it alongside Vite's default VITE_
+  envPrefix: ['VITE_', 'NEXT_PUBLIC_'],
   plugins: [
     preact(),
     VitePWA({
