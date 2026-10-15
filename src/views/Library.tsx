@@ -1,0 +1,31 @@
+import { useState } from 'preact/hooks';
+import { useDB } from '../store';
+import { openResource } from '../forms';
+import { Empty } from '../ui';
+import { PageHead, ResourceCard } from './shared';
+
+export function Library() {
+  const db = useDB();
+  const [q, setQ] = useState('');
+  const [type, setType] = useState('');
+  const needle = q.trim().toLowerCase();
+  const list = db.resources.filter((r) => (!type || r.type === type) && (!needle || `${r.title} ${r.description}`.toLowerCase().includes(needle)));
+
+  return (
+    <>
+      <PageHead title="Perpustakaan Sumber 📚" sub="Semua ide, materi, dan referensi dalam satu tempat." action={<button class="btn" onClick={() => openResource()}>＋ Tambah Sumber</button>} />
+      <div class="panel">
+        <div class="filters">
+          <input class="field" placeholder="🔎 Cari referensi..." aria-label="Cari referensi" value={q} onInput={(e) => setQ(e.currentTarget.value)} />
+          <select class="field" aria-label="Filter jenis" value={type} onChange={(e) => setType(e.currentTarget.value)}>
+            <option value="">Semua Jenis</option>
+            {['Materi', 'Ide', 'Link', 'Aktivitas'].map((t) => <option value={t}>{t}</option>)}
+          </select>
+        </div>
+        <div class="list-grid">
+          {list.length ? list.map((r) => <ResourceCard r={r} />) : <Empty title="Belum ada sumber yang sesuai" />}
+        </div>
+      </div>
+    </>
+  );
+}

@@ -1,0 +1,40 @@
+/* Additions on top of the original stylesheet (styles.css) */
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.field:focus-visible{outline:none}
+.avatar{border:0;padding:0;cursor:pointer;font:inherit;font-weight:800}
+.searchbar{margin:0}
+.searchbar input[type=search]::-webkit-search-cancel-button{cursor:pointer}
+.sidebar nav{display:block}
+.pill.peach{background:#fff1e5;color:#a8621c}
+.toast{display:flex;align-items:center;gap:14px}
+.toast.show{pointer-events:auto}
+.toast-action{background:transparent;border:0;color:#c9c4ff;font-weight:800;text-decoration:underline;padding:0}
+
+/* calendar cells are buttons now */
+.day.cell{text-align:left;color:inherit;display:block;width:100%;cursor:pointer}
+.day.cell:hover{border-color:#b9b4f3}
+.day .dot{display:block;margin-top:5px;width:max-content;max-width:100%}
+.day .dot.more{background:#f2f3f9;color:var(--muted)}
+
+/* settings */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.chip{align-items:center;gap:6px}
+.chip button{border:0;background:transparent;color:inherit;font-size:14px;line-height:1;padding:0 2px}
+.inline-form{display:flex;gap:8px}
+.inline-form .field{flex:1}
+form.panel{display:block}
+
+/* mobile: bottom navigation replaces the shrunken sidebar */
+.bottom-nav{display:none}
+@media(max-width:760px){
+  .sidebar{display:none}
+  .container{padding-bottom:96px}
+  .bottom-nav{display:grid;grid-template-columns:repeat(6,1fr);position:fixed;left:0;right:0;bottom:0;z-index:40;background:#fff;border-top:1px solid var(--border);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+  .bottom-nav .nav{flex-direction:column;gap:2px;padding:7px 2px;margin:0;font-size:10px;justify-content:center;align-items:center}
+  .bottom-nav .nav .nav-text{display:block}
+  .bottom-nav .nav .ico{font-size:19px}
+  .toast{bottom:84px;right:12px;left:12px}
+  .topbar .searchbar{max-width:none}
+  .filters .field{max-width:none;flex:1 1 140px}
+}
+@media(max-width:420px){.bottom-nav .nav .nav-text{font-size:9px}}
