@@ -468,3 +468,34 @@ html { scroll-padding-top: 64px; }
 .sk-logo { display: block; height: 3rem; width: auto; margin-bottom: 18px; color: var(--ink); }
 .footer-brand { display: inline-flex; align-items: center; gap: 12px; }
 .footer-brand .mark { display: block; }
+
+/* ---- auth polish ---- */
+.auth-wrap { min-height: 100vh; min-height: 100dvh; }
+.auth-title { font-size: 1.5rem; line-height: 1.1; letter-spacing: -.02em; margin-bottom: 8px; }
+.auth-tabs { width: 100%; margin-bottom: 22px; }
+.auth-tabs .tab { flex: 1; }
+.auth-icon { display: grid; place-items: center; width: 56px; height: 56px; margin-bottom: 14px; border: 1px solid var(--ink); }
+.auth-note { margin: 14px 0 0; }
+.auth-forgot { justify-self: end; min-height: 36px; }
+.opt { text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--n500); }
+.break { overflow-wrap: anywhere; }
+.pw-wrap { position: relative; }
+.pw-wrap .field { padding-right: 52px; }
+.pw-toggle { position: absolute; right: 0; top: 0; width: 44px; height: 100%; min-height: 44px; display: grid; place-items: center; background: transparent; border: 0; transition: background-color var(--t) ease-out; }
+.pw-toggle:active { background: var(--ink); color: var(--paper); }
+@media (hover: hover) { .pw-toggle:hover { background: var(--rule); } }
+.notice:focus { outline: 2px solid var(--ink); outline-offset: 2px; }
+.auth-card .btn:disabled { cursor: progress; }
+
+/* ---- onboarding checklist ---- */
+.onboarding { margin-bottom: 28px; border-width: 1px; border-top: 4px solid var(--ink); }
+.ob-list { list-style: none; margin: 0; padding: 0; display: grid; }
+.ob-list li { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--rule); }
+.ob-list li:last-child { border-bottom: 0; padding-bottom: 0; }
+.ob-mark { flex-shrink: 0; width: 36px; height: 36px; display: grid; place-items: center; border: 1px solid var(--ink); font: 500 13px var(--f-mono); }
+.ob-list li.done .ob-mark { background: var(--ink); color: var(--paper); }
+.ob-list li.done .ob-text b { color: var(--n500); text-decoration: line-through; text-decoration-thickness: 2px; }
+.ob-text { flex: 1; min-width: 0; display: grid; }
+.ob-text b { font: 700 17px var(--f-display); }
+.ob-text span:not(.sr-only) { font-size: 13px; color: var(--n500); }
+@media (max-width: 767px) { .ob-list li { flex-wrap: wrap; } .ob-list li .btn { width: 100%; } }

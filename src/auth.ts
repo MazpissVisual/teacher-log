@@ -9,6 +9,9 @@ let state: AuthState = { ready: false, session: null, recovery: false };
 const subs = new Set<() => void>();
 const set = (p: Partial<AuthState>) => { state = { ...state, ...p }; subs.forEach((s) => s()); };
 
+/** Leave the "set a new password" screen once the password was changed. */
+export const endRecovery = () => set({ recovery: false });
+
 export function useAuth(): AuthState {
   const [, force] = useState(0);
   useEffect(() => {
@@ -35,12 +38,14 @@ async function bootstrap(session: Session) {
 
   if (!existed && !hadCache) {
     // Brand-new account: offer to carry over data created on this device before cloud sync existed.
+    // Name chosen at sign-up (user_metadata) wins; otherwise fall back to the part of the email before "@".
+    const meta = typeof session.user.user_metadata?.name === 'string' ? session.user.user_metadata.name.trim() : '';
+    const name = meta || session.user.email?.split('@')[0] || 'Guru';
     const local = readLocalOnly();
     const hasLocal = local && (local.journals.length || local.plans.length || local.resources.length || local.tasks.length);
     if (hasLocal && confirm('Unggah data yang ada di perangkat ini ke akun barumu?')) {
-      actions.adopt({ ...local!, profile: { ...local!.profile, name: local!.profile.name } });
+      actions.adopt({ ...local!, profile: { ...local!.profile, name } });
     } else {
-      const name = session.user.email?.split('@')[0] ?? 'Guru';
       actions.setProfile({ ...getDB().profile, name });
     }
   }

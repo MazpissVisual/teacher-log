@@ -6,6 +6,7 @@ import { Icon, MoodIcon } from '../icons';
 import { CountUp, Empty, go } from '../ui';
 import { dateText, excerpt, hourIn, todayIn } from '../util';
 import { TaskRow } from './shared';
+import { Onboarding } from './Onboarding';
 
 export function Dashboard() {
   const db = useDB();
@@ -60,6 +61,8 @@ export function Dashboard() {
           )) : <p class="muted" style="font-style:italic">Tidak ada jadwal hari ini.</p>}
         </aside>
       </section>
+
+      <Onboarding />
 
       <div class={'ticker' + (paused ? ' paused' : '')} role="marquee" aria-label="Ringkasan berita terkini">
         <span class="ticker-badge">Terkini</span>
