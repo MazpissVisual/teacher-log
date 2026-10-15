@@ -327,7 +327,9 @@ select.field { appearance: none; padding-right: 32px; background-image: linear-g
   .modal { padding: 16px; }
   .lead-main { padding-bottom: 20px; }
   .dropcap::first-letter { font-size: 4rem; }
-  .footer { margin-bottom: 64px; }
+  .footer-cta { display: none; }
+  .footer-inner { padding-bottom: calc(76px + env(safe-area-inset-bottom)); gap: 20px; }
+  .footer blockquote { font-size: 17px; }
   .toast { bottom: 76px; left: 12px; right: 12px; }
   .bottom-nav { display: grid; grid-template-columns: repeat(6, 1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: var(--paper); border-top: 2px solid var(--ink); padding-bottom: env(safe-area-inset-bottom); }
   .bottom-nav .nav { flex-direction: column; justify-content: center; gap: 3px; min-height: 56px; padding: 6px 0; font-size: 9px; letter-spacing: .08em; border-right: 1px solid var(--rule); }
