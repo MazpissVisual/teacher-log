@@ -1,4 +1,15 @@
-export const DEFAULT_TZ = 'Asia/Jakarta';
+// Indonesian time zones. The default follows the device, so a teacher in Makassar doesn't start on "Jakarta".
+const ZONES: Record<string, string> = {
+  'Asia/Jakarta': 'Asia/Jakarta', 'Asia/Pontianak': 'Asia/Jakarta',
+  'Asia/Makassar': 'Asia/Makassar', 'Asia/Ujung_Pandang': 'Asia/Makassar',
+  'Asia/Jayapura': 'Asia/Jayapura',
+};
+export const mapTz = (name?: string): string => (name && ZONES[name]) || 'Asia/Jakarta';
+export const detectTz = (): string => {
+  try { return mapTz(Intl.DateTimeFormat().resolvedOptions().timeZone); } catch { return 'Asia/Jakarta'; }
+};
+export const DEFAULT_TZ = detectTz();
+export const tzLabel = (tz: string) => ({ 'Asia/Jakarta': 'WIB', 'Asia/Makassar': 'WITA', 'Asia/Jayapura': 'WIT' } as Record<string, string>)[tz] ?? tz;
 
 export const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -40,3 +51,24 @@ export const excerpt = (s: string, n: number) => (s.length > n ? s.slice(0, n).t
 export const firstChar = (s: string) => Array.from(s.trim())[0]?.toUpperCase() ?? 'G';
 
 export const isHttpUrl = (u: string) => /^https?:\/\//i.test(u);
+
+/** Whole days from `b` to `a` (a - b), for YYYY-MM-DD strings. */
+export function dayDiff(a: string, b: string): number {
+  const t = (d: string) => { const [y, m, day] = d.split('-').map(Number); return Date.UTC(y, m - 1, day); };
+  return Math.round((t(a) - t(b)) / 86400000);
+}
+
+/** "Hari ini", "Besok", "3 hari lagi", "2 hari lalu" — only within two weeks, otherwise null (show the date instead). */
+export function relativeDay(date: string, today: string): string | null {
+  if (!date) return null;
+  const d = dayDiff(date, today);
+  if (d === 0) return 'Hari ini';
+  if (d === 1) return 'Besok';
+  if (d === -1) return 'Kemarin';
+  if (d > 1 && d <= 14) return d + ' hari lagi';
+  if (d < -1 && d >= -14) return -d + ' hari lalu';
+  return null;
+}
+
+/** Tiny haptic tick on devices that support it (Android PWA); silently ignored elsewhere. */
+export const tap = (ms = 10) => { try { navigator.vibrate?.(ms); } catch { /* unsupported */ } };

@@ -33,7 +33,7 @@ export function Journal() {
             {(['great', 'good', 'neutral', 'challenging'] as const).map((m) => <option value={m}>{moodLabel(m)}</option>)}
           </select>
         </div>
-        {list.length ? list.map((j) => <JournalCard j={j} />) : <Empty title="Belum ada jurnal yang sesuai" />}
+        {list.length ? list.map((j) => <JournalCard j={j} />) : <Empty title="Belum ada jurnal yang sesuai" action={db.journals.length === 0 ? { label: 'Tulis jurnal pertamamu', run: () => openJournal() } : undefined} />}
       </div>
     </>
   );

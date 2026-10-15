@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import type { ComponentChildren } from 'preact';
 import type { Collection, DB, Page } from './types';
 import { actions } from './store';
+import { tap } from './util';
 
 /** Minimal observable value, used for page / modal / toast state. */
 function atom<T>(initial: T) {
@@ -80,7 +81,7 @@ export function removeWithUndo<K extends Collection>(kind: K, item: DB[K][number
     const next = new Set(leavingAtom.get());
     next.delete(item.id);
     leavingAtom.set(next);
-    toast(label, { label: 'Urungkan', run: () => actions.upsert(kind, item) });
+    toast(label, { label: 'Urungkan', run: () => { tap(); actions.upsert(kind, item); } });
   }, LEAVE_MS);
 }
 
@@ -135,12 +136,13 @@ export function ModalRoot() {
 }
 
 // ---------- small shared pieces ----------
-export function Empty({ title }: { title: string }) {
+export function Empty({ title, action }: { title: string; action?: { label: string; run: () => void } }) {
   return (
     <div class="empty">
       <div class="ornament" style="padding:0;font-size:20px" aria-hidden="true">✧ ✧ ✧</div>
       <b>{title}</b>
       <span>Ruang ini siap untuk ide berikutnya.</span>
+      {action && <button class="btn sm" style="margin-top:16px" onClick={action.run}>{action.label}</button>}
     </div>
   );
 }
@@ -152,4 +154,41 @@ export function download(filename: string, text: string) {
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
+}
+
+/** Number that counts up to its value (like a press run totalling). Instant under reduced motion. */
+export function CountUp({ value }: { value: number }) {
+  const reduce = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const [n, setN] = useState(reduce ? value : 0);
+  const cur = useRef(n);
+  useEffect(() => {
+    if (reduce || cur.current === value) { cur.current = value; setN(value); return; }
+    const from = cur.current, t0 = performance.now(), dur = 420;
+    let raf = 0;
+    const step = (t: number) => {
+      const p = Math.min(1, (t - t0) / dur);
+      const v = Math.round(from + (value - from) * (1 - Math.pow(1 - p, 3)));
+      cur.current = v;
+      setN(v);
+      if (p < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [value]);
+  return <><span aria-hidden="true">{n}</span><span class="sr-only">{value}</span></>;
+}
+
+/** Placeholder shaped like a not-yet-printed front page. */
+export function Skeleton() {
+  return (
+    <main class="auth-wrap">
+      <div class="skeleton" role="status" aria-busy="true">
+        <span class="sr-only">Memuat…</span>
+        <div class="sk" style="height:12px;width:90px" />
+        <div class="sk" style="height:44px;width:80%;margin:14px 0 18px" />
+        <div class="sk" style="height:12px" /><div class="sk" style="height:12px;width:94%" /><div class="sk" style="height:12px;width:70%" />
+        <div class="sk" style="height:84px;margin-top:22px" />
+      </div>
+    </main>
+  );
 }

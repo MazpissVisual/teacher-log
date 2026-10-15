@@ -5,7 +5,7 @@ import type { Journal, Plan, Resource, Task } from '../types';
 import { openJournal, openPlan, openResource, openTask, prioLabel } from '../forms';
 import { Icon, MoodIcon } from '../icons';
 import { removeWithUndo, useLeaving } from '../ui';
-import { dateText, isHttpUrl, moodLabel } from '../util';
+import { dateText, isHttpUrl, moodLabel, relativeDay, tap } from '../util';
 
 export function PageHead({ kicker, title, sub, action }: { kicker: string; title: string; sub: string; action?: ComponentChildren }) {
   return (
@@ -25,11 +25,11 @@ export function TaskRow({ t, today }: { t: Task; today: string }) {
   const leaving = useLeaving(t.id);
   return (
     <div class={`task-row ${t.done ? 'done' : ''} ${leaving ? 'leaving' : ''}`}>
-      <input type="checkbox" checked={t.done} aria-label={`Selesaikan: ${t.title}`} onChange={() => actions.patch('tasks', t.id, { done: !t.done })} />
+      <input type="checkbox" checked={t.done} aria-label={`Selesaikan: ${t.title}`} onChange={() => { tap(); actions.patch('tasks', t.id, { done: !t.done }); }} />
       <div style="flex:1;min-width:0">
         <div class="task-title">{t.title}</div>
         <div class="task-meta">
-          <span>{dateText(t.date)}</span>
+          <span>{!t.done && relativeDay(t.date, today) ? relativeDay(t.date, today) + ' · ' : ''}{dateText(t.date)}</span>
           <span>· Prioritas {prioLabel(t.priority)}</span>
           {overdue && <span class="pill peach">Terlambat</span>}
         </div>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { addDays, dateText, excerpt, firstChar, hourIn, isHttpUrl, todayIn, UUID_RE, uid } from './util';
+import { addDays, dateText, dayDiff, excerpt, firstChar, hourIn, isHttpUrl, mapTz, relativeDay, todayIn, tzLabel, UUID_RE, uid } from './util';
 
 describe('dates', () => {
   it('addDays crosses month, year and leap boundaries', () => {
@@ -56,5 +56,41 @@ describe('strings', () => {
     } finally {
       crypto.randomUUID = orig;
     }
+  });
+});
+
+describe('time zones', () => {
+  it('maps device zones to the three Indonesian zones, falling back to WIB', () => {
+    expect(mapTz('Asia/Pontianak')).toBe('Asia/Jakarta');
+    expect(mapTz('Asia/Makassar')).toBe('Asia/Makassar');
+    expect(mapTz('Asia/Ujung_Pandang')).toBe('Asia/Makassar');
+    expect(mapTz('Asia/Jayapura')).toBe('Asia/Jayapura');
+    expect(mapTz('Europe/London')).toBe('Asia/Jakarta');
+    expect(mapTz(undefined)).toBe('Asia/Jakarta');
+  });
+  it('labels zones as WIB / WITA / WIT', () => {
+    expect(tzLabel('Asia/Jakarta')).toBe('WIB');
+    expect(tzLabel('Asia/Makassar')).toBe('WITA');
+    expect(tzLabel('Asia/Jayapura')).toBe('WIT');
+  });
+});
+
+describe('relativeDay', () => {
+  const today = '2026-10-15';
+  it('names nearby days', () => {
+    expect(relativeDay('2026-10-15', today)).toBe('Hari ini');
+    expect(relativeDay('2026-10-16', today)).toBe('Besok');
+    expect(relativeDay('2026-10-14', today)).toBe('Kemarin');
+    expect(relativeDay('2026-10-18', today)).toBe('3 hari lagi');
+    expect(relativeDay('2026-10-10', today)).toBe('5 hari lalu');
+  });
+  it('returns null when far away or empty', () => {
+    expect(relativeDay('2026-12-01', today)).toBeNull();
+    expect(relativeDay('2026-09-01', today)).toBeNull();
+    expect(relativeDay('', today)).toBeNull();
+  });
+  it('dayDiff is DST/zone independent and handles month ends', () => {
+    expect(dayDiff('2026-03-01', '2026-02-28')).toBe(1);
+    expect(dayDiff('2027-01-01', '2026-12-31')).toBe(1);
   });
 });

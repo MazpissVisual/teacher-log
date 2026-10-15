@@ -25,7 +25,7 @@ export function Library() {
           </select>
         </div>
         <div class="list-grid">
-          {list.length ? list.map((r) => <ResourceCard r={r} />) : <Empty title="Belum ada sumber yang sesuai" />}
+          {list.length ? list.map((r) => <ResourceCard r={r} />) : <Empty title="Belum ada sumber yang sesuai" action={db.resources.length === 0 ? { label: 'Simpan sumber pertama', run: () => openResource() } : undefined} />}
         </div>
       </div>
     </>

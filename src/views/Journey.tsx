@@ -1,6 +1,6 @@
 import { exportJSON, useDB } from '../store';
 import { openJournal } from '../forms';
-import { download, Empty, toast } from '../ui';
+import { CountUp, download, Empty, toast } from '../ui';
 import { addDays, dateText, todayIn } from '../util';
 import { BookOpen, CheckSquare, Download, NotebookPen, Smile } from 'lucide-preact';
 import { Icon, MoodIcon } from '../icons';
@@ -30,7 +30,7 @@ export function Journey() {
     <>
       <PageHead kicker="Seksi · Perjalanan" title="Perjalanan Mengajarku" sub="Setiap pengalaman adalah langkah untuk berkembang." action={<button class="btn secondary" onClick={() => { download(`gurulog-data-${today}.json`, exportJSON()); toast('Data berhasil diekspor'); }}><Icon as={Download} size={16} /> Ekspor data</button>} />
       <div class="cards4">
-        {stats.map(([Ico, l, n]) => <div class="stat"><div class="stat-top"><span>{l}</span><span class="stat-icon"><Icon as={Ico} size={16} /></span></div><strong>{n}</strong><p>Aktivitas pribadi</p></div>)}
+        {stats.map(([Ico, l, n]) => <div class="stat"><div class="stat-top"><span>{l}</span><span class="stat-icon"><Icon as={Ico} size={16} /></span></div><strong><CountUp value={n} /></strong><p>Aktivitas pribadi</p></div>)}
       </div>
       <div class="grid-main">
         <div class="panel">

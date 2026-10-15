@@ -34,6 +34,7 @@ export function Planner() {
           <div class="panel-head">
             <h2>{title}</h2>
             <div class="compact-actions">
+              <button class="btn sm secondary" disabled={y === ty && m === tm - 1} onClick={() => setCursor({ y: ty, m: tm - 1 })}>Hari ini</button>
               <button class="btn sm secondary" aria-label="Bulan sebelumnya" onClick={() => move(-1)}><Icon as={ChevronLeft} size={16} /></button>
               <button class="btn sm secondary" aria-label="Bulan berikutnya" onClick={() => move(1)}><Icon as={ChevronRight} size={16} /></button>
             </div>
@@ -57,7 +58,7 @@ export function Planner() {
         </div>
         <div class="panel">
           <div class="panel-head"><h2>Rencana pembelajaran</h2><button class="link" onClick={() => openPlan()}>Tambah +</button></div>
-          {plans.length ? plans.map((p) => <PlanCard p={p} />) : <Empty title="Belum ada rencana pembelajaran" />}
+          {plans.length ? plans.map((p) => <PlanCard p={p} />) : <Empty title="Belum ada rencana pembelajaran" action={db.plans.length === 0 ? { label: 'Buat rencana pertama', run: () => openPlan() } : undefined} />}
         </div>
       </div>
     </>

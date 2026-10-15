@@ -1,7 +1,7 @@
 import { useEffect } from 'preact/hooks';
 import { setStorageErrorHandler, useDB } from './store';
 import type { Page } from './types';
-import { go, ModalRoot, pageAtom, searchAtom, Toast, toast } from './ui';
+import { go, ModalRoot, pageAtom, searchAtom, Skeleton, Toast, toast } from './ui';
 import { openJournal } from './forms';
 import { firstChar, todayIn } from './util';
 import { CloudCheck, CloudOff, CalendarDays, CheckSquare, House, Library as LibraryIcon, NotebookPen, RefreshCw, Search as SearchIcon, Settings as SettingsIcon, Sprout, TriangleAlert, type LucideIcon } from 'lucide-preact';
@@ -67,7 +67,6 @@ function Shell() {
       <header class="masthead">
         <div class="edition-bar">
           <span class="label">Vol. 1 · {dateLong}</span>
-          <span class="label hide-sm">Edisi Guru · {db.profile.tz.split('/')[1]?.replace('_', ' ')}</span>
           <span class="edition-right">
             {cloudEnabled && <SyncChip s={sync} />}
             <button class="avatar" aria-label={'Pengaturan profil (' + db.profile.name + ')'} onClick={() => go('settings')}>{firstChar(db.profile.name)}</button>
@@ -126,7 +125,7 @@ function SyncChip({ s }: { s: ReturnType<typeof useSyncStatus> }) {
 export function App() {
   const auth = useAuth();
   if (!cloudEnabled) return <Shell />;
-  if (!auth.ready) return <main class="auth-wrap"><p class="muted" role="status">Memuat…</p></main>;
+  if (!auth.ready) return <Skeleton />;
   if (!auth.session || auth.recovery) return <Login recovery={auth.recovery} />;
   return <Shell />;
 }

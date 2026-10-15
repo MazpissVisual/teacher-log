@@ -1,13 +1,15 @@
-import { BookOpen, CalendarDays, CheckSquare, NotebookPen, Plus } from 'lucide-preact';
+import { useState } from 'preact/hooks';
+import { BookOpen, CalendarDays, CheckSquare, NotebookPen, Pause, Play, Plus } from 'lucide-preact';
 import { useDB } from '../store';
 import { openJournal } from '../forms';
 import { Icon, MoodIcon } from '../icons';
-import { Empty, go } from '../ui';
+import { CountUp, Empty, go } from '../ui';
 import { dateText, excerpt, hourIn, todayIn } from '../util';
 import { TaskRow } from './shared';
 
 export function Dashboard() {
   const db = useDB();
+  const [paused, setPaused] = useState(false);
   const tz = db.profile.tz;
   const today = todayIn(tz);
   const h = hourIn(tz);
@@ -59,18 +61,21 @@ export function Dashboard() {
         </aside>
       </section>
 
-      <div class="ticker" role="marquee" aria-label="Ringkasan berita terkini">
+      <div class={'ticker' + (paused ? ' paused' : '')} role="marquee" aria-label="Ringkasan berita terkini">
         <span class="ticker-badge">Terkini</span>
         <div class="ticker-viewport">
           <div class="ticker-track" aria-hidden="false">
             {[0, 1].map((k) => ticks.map((t) => <span class="ticker-item" aria-hidden={k === 1 ? 'true' : undefined}>{t}</span>))}
           </div>
         </div>
+        <button class="ticker-toggle" aria-pressed={paused} aria-label={paused ? 'Lanjutkan teks berjalan' : 'Jeda teks berjalan'} onClick={() => setPaused(!paused)}>
+          <Icon as={paused ? Play : Pause} size={14} />
+        </button>
       </div>
 
       <div class="cards4">
         {stats.map(([Ico, l, n, sub]) => (
-          <div class="stat"><div class="stat-top"><span>{l}</span><span class="stat-icon"><Icon as={Ico} size={16} /></span></div><strong>{n}</strong><p>{sub}</p></div>
+          <div class="stat"><div class="stat-top"><span>{l}</span><span class="stat-icon"><Icon as={Ico} size={16} /></span></div><strong><CountUp value={n} /></strong><p>{sub}</p></div>
         ))}
       </div>
 

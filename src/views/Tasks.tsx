@@ -13,6 +13,7 @@ export function Tasks() {
   const db = useDB();
   const [f, setF] = useState<'all' | 'todo' | 'done'>('all');
   const today = todayIn(db.profile.tz);
+  const counts = { all: db.tasks.length, todo: db.tasks.filter((t) => !t.done).length, done: db.tasks.filter((t) => t.done).length };
   const list = db.tasks
     .filter((t) => f === 'all' || (f === 'done' ? t.done : !t.done))
     .sort((a, b) => Number(a.done) - Number(b.done) || (a.date || '9').localeCompare(b.date || '9'));
@@ -23,10 +24,10 @@ export function Tasks() {
       <div class="panel">
         <div class="tabs" role="tablist">
           {FILTERS.map(([k, label]) => (
-            <button role="tab" aria-selected={f === k} class={`tab ${f === k ? 'active' : ''}`} onClick={() => setF(k)}>{label}</button>
+            <button role="tab" aria-selected={f === k} class={`tab ${f === k ? 'active' : ''}`} onClick={() => setF(k)}>{label} · {counts[k]}</button>
           ))}
         </div>
-        {list.length ? list.map((t) => <TaskRow t={t} today={today} />) : <Empty title="Tidak ada tugas di kategori ini" />}
+        {list.length ? list.map((t) => <TaskRow t={t} today={today} />) : <Empty title="Tidak ada tugas di kategori ini" action={db.tasks.length === 0 ? { label: 'Tambah tugas pertama', run: () => openTask() } : undefined} />}
       </div>
     </>
   );
