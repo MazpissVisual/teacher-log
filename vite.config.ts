@@ -15,7 +15,7 @@ export default defineConfig({
         short_name: 'GuruLog',
         description: 'Jurnal, perencanaan, dan sumber belajar guru dalam satu tempat.',
         lang: 'id',
-        theme_color: '#635bdb',
+        theme_color: '#f9f9f7',
         background_color: '#f7f8fc',
         display: 'standalone',
         start_url: '/',

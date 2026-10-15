@@ -84,7 +84,7 @@ a { color: inherit; }
 .searchbar input:focus { background: var(--field-focus); outline: none; }
 .searchbar input::placeholder { color: var(--n500); }
 
-.avatar { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid var(--ink); background: transparent; font: 700 15px var(--f-display); transition: all .2s ease-out; padding: 0; }
+.avatar { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid var(--ink); background: transparent; font: 700 14px var(--f-ui); transition: all .2s ease-out; padding: 0; }
 .avatar:hover { background: var(--ink); color: var(--paper); }
 
 .container { min-width: 0; max-width: var(--max); width: 100%; margin: 0 auto; padding: 32px var(--pad) 48px; flex: 1; }
@@ -341,3 +341,16 @@ select.field { appearance: none; padding-right: 32px; background-image: linear-g
 .skip { position: absolute; left: -999px; top: 8px; z-index: 100; background: var(--ink); color: var(--paper); padding: 10px 14px; font: 600 11px var(--f-ui); letter-spacing: .12em; text-transform: uppercase; }
 .skip:focus { left: 8px; }
 main:focus { outline: none; }
+
+/* small screens: calmer hero, safer bottom-nav labels */
+@media (max-width: 767px) {
+  .lead-main h1 { font-size: clamp(1.9rem, 9vw, 2.4rem); overflow-wrap: anywhere; margin-bottom: 14px; }
+  .lead-deck { text-align: left; hyphens: none; font-size: 16px; line-height: 1.65; }
+  .dropcap::first-letter { font-size: 3.4rem; padding: 4px 8px 0 0; }
+  .lead-main { padding-bottom: 18px; }
+  .lead-side.is-empty { display: none; }
+  .lead { margin-bottom: 20px; }
+  .journal-card p, .timeline-item p { text-align: left; hyphens: none; }
+  .bottom-nav .nav { min-width: 0; overflow: hidden; letter-spacing: .02em; font-size: 9px; }
+  .bottom-nav .nav .nav-text { max-width: 100%; overflow: hidden; text-overflow: clip; white-space: nowrap; }
+}

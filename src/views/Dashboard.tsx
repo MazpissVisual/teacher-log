@@ -51,7 +51,7 @@ export function Dashboard() {
             <button class="btn secondary" onClick={() => go('planner')}>Buka perencana</button>
           </div>
         </div>
-        <aside class="lead-side" aria-labelledby="today-title">
+        <aside class={"lead-side" + (todayPlans.length ? "" : " is-empty")} aria-labelledby="today-title">
           <h2 id="today-title">Agenda hari ini</h2>
           {todayPlans.length ? todayPlans.map((p) => (
             <div class="schedule-item"><span class="time">{p.time || '--:--'}</span><div class="details"><strong>{p.title}</strong><p>{p.className || 'Rencana pribadi'}</p></div></div>
