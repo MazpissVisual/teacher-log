@@ -86,7 +86,7 @@ function Shell() {
       </div>
       <main class="container" id="main" tabIndex={-1}>
         <div class="mobile-search">{searchInput}</div>
-        <View />
+        <div class="page" key={page}><View /></div>
         <div class="ornament" aria-hidden="true">✧ ✧ ✧</div>
       </main>
       <footer class="footer inverted">
@@ -117,7 +117,7 @@ function SyncChip({ s }: { s: ReturnType<typeof useSyncStatus> }) {
   const label = s.state === 'syncing' ? 'Menyinkronkan' : s.state === 'offline' ? 'Offline' : s.state === 'error' ? 'Gagal sinkron' : s.pending ? 'Menunggu' : 'Tersimpan';
   const ico = s.state === 'syncing' ? RefreshCw : s.state === 'offline' ? CloudOff : s.state === 'error' ? TriangleAlert : CloudCheck;
   return (
-    <span class={'sync-chip ' + s.state} role="status" title={s.error ?? (s.pending ? s.pending + ' perubahan belum terkirim' : 'Semua perubahan tersimpan di akunmu')}>
+    <span key={s.state} class={'sync-chip ' + s.state} role="status" title={s.error ?? (s.pending ? s.pending + ' perubahan belum terkirim' : 'Semua perubahan tersimpan di akunmu')}>
       <Icon as={ico} size={14} /> <span class="sync-label">{label}</span>
     </span>
   );

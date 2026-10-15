@@ -39,37 +39,62 @@ export function go(p: Page) {
 }
 
 // ---------- toast ----------
-interface ToastState { msg: string; action?: { label: string; run: () => void } }
+interface ToastState { id: number; msg: string; ms: number; action?: { label: string; run: () => void } }
 const toastAtom = atom<ToastState | null>(null);
 let toastTimer: number | undefined;
+let toastSeq = 0;
 export function toast(msg: string, action?: ToastState['action'], ms?: number) {
-  toastAtom.set({ msg, action });
+  const dur = ms ?? (action ? 6000 : 2600);
+  toastAtom.set({ id: ++toastSeq, msg, ms: dur, action });
   clearTimeout(toastTimer);
-  toastTimer = window.setTimeout(() => toastAtom.set(null), ms ?? (action ? 6000 : 2600));
+  toastTimer = window.setTimeout(() => toastAtom.set(null), dur);
 }
 export function Toast() {
   const t = toastAtom.use();
+  // Keep the last message mounted while the toast fades out so it doesn't blank mid-transition.
+  const last = useRef<ToastState | null>(null);
+  if (t) last.current = t;
+  const shown = t ?? last.current;
   return (
     <div class={`toast ${t ? 'show' : ''}`} role="status" aria-live="polite">
-      {t?.msg}
-      {t?.action && (
-        <button class="toast-action" onClick={() => { t.action!.run(); toastAtom.set(null); }}>{t.action.label}</button>
+      {shown?.msg}
+      {shown?.action && (
+        <button class="toast-action" tabIndex={t ? 0 : -1} onClick={() => { shown.action!.run(); toastAtom.set(null); }}>{shown.action.label}</button>
       )}
+      {t && t.action && <span class="toast-bar" key={t.id} style={{ animationDuration: t.ms + 'ms' }} />}
     </div>
   );
 }
 
 /** Delete with an undo window instead of a blocking confirm(). */
+const LEAVE_MS = 160;
+const leavingAtom = atom<ReadonlySet<string>>(new Set());
+/** True while an item is playing its exit animation (before it is actually removed from the store). */
+export const useLeaving = (id: string) => leavingAtom.use().has(id);
+
 export function removeWithUndo<K extends Collection>(kind: K, item: DB[K][number], label = 'Item dihapus') {
-  actions.remove(kind, item.id);
-  toast(label, { label: 'Urungkan', run: () => actions.upsert(kind, item) });
+  if (leavingAtom.get().has(item.id)) return; // ignore double clicks mid-animation
+  leavingAtom.set(new Set(leavingAtom.get()).add(item.id));
+  window.setTimeout(() => {
+    actions.remove(kind, item.id);
+    const next = new Set(leavingAtom.get());
+    next.delete(item.id);
+    leavingAtom.set(next);
+    toast(label, { label: 'Urungkan', run: () => actions.upsert(kind, item) });
+  }, LEAVE_MS);
 }
 
 // ---------- modal ----------
-interface ModalState { title: string; body: ComponentChildren }
+interface ModalState { title: string; body: ComponentChildren; closing?: boolean }
 const modalAtom = atom<ModalState | null>(null);
 export const openModal = (title: string, body: ComponentChildren) => modalAtom.set({ title, body });
-export const closeModal = () => modalAtom.set(null);
+/** Plays the exit animation, then unmounts. */
+export function closeModal() {
+  const cur = modalAtom.get();
+  if (!cur || cur.closing) return;
+  modalAtom.set({ ...cur, closing: true });
+  window.setTimeout(() => { if (modalAtom.get()?.closing) modalAtom.set(null); }, 140);
+}
 
 const FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
 
@@ -97,7 +122,7 @@ export function ModalRoot() {
 
   if (!m) return null;
   return (
-    <div class="modal-overlay" onMouseDown={(e) => { if (e.target === e.currentTarget) closeModal(); }}>
+    <div class={'modal-overlay' + (m.closing ? ' closing' : '')} onMouseDown={(e) => { if (e.target === e.currentTarget) closeModal(); }}>
       <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" ref={ref}>
         <div class="modal-header">
           <h2 id="modal-title" style="margin:0">{m.title}</h2>

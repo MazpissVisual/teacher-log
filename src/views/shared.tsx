@@ -4,7 +4,7 @@ import { actions } from '../store';
 import type { Journal, Plan, Resource, Task } from '../types';
 import { openJournal, openPlan, openResource, openTask, prioLabel } from '../forms';
 import { Icon, MoodIcon } from '../icons';
-import { removeWithUndo } from '../ui';
+import { removeWithUndo, useLeaving } from '../ui';
 import { dateText, isHttpUrl, moodLabel } from '../util';
 
 export function PageHead({ kicker, title, sub, action }: { kicker: string; title: string; sub: string; action?: ComponentChildren }) {
@@ -22,8 +22,9 @@ export function PageHead({ kicker, title, sub, action }: { kicker: string; title
 
 export function TaskRow({ t, today }: { t: Task; today: string }) {
   const overdue = !t.done && t.date && t.date < today;
+  const leaving = useLeaving(t.id);
   return (
-    <div class={`task-row ${t.done ? 'done' : ''}`}>
+    <div class={`task-row ${t.done ? 'done' : ''} ${leaving ? 'leaving' : ''}`}>
       <input type="checkbox" checked={t.done} aria-label={`Selesaikan: ${t.title}`} onChange={() => actions.patch('tasks', t.id, { done: !t.done })} />
       <div style="flex:1;min-width:0">
         <div class="task-title">{t.title}</div>
@@ -40,8 +41,9 @@ export function TaskRow({ t, today }: { t: Task; today: string }) {
 }
 
 export function JournalCard({ j }: { j: Journal }) {
+  const leaving = useLeaving(j.id);
   return (
-    <article class="journal-card">
+    <article class={'journal-card' + (leaving ? ' leaving' : '')}>
       <div class="journal-meta">
         <span>{dateText(j.date)}</span>
         <span style="display:inline-flex;align-items:center;gap:6px" title={moodLabel(j.mood)}><MoodIcon m={j.mood} size={16} /> {j.type === 'quick' ? 'Catatan Cepat' : 'Jurnal Lengkap'}</span>
@@ -61,8 +63,9 @@ export function JournalCard({ j }: { j: Journal }) {
 }
 
 export function PlanCard({ p }: { p: Plan }) {
+  const leaving = useLeaving(p.id);
   return (
-    <article class="journal-card">
+    <article class={'journal-card' + (leaving ? ' leaving' : '')}>
       <div class="journal-meta"><span>{dateText(p.date)}{p.time && ` · ${p.time}`}</span><span class="tag">{p.className || 'Pribadi'}</span></div>
       <h3>{p.title}</h3>
       <p>{p.objective || 'Belum ada tujuan khusus'}</p>
@@ -76,8 +79,9 @@ export function PlanCard({ p }: { p: Plan }) {
 
 const RICON: Record<string, LucideIcon> = { Materi: BookOpen, Ide: Lightbulb, Link: Link2, Aktivitas: Dices };
 export function ResourceCard({ r }: { r: Resource }) {
+  const leaving = useLeaving(r.id);
   return (
-    <article class="resource-card">
+    <article class={'resource-card' + (leaving ? ' leaving' : '')}>
       <span class="resource-icon"><Icon as={RICON[r.type] ?? BookOpen} size={20} /></span>
       <span class="tag" style="width:max-content">{r.type}</span>
       <h3>{r.title}</h3>
