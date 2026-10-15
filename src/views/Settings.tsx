@@ -7,6 +7,8 @@ import { syncNow, useSyncStatus } from '../sync';
 import { todayIn } from '../util';
 import { useInstall } from '../pwa';
 import { PageHead } from './shared';
+import { Download, LogOut, RefreshCw, RotateCcw, Trash2, Upload } from 'lucide-preact';
+import { Icon } from '../icons';
 
 function ListEditor({ kind, label, items }: { kind: 'classes' | 'subjects'; label: string; items: string[] }) {
   const [v, setV] = useState('');
@@ -58,7 +60,7 @@ export function Settings() {
 
   return (
     <>
-      <PageHead title="Pengaturan ⚙️" sub="Atur ruang kerja sesuai caramu mengajar." />
+      <PageHead kicker="Redaksi" title="Pengaturan" sub="Atur ruang kerja sesuai caramu mengajar." />
       <div class="grid-main">
         <div class="stack">
           {cloudEnabled && (
@@ -70,8 +72,8 @@ export function Settings() {
                 {sync.state === 'syncing' ? 'Sedang menyinkronkan…' : sync.state === 'offline' ? 'Offline — perubahan akan dikirim saat tersambung.' : sync.state === 'error' ? `Gagal sinkron: ${sync.error}` : sync.pending ? `${sync.pending} perubahan menunggu dikirim.` : sync.lastSync ? `Terakhir sinkron ${new Date(sync.lastSync).toLocaleTimeString('id-ID')}.` : 'Siap.'}
               </p>
               <div class="compact-actions">
-                <button class="btn secondary" onClick={() => { void syncNow(); }}>⟳ Sinkronkan</button>
-                <button class="btn danger" onClick={() => { void signOut(); }}>Keluar</button>
+                <button class="btn secondary" onClick={() => { void syncNow(); }}><Icon as={RefreshCw} size={14} /> Sinkronkan</button>
+                <button class="btn danger" onClick={() => { void signOut(); }}><Icon as={LogOut} size={14} /> Keluar</button>
               </div>
             </div>
           )}
@@ -81,7 +83,7 @@ export function Settings() {
               {installState === 'available' && (
                 <>
                   <p class="muted" style="line-height:1.7;margin-bottom:14px">Pasang GuruLog seperti aplikasi biasa: ikon di layar utama, tampil layar penuh, dan tetap bisa dibuka offline.</p>
-                  <button class="btn" onClick={() => { void install(); }}>⬇ Pasang aplikasi</button>
+                  <button class="btn" onClick={() => { void install(); }}><Icon as={Download} size={16} /> Pasang aplikasi</button>
                 </>
               )}
               {installState === 'ios' && (
@@ -115,13 +117,13 @@ export function Settings() {
           <h2>Data &amp; Privasi</h2>
           <p class="muted" style="line-height:1.8">{cloudEnabled ? 'Datamu tersimpan di akunmu (terlindungi per pengguna) dan di-cache di perangkat ini agar bisa dipakai offline. Ekspor secara berkala sebagai cadangan tambahan.' : 'Data disimpan di browser perangkat ini (localStorage) tanpa akun. Ekspor secara berkala sebagai cadangan.'}</p>
           <div class="compact-actions">
-            <button class="btn secondary" onClick={() => { download(`gurulog-data-${todayIn(db.profile.tz)}.json`, exportJSON()); toast('Data berhasil diekspor'); }}>↓ Ekspor JSON</button>
-            <button class="btn secondary" onClick={() => file.current?.click()}>↑ Impor JSON</button>
+            <button class="btn secondary" onClick={() => { download(`gurulog-data-${todayIn(db.profile.tz)}.json`, exportJSON()); toast('Data berhasil diekspor'); }}><Icon as={Download} size={16} /> Ekspor JSON</button>
+            <button class="btn secondary" onClick={() => file.current?.click()}><Icon as={Upload} size={16} /> Impor JSON</button>
             <input ref={file} type="file" accept="application/json,.json" class="hidden" onChange={onImport} />
           </div>
           <div class="compact-actions" style="margin-top:12px">
-            <button class="btn danger" onClick={() => { if (confirm('Kembalikan data contoh? Semua perubahan akan hilang.')) { actions.reset(); setName('Guru'); toast('Data contoh dikembalikan'); } }}>↻ Reset ke Data Contoh</button>
-            <button class="btn danger" onClick={() => { if (confirm('Hapus SEMUA data? Tindakan ini tidak bisa dibatalkan.')) { actions.clearAll(); toast('Semua data dihapus'); } }}>🗑 Hapus Semua</button>
+            <button class="btn danger" onClick={() => { if (confirm('Kembalikan data contoh? Semua perubahan akan hilang.')) { actions.reset(); setName('Guru'); toast('Data contoh dikembalikan'); } }}><Icon as={RotateCcw} size={16} /> Reset ke data contoh</button>
+            <button class="btn danger" onClick={() => { if (confirm('Hapus SEMUA data? Tindakan ini tidak bisa dibatalkan.')) { actions.clearAll(); toast('Semua data dihapus'); } }}><Icon as={Trash2} size={16} /> Hapus semua</button>
           </div>
         </div>
       </div>

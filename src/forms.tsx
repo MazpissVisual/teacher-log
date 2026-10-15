@@ -2,7 +2,9 @@ import { useState } from 'preact/hooks';
 import { actions, useDB } from './store';
 import type { Journal, Mood, Plan, Priority, Resource, ResourceType, Task } from './types';
 import { closeModal, openModal, toast } from './ui';
-import { moodIcon, moodLabel, todayIn, uid } from './util';
+import { Check, Zap, BookOpen } from 'lucide-preact';
+import { Icon, MoodIcon } from './icons';
+import { moodLabel, todayIn, uid } from './util';
 
 const fd = (e: Event) => new FormData(e.currentTarget as HTMLFormElement);
 const s = (f: FormData, k: string) => String(f.get(k) ?? '').trim();
@@ -15,7 +17,7 @@ function Options({ list, current }: { list: string[]; current?: string }) {
 
 const Actions = ({ label }: { label: string }) => (
   <div class="compact-actions">
-    <button class="btn" type="submit">💾 {label}</button>
+    <button class="btn" type="submit"><Icon as={Check} size={16} /> {label}</button>
     <button class="btn secondary" type="button" onClick={closeModal}>Batal</button>
   </div>
 );
@@ -42,14 +44,14 @@ function JournalForm({ journal }: { journal?: Journal }) {
       pinned: journal?.pinned ?? false,
     });
     closeModal();
-    toast('Jurnal berhasil disimpan ✨');
+    toast('Jurnal berhasil disimpan');
   };
 
   return (
     <form onSubmit={submit}>
       <div class="tabs" role="tablist">
-        <button type="button" role="tab" aria-selected={type === 'quick'} class={`tab ${type === 'quick' ? 'active' : ''}`} onClick={() => setType('quick')}>⚡ Catatan Cepat</button>
-        <button type="button" role="tab" aria-selected={type === 'detailed'} class={`tab ${type === 'detailed' ? 'active' : ''}`} onClick={() => setType('detailed')}>📖 Jurnal Lengkap</button>
+        <button type="button" role="tab" aria-selected={type === 'quick'} class={`tab ${type === 'quick' ? 'active' : ''}`} onClick={() => setType('quick')}><Icon as={Zap} size={14} /> Catatan Cepat</button>
+        <button type="button" role="tab" aria-selected={type === 'detailed'} class={`tab ${type === 'detailed' ? 'active' : ''}`} onClick={() => setType('detailed')}><Icon as={BookOpen} size={14} /> Jurnal Lengkap</button>
       </div>
       <div class="cols-2">
         <div class="form-group"><label for="j-date">Tanggal</label><input id="j-date" class="field" type="date" name="date" value={journal?.date ?? todayIn(db.profile.tz)} required /></div>
@@ -60,10 +62,10 @@ function JournalForm({ journal }: { journal?: Journal }) {
         <div class="form-group"><label for="j-subj">Mapel (opsional)</label><select id="j-subj" class="field" name="subject"><option value="">Tanpa mapel</option><Options list={db.subjects} current={journal?.subject} /></select></div>
       </div>
       <div class="form-group">
-        <label id="mood-label">Bagaimana pembelajaranmu?</label>
+        <span class="group-label" id="mood-label">Bagaimana pembelajaranmu?</span>
         <div class="moods" role="group" aria-labelledby="mood-label">
           {MOODS.map((m) => (
-            <button type="button" class={`mood ${mood === m ? 'selected' : ''}`} aria-pressed={mood === m} aria-label={moodLabel(m)} title={moodLabel(m)} onClick={() => setMood(m)}>{moodIcon(m)}</button>
+            <button type="button" class={`mood ${mood === m ? 'selected' : ''}`} aria-pressed={mood === m} aria-label={moodLabel(m)} title={moodLabel(m)} onClick={() => setMood(m)}><MoodIcon m={m} size={22} /></button>
           ))}
         </div>
       </div>

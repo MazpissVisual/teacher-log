@@ -113,7 +113,7 @@ export function ModalRoot() {
 export function Empty({ title }: { title: string }) {
   return (
     <div class="empty">
-      <div style="font-size:27px" aria-hidden="true">✦</div>
+      <div class="ornament" style="padding:0;font-size:20px" aria-hidden="true">✧ ✧ ✧</div>
       <b>{title}</b>
       <span>Ruang ini siap untuk ide berikutnya.</span>
     </div>

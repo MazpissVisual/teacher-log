@@ -20,7 +20,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
   deferred = e as BeforeInstallPromptEvent;
   emit();
 });
-window.addEventListener('appinstalled', () => { deferred = null; emit(); toast('GuruLog terpasang 🎉'); });
+window.addEventListener('appinstalled', () => { deferred = null; emit(); toast('GuruLog terpasang'); });
 
 export type InstallState = 'installed' | 'available' | 'ios' | 'unavailable';
 
@@ -51,7 +51,7 @@ export function initPWA() {
       toast('Versi baru GuruLog tersedia', { label: 'Muat ulang', run: () => { void update(true); } }, 60000);
     },
     onOfflineReady() {
-      toast('Siap dipakai offline ✨');
+      toast('Siap dipakai offline');
     },
   });
 }

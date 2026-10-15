@@ -4,6 +4,8 @@ import { openTask } from '../forms';
 import { Empty } from '../ui';
 import { todayIn } from '../util';
 import { PageHead, TaskRow } from './shared';
+import { Plus } from 'lucide-preact';
+import { Icon } from '../icons';
 
 const FILTERS = [['all', 'Semua'], ['todo', 'Belum Selesai'], ['done', 'Selesai']] as const;
 
@@ -17,7 +19,7 @@ export function Tasks() {
 
   return (
     <>
-      <PageHead title="Tugasku ✅" sub="Hal kecil yang ingin kamu selesaikan hari ini." action={<button class="btn" onClick={() => openTask()}>＋ Tugas Baru</button>} />
+      <PageHead kicker="Seksi · Tugas" title="Tugasku" sub="Hal kecil yang ingin kamu selesaikan hari ini." action={<button class="btn" onClick={() => openTask()}><Icon as={Plus} size={16} /> Tugas baru</button>} />
       <div class="panel">
         <div class="tabs" role="tablist">
           {FILTERS.map(([k, label]) => (

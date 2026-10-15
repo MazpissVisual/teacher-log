@@ -57,7 +57,7 @@ export function Login({ recovery }: { recovery: boolean }) {
   return (
     <main class="auth-wrap">
       <form class="panel auth-card" onSubmit={submit}>
-        <div class="logo" style="padding:0 0 18px"><span class="logo-mark" aria-hidden="true">✦</span><span>GuruLog<span style="color:#776fe1">.</span></span></div>
+        <div class="nameplate" style="margin-bottom:20px"><span class="nameplate-title">GuruLog<i>.</i></span></div>
         <h1 style="font-size:22px">{title}</h1>
         <p class="muted" style="margin-bottom:20px">Catatan mengajarmu tersimpan privat di akunmu dan bisa dibuka dari perangkat mana pun.</p>
 

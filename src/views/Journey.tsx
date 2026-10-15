@@ -1,7 +1,9 @@
 import { exportJSON, useDB } from '../store';
 import { openJournal } from '../forms';
 import { download, Empty, toast } from '../ui';
-import { addDays, dateText, moodIcon, todayIn } from '../util';
+import { addDays, dateText, todayIn } from '../util';
+import { BookOpen, CheckSquare, Download, NotebookPen, Smile } from 'lucide-preact';
+import { Icon, MoodIcon } from '../icons';
 import { PageHead } from './shared';
 
 export function Journey() {
@@ -17,26 +19,26 @@ export function Journey() {
   });
   const max = Math.max(1, ...weeks);
 
-  const stats: [string, string, number][] = [
-    ['📝', 'Total Refleksi', journals.length],
-    ['🙂', 'Mood Positif', journals.filter((x) => x.mood === 'great' || x.mood === 'good').length],
-    ['📚', 'Bahan Tersimpan', db.resources.length],
-    ['✅', 'Tugas Tuntas', db.tasks.filter((x) => x.done).length],
+  const stats: [typeof NotebookPen, string, number][] = [
+    [NotebookPen, 'Total refleksi', journals.length],
+    [Smile, 'Mood positif', journals.filter((x) => x.mood === 'great' || x.mood === 'good').length],
+    [BookOpen, 'Bahan tersimpan', db.resources.length],
+    [CheckSquare, 'Tugas tuntas', db.tasks.filter((x) => x.done).length],
   ];
 
   return (
     <>
-      <PageHead title="Perjalanan Mengajarku 🌱" sub="Setiap pengalaman adalah langkah untuk berkembang." action={<button class="btn secondary" onClick={() => { download(`gurulog-data-${today}.json`, exportJSON()); toast('Data berhasil diekspor'); }}>↓ Ekspor Data</button>} />
+      <PageHead kicker="Seksi · Perjalanan" title="Perjalanan Mengajarku" sub="Setiap pengalaman adalah langkah untuk berkembang." action={<button class="btn secondary" onClick={() => { download(`gurulog-data-${today}.json`, exportJSON()); toast('Data berhasil diekspor'); }}><Icon as={Download} size={16} /> Ekspor data</button>} />
       <div class="cards4">
-        {stats.map(([i, l, n]) => <div class="stat"><div class="stat-top"><span>{l}</span><span class="stat-icon" aria-hidden="true">{i}</span></div><strong>{n}</strong><p>Aktivitas pribadi</p></div>)}
+        {stats.map(([Ico, l, n]) => <div class="stat"><div class="stat-top"><span>{l}</span><span class="stat-icon"><Icon as={Ico} size={16} /></span></div><strong>{n}</strong><p>Aktivitas pribadi</p></div>)}
       </div>
       <div class="grid-main">
         <div class="panel">
-          <div class="panel-head"><h2>🕰 Linimasa Mengajar</h2></div>
+          <div class="panel-head"><h2>Linimasa Mengajar</h2></div>
           <div class="timeline">
             {journals.length ? journals.map((x) => (
               <div class="timeline-item">
-                <div class="journal-meta">{dateText(x.date)} · {moodIcon(x.mood)} {x.className || 'Pribadi'}</div>
+                <div class="journal-meta"><span>{dateText(x.date)}</span><span style="display:inline-flex;align-items:center;gap:6px"><MoodIcon m={x.mood} size={16} /> {x.className || 'Pribadi'}</span></div>
                 <h3>{x.title}</h3>
                 <p>{x.content}</p>
                 <button class="link" onClick={() => openJournal(x)}>Buka refleksi →</button>
@@ -46,7 +48,7 @@ export function Journey() {
         </div>
         <div class="stack">
           <div class="panel">
-            <h2>📊 Ritme Jurnalmu</h2>
+            <h2>Ritme Jurnalmu</h2>
             <p class="muted small">Total catatan dalam 4 minggu terakhir</p>
             <div style="margin-top:25px">
               {weeks.map((n, i) => (
@@ -58,8 +60,8 @@ export function Journey() {
               ))}
             </div>
           </div>
-          <div class="panel quote">
-            <h2>✨ Renungkan &amp; Tumbuh</h2>
+          <div class="panel quote inverted">
+            <h2>Renungkan &amp; Tumbuh</h2>
             <p>Catatan bukan alat untuk menilai apakah kamu guru yang baik. Ini adalah ruang aman untuk melihat apa yang telah dipelajari sepanjang perjalananmu.</p>
           </div>
         </div>

@@ -3,6 +3,8 @@ import { useDB } from '../store';
 import { openResource } from '../forms';
 import { Empty } from '../ui';
 import { PageHead, ResourceCard } from './shared';
+import { Plus } from 'lucide-preact';
+import { Icon } from '../icons';
 
 export function Library() {
   const db = useDB();
@@ -13,10 +15,10 @@ export function Library() {
 
   return (
     <>
-      <PageHead title="Perpustakaan Sumber 📚" sub="Semua ide, materi, dan referensi dalam satu tempat." action={<button class="btn" onClick={() => openResource()}>＋ Tambah Sumber</button>} />
+      <PageHead kicker="Seksi · Perpustakaan" title="Perpustakaan Sumber" sub="Semua ide, materi, dan referensi dalam satu tempat." action={<button class="btn" onClick={() => openResource()}><Icon as={Plus} size={16} /> Tambah sumber</button>} />
       <div class="panel">
         <div class="filters">
-          <input class="field" placeholder="🔎 Cari referensi..." aria-label="Cari referensi" value={q} onInput={(e) => setQ(e.currentTarget.value)} />
+          <input class="field" placeholder="Cari referensi..." aria-label="Cari referensi" value={q} onInput={(e) => setQ(e.currentTarget.value)} />
           <select class="field" aria-label="Filter jenis" value={type} onChange={(e) => setType(e.currentTarget.value)}>
             <option value="">Semua Jenis</option>
             {['Materi', 'Ide', 'Link', 'Aktivitas'].map((t) => <option value={t}>{t}</option>)}

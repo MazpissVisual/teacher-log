@@ -3,6 +3,8 @@ import { useDB } from '../store';
 import { openPlan } from '../forms';
 import { Empty } from '../ui';
 import { excerpt, todayIn } from '../util';
+import { ChevronLeft, ChevronRight, Plus } from 'lucide-preact';
+import { Icon } from '../icons';
 import { PageHead, PlanCard } from './shared';
 
 const DAYS = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
@@ -26,19 +28,19 @@ export function Planner() {
 
   return (
     <>
-      <PageHead title="Perencana Mengajar 📅" sub="Rencanakan minggumu, satu langkah pada satu waktu." action={<button class="btn" onClick={() => openPlan()}>＋ Rencana Baru</button>} />
+      <PageHead kicker="Seksi · Perencana" title="Perencana Mengajar" sub="Rencanakan minggumu, satu langkah pada satu waktu." action={<button class="btn" onClick={() => openPlan()}><Icon as={Plus} size={16} /> Rencana baru</button>} />
       <div class="grid-main">
         <div class="panel">
           <div class="panel-head">
             <h2>{title}</h2>
             <div class="compact-actions">
-              <button class="btn sm secondary" aria-label="Bulan sebelumnya" onClick={() => move(-1)}>←</button>
-              <button class="btn sm secondary" aria-label="Bulan berikutnya" onClick={() => move(1)}>→</button>
+              <button class="btn sm secondary" aria-label="Bulan sebelumnya" onClick={() => move(-1)}><Icon as={ChevronLeft} size={16} /></button>
+              <button class="btn sm secondary" aria-label="Bulan berikutnya" onClick={() => move(1)}><Icon as={ChevronRight} size={16} /></button>
             </div>
           </div>
           <div class="calendar">
             {DAYS.map((n) => <div class="day head">{n}</div>)}
-            {Array.from({ length: start }, () => <div />)}
+            {Array.from({ length: start }, () => <div class="day pad" aria-hidden="true" />)}
             {Array.from({ length: days }, (_, i) => {
               const d = i + 1;
               const key = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
@@ -54,7 +56,7 @@ export function Planner() {
           </div>
         </div>
         <div class="panel">
-          <div class="panel-head"><h2>📚 Rencana Pembelajaran</h2><button class="link" onClick={() => openPlan()}>Tambah +</button></div>
+          <div class="panel-head"><h2>Rencana pembelajaran</h2><button class="link" onClick={() => openPlan()}>Tambah +</button></div>
           {plans.length ? plans.map((p) => <PlanCard p={p} />) : <Empty title="Belum ada rencana pembelajaran" />}
         </div>
       </div>

@@ -1,8 +1,9 @@
 import { render } from 'preact';
-import '@fontsource-variable/dm-sans';
-import '@fontsource-variable/plus-jakarta-sans';
+import '@fontsource-variable/playfair-display';
+import '@fontsource-variable/lora';
+import '@fontsource-variable/inter';
+import '@fontsource-variable/jetbrains-mono';
 import './styles.css';
-import './app.css';
 import { App } from './App';
 import { initAuth } from './auth';
 import { initPWA } from './pwa';

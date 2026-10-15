@@ -33,7 +33,6 @@ export function dateText(d: string): string {
   return new Date(Date.UTC(y, m - 1, day)).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
 }
 
-export const moodIcon = (m: string) => ({ great: '🤩', good: '🙂', neutral: '😐', challenging: '😮‍💨' } as Record<string, string>)[m] ?? '📝';
 export const moodLabel = (m: string) => ({ great: 'Seru', good: 'Baik', neutral: 'Biasa', challenging: 'Menantang' } as Record<string, string>)[m] ?? 'Catatan';
 
 export const excerpt = (s: string, n: number) => (s.length > n ? s.slice(0, n).trimEnd() + '…' : s);
