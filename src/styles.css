@@ -63,7 +63,7 @@ a { color: inherit; }
 .edition-right { display: flex; align-items: center; gap: 10px; }
 .nameplate { text-align: center; padding: 22px 0 14px; border-bottom: 4px solid var(--ink); }
 .nameplate-title { display: inline-block; padding-bottom: .08em; font: 900 clamp(2.75rem, 10vw, 7rem)/.9 var(--f-display); letter-spacing: -.045em; text-decoration: none; }
-.nameplate-title i { color: var(--red); font-style: normal; }
+
 .nameplate-sub { margin: 14px 0 0; font: italic 400 15px var(--f-body); color: var(--n700); }
 
 .navrow { position: sticky; top: 0; z-index: 40; background: var(--paper); border-bottom: 1px solid var(--ink); }
@@ -460,3 +460,11 @@ html { scroll-padding-top: 64px; }
 .empty span { display: block; }
 .empty .btn { display: flex; width: max-content; margin: 16px auto 0 !important; }
 .list-grid > .empty { grid-column: 1 / -1; }
+
+/* ---- logo ---- */
+.nameplate-title { line-height: 0; padding-bottom: 0; }
+.nameplate-title .wordmark { display: block; height: clamp(3.4rem, 12.5vw, 7.6rem); width: auto; color: var(--ink); }
+.auth-card .nameplate-title .wordmark { height: 4.25rem; }
+.sk-logo { display: block; height: 3rem; width: auto; margin-bottom: 18px; color: var(--ink); }
+.footer-brand { display: inline-flex; align-items: center; gap: 12px; }
+.footer-brand .mark { display: block; }

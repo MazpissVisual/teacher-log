@@ -6,6 +6,7 @@ import { openJournal } from './forms';
 import { firstChar, todayIn } from './util';
 import { CloudCheck, CloudOff, CalendarDays, CheckSquare, House, Library as LibraryIcon, NotebookPen, RefreshCw, Search as SearchIcon, Settings as SettingsIcon, Sprout, TriangleAlert, type LucideIcon } from 'lucide-preact';
 import { Icon } from './icons';
+import { Mark, Wordmark } from './Logo';
 import { Dashboard } from './views/Dashboard';
 import { Journal } from './views/Journal';
 import { Planner } from './views/Planner';
@@ -73,7 +74,7 @@ function Shell() {
           </span>
         </div>
         <div class="nameplate">
-          <a class="nameplate-title" href="#/dashboard" onClick={() => go('dashboard')}>GuruLog<i>.</i></a>
+          <a class="nameplate-title" href="#/dashboard" onClick={() => go('dashboard')}><Wordmark /></a>
           <p class="nameplate-sub">Catatan kecil, perjalanan mengajar yang berarti</p>
         </div>
       </header>
@@ -100,7 +101,7 @@ function Shell() {
             <span class="muted">catatan jurnal tersimpan di edisimu</span>
             <button class="btn sm" onClick={() => { go('journal'); openJournal(); }}>Tulis catatan</button>
           </div>
-          <div class="footer-meta"><span>Edisi: Vol 1.0</span><span>Dicetak di perangkatmu</span></div>
+          <div class="footer-meta"><span class="footer-brand"><Mark size={28} /> Edisi: Vol 1.0</span><span>Dicetak di perangkatmu</span></div>
         </div>
       </footer>
       <nav class="bottom-nav" aria-label="Navigasi seluler">

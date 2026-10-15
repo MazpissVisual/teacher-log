@@ -1,6 +1,7 @@
 import { useState } from 'preact/hooks';
 import { supabase } from '../supabase';
 import { toast } from '../ui';
+import { Wordmark } from '../Logo';
 
 type Mode = 'signin' | 'signup' | 'reset' | 'newpass';
 
@@ -57,7 +58,7 @@ export function Login({ recovery }: { recovery: boolean }) {
   return (
     <main class="auth-wrap">
       <form class="panel auth-card" onSubmit={submit}>
-        <div class="nameplate" style="margin-bottom:20px"><span class="nameplate-title">GuruLog<i>.</i></span></div>
+        <div class="nameplate" style="margin-bottom:20px"><span class="nameplate-title"><Wordmark /></span></div>
         <h1 style="font-size:22px">{title}</h1>
         <p class="muted" style="margin-bottom:20px">Catatan mengajarmu tersimpan privat di akunmu dan bisa dibuka dari perangkat mana pun.</p>
 

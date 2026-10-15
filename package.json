@@ -8,7 +8,7 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "icons": "node scripts/make-icons.mjs",
+    "logo": "node scripts/make-logo.mjs",
     "test": "vitest run"
   },
   "dependencies": {
@@ -21,8 +21,10 @@
     "preact": "^11.0.1"
   },
   "devDependencies": {
+    "@fontsource/playfair-display": "^5.3.0",
     "@preact/preset-vite": "^2.10.6",
     "jsdom": "^29.1.1",
+    "opentype.js": "^2.0.0",
     "sharp": "^0.35.5",
     "typescript": "^7.0.2",
     "vite": "^8.3.4",

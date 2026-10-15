@@ -3,6 +3,7 @@ import type { ComponentChildren } from 'preact';
 import type { Collection, DB, Page } from './types';
 import { actions } from './store';
 import { tap } from './util';
+import { Wordmark } from './Logo';
 
 /** Minimal observable value, used for page / modal / toast state. */
 function atom<T>(initial: T) {
@@ -184,6 +185,7 @@ export function Skeleton() {
     <main class="auth-wrap">
       <div class="skeleton" role="status" aria-busy="true">
         <span class="sr-only">Memuat…</span>
+        <Wordmark class="sk-logo" label="" />
         <div class="sk" style="height:12px;width:90px" />
         <div class="sk" style="height:44px;width:80%;margin:14px 0 18px" />
         <div class="sk" style="height:12px" /><div class="sk" style="height:12px;width:94%" /><div class="sk" style="height:12px;width:70%" />
