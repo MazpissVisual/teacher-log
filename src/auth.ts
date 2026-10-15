@@ -95,3 +95,26 @@ export async function signOut(): Promise<boolean> {
   if (uid) { clearUserCache(uid); clearOutbox(uid); } // don't leave a teacher's data on a shared device
   return true;
 }
+
+/**
+ * Permanently deletes the signed-in user's account (and, via ON DELETE CASCADE, all their rows).
+ * Requires supabase/migrations/0002_delete_account.sql. Throws a short Indonesian message on failure.
+ */
+export async function deleteAccount(): Promise<void> {
+  if (!supabase || !activeUser) throw new Error('Kamu belum masuk.');
+  if (!navigator.onLine) throw new Error('Kamu sedang offline. Sambungkan internet untuk menghapus akun.');
+  const uid = activeUser;
+  stopSync(); // nothing queued may be pushed (or re-created) after this point
+  clearOutbox(uid);
+  const { error } = await supabase.rpc('delete_my_account');
+  if (error) {
+    startSync(uid); // account still exists → resume normal syncing
+    const m = (error.message ?? '').toLowerCase();
+    throw new Error(m.includes('could not find') || m.includes('does not exist') || m.includes('schema cache')
+      ? 'Fitur hapus akun belum diaktifkan di server. Jalankan migrasi 0002 di Supabase.'
+      : 'Gagal menghapus akun. Coba lagi sebentar lagi.');
+  }
+  await supabase.auth.signOut({ scope: 'local' }).catch(() => {}); // the server-side session is already gone
+  clearUserCache(uid);
+  clearOutbox(uid);
+}

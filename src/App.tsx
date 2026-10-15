@@ -16,6 +16,7 @@ import { Journey } from './views/Journey';
 import { Search } from './views/Search';
 import { Settings } from './views/Settings';
 import { Login } from './views/Login';
+import { Privacy, Terms } from './views/Legal';
 import { cloudEnabled } from './supabase';
 import { useAuth } from './auth';
 import { useSyncStatus } from './sync';
@@ -29,17 +30,17 @@ const NAV: { page: Page; icon: LucideIcon; label: string; short?: string }[] = [
   { page: 'journey', icon: Sprout, label: 'Perjalanan', short: 'Jejak' },
 ];
 const SETTINGS = { page: 'settings' as Page, icon: SettingsIcon, label: 'Pengaturan', short: 'Atur' };
-const VIEWS: Record<Page, () => preact.JSX.Element> = {
+const VIEWS: Record<Exclude<Page, 'privacy' | 'terms'>, () => preact.JSX.Element> = {
   dashboard: Dashboard, journal: Journal, planner: Planner, library: Library,
   tasks: Tasks, journey: Journey, search: Search, settings: Settings,
 };
-const PAGE_NAMES: Record<Page, string> = { dashboard: 'Beranda', journal: 'Jurnal', planner: 'Perencana', library: 'Sumber', tasks: 'Tugas', journey: 'Perjalanan', search: 'Pencarian', settings: 'Pengaturan' };
+const PAGE_NAMES: Record<Page, string> = { dashboard: 'Beranda', journal: 'Jurnal', planner: 'Perencana', library: 'Sumber', tasks: 'Tugas', journey: 'Perjalanan', search: 'Pencarian', settings: 'Pengaturan', privacy: 'Kebijakan Privasi', terms: 'Syarat Penggunaan' };
 
 function Shell() {
   const db = useDB();
   const page = pageAtom.use();
   const query = searchAtom.use();
-  const View = VIEWS[page];
+  const View = VIEWS[page as keyof typeof VIEWS];
   const sync = useSyncStatus();
   const today = todayIn(db.profile.tz);
   const dateLong = new Date(today + 'T12:00:00Z').toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
@@ -101,7 +102,8 @@ function Shell() {
             <span class="muted">catatan jurnal tersimpan di edisimu</span>
             <button class="btn sm" onClick={() => { go('journal'); openJournal(); }}>Tulis catatan</button>
           </div>
-          <div class="footer-meta"><span class="footer-brand"><Mark size={28} /> Edisi: Vol 1.0</span><span>Dicetak di perangkatmu</span></div>
+          <div class="footer-meta"><span class="footer-brand"><Mark size={28} /> Edisi: Vol 1.0</span>
+            <span class="footer-legal"><a href="/privacy" onClick={(e) => { e.preventDefault(); go('privacy'); }}>Privasi</a><a href="/terms" onClick={(e) => { e.preventDefault(); go('terms'); }}>Syarat</a></span><span>Dicetak di perangkatmu</span></div>
         </div>
       </footer>
       <nav class="bottom-nav" aria-label="Navigasi seluler">
@@ -125,6 +127,10 @@ function SyncChip({ s }: { s: ReturnType<typeof useSyncStatus> }) {
 
 export function App() {
   const auth = useAuth();
+  const page = pageAtom.use();
+  useEffect(() => { if (page === 'privacy' || page === 'terms') document.title = PAGE_NAMES[page] + ' — GuruLog'; }, [page]);
+  if (page === 'privacy') return <Privacy />;
+  if (page === 'terms') return <Terms />;
   if (!cloudEnabled) return <Shell />;
   if (!auth.ready) return <Skeleton />;
   if (!auth.session || auth.recovery) return <Login recovery={auth.recovery} />;

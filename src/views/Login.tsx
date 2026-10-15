@@ -244,6 +244,11 @@ export function Login({ recovery }: { recovery: boolean }) {
         </button>
 
         {m === 'signup' && <p class="legend auth-note">Dengan mendaftar, catatanmu disimpan di akunmu. Jangan memasukkan data pribadi siswa seperti alamat atau nomor telepon.</p>}
+        <p class="legend auth-legal">
+          {m === 'signup' ? 'Dengan membuat akun, kamu menyetujui ' : 'Dengan masuk, kamu menyetujui '}
+          <a href="/terms" onClick={(e) => { e.preventDefault(); go('terms'); }}>Syarat</a> dan{' '}
+          <a href="/privacy" onClick={(e) => { e.preventDefault(); go('privacy'); }}>Kebijakan Privasi</a>.
+        </p>
 
         {m === 'reset' && (
           <div class="auth-links"><button type="button" class="link" onClick={() => switchMode('signin')}>← Kembali ke masuk</button></div>

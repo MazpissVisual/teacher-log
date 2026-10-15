@@ -26,7 +26,7 @@ function atom<T>(initial: T) {
 }
 
 // ---------- navigation (clean URLs via the History API: /journal, /tasks, …) ----------
-const PAGES: Page[] = ['dashboard', 'journal', 'planner', 'library', 'tasks', 'journey', 'search', 'settings'];
+const PAGES: Page[] = ['dashboard', 'journal', 'planner', 'library', 'tasks', 'journey', 'search', 'settings', 'privacy', 'terms'];
 const pathOf = (p: Page) => (p === 'dashboard' ? '/' : '/' + p);
 const segment = () => location.pathname.replace(/^\/+|\/+$/g, '');
 const fromPath = (): Page => {

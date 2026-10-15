@@ -1,13 +1,13 @@
 import { useRef, useState } from 'preact/hooks';
 import { actions, exportJSON, useDB } from '../store';
-import { closeModal, download, openModal, toast } from '../ui';
+import { closeModal, download, go, openModal, toast } from '../ui';
 import { cloudEnabled } from '../supabase';
-import { signOut, useAuth } from '../auth';
+import { deleteAccount, signOut, useAuth } from '../auth';
 import { syncNow, useSyncStatus } from '../sync';
 import { todayIn } from '../util';
 import { useInstall } from '../pwa';
 import { PageHead } from './shared';
-import { Download, LogOut, RefreshCw, RotateCcw, Trash2, Upload } from 'lucide-preact';
+import { Download, LogOut, RefreshCw, RotateCcw, Trash2, Upload, UserX } from 'lucide-preact';
 import { Icon } from '../icons';
 
 function ListEditor({ kind, label, items }: { kind: 'classes' | 'subjects'; label: string; items: string[] }) {
@@ -61,6 +61,43 @@ function WipeConfirm({ cloud }: { cloud: boolean }) {
       </div>
       <div class="compact-actions">
         <button class="btn danger" type="submit" disabled={!ok}>Hapus semua data</button>
+        <button class="btn secondary" type="button" onClick={() => { download('gurulog-cadangan.json', exportJSON()); toast('Cadangan diunduh'); }}>Ekspor dulu</button>
+        <button class="btn ghost" type="button" onClick={closeModal}>Batal</button>
+      </div>
+    </form>
+  );
+}
+
+function DeleteAccountConfirm({ email }: { email: string }) {
+  const [v, setV] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  const ok = v.trim().toLowerCase() === email.toLowerCase();
+  const submit = async (e: Event) => {
+    e.preventDefault();
+    if (!ok || busy) return;
+    setBusy(true);
+    setErr('');
+    try {
+      await deleteAccount();
+      closeModal();
+      toast('Akunmu sudah dihapus');
+    } catch (x) {
+      setErr((x as Error).message);
+      setBusy(false);
+    }
+  };
+  return (
+    <form onSubmit={submit}>
+      <p>Akun <b class="break">{email}</b> dan <b>seluruh datanya</b> (jurnal, rencana, sumber, tugas) akan dihapus permanen dari server dan semua perangkat. Tindakan ini <b>tidak bisa dibatalkan</b>.</p>
+      <p class="muted small">Ekspor dulu kalau kamu masih membutuhkan catatanmu.</p>
+      <div class="form-group">
+        <label for="del-email">Ketik emailmu untuk melanjutkan</label>
+        <input id="del-email" class="field" type="email" autocomplete="off" autocapitalize="none" spellcheck={false} placeholder={email} value={v} onInput={(e) => setV(e.currentTarget.value)} />
+      </div>
+      {err && <div class="notice error" role="alert">{err}</div>}
+      <div class="compact-actions">
+        <button class="btn danger" type="submit" disabled={!ok || busy} aria-busy={busy}>{busy ? 'Menghapus…' : 'Hapus akun permanen'}</button>
         <button class="btn secondary" type="button" onClick={() => { download('gurulog-cadangan.json', exportJSON()); toast('Cadangan diunduh'); }}>Ekspor dulu</button>
         <button class="btn ghost" type="button" onClick={closeModal}>Batal</button>
       </div>
@@ -148,6 +185,7 @@ export function Settings() {
         </div>
         <div class="panel" style="align-self:start">
           <h2>Data &amp; Privasi</h2>
+          <p class="small legal-inline"><a href="/privacy" onClick={(e) => { e.preventDefault(); go('privacy'); }}>Kebijakan Privasi</a> · <a href="/terms" onClick={(e) => { e.preventDefault(); go('terms'); }}>Syarat Penggunaan</a></p>
           <p class="muted" style="line-height:1.8">{cloudEnabled ? 'Datamu tersimpan di akunmu (terlindungi per pengguna) dan di-cache di perangkat ini agar bisa dipakai offline. Ekspor secara berkala sebagai cadangan tambahan.' : 'Data disimpan di browser perangkat ini (localStorage) tanpa akun. Ekspor secara berkala sebagai cadangan.'}</p>
           <div class="compact-actions">
             <button class="btn secondary" onClick={() => { download(`gurulog-data-${todayIn(db.profile.tz)}.json`, exportJSON()); toast('Data berhasil diekspor'); }}><Icon as={Download} size={16} /> Ekspor JSON</button>
@@ -157,6 +195,9 @@ export function Settings() {
           <div class="compact-actions" style="margin-top:12px">
             {!cloudEnabled && <button class="btn danger" onClick={() => { if (confirm('Kembalikan data contoh? Semua perubahan akan hilang.')) { actions.reset(); setName('Guru'); toast('Data contoh dikembalikan'); } }}><Icon as={RotateCcw} size={16} /> Reset ke data contoh</button>}
             <button class="btn danger" onClick={() => openModal('Hapus semua data?', <WipeConfirm cloud={cloudEnabled} />)}><Icon as={Trash2} size={16} /> Hapus semua</button>
+            {cloudEnabled && auth.session?.user.email && (
+              <button class="btn danger" onClick={() => openModal('Hapus akun?', <DeleteAccountConfirm email={auth.session!.user.email!} />)}><Icon as={UserX} size={16} /> Hapus akun</button>
+            )}
           </div>
         </div>
       </div>

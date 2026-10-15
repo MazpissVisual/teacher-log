@@ -25,13 +25,16 @@ Tanpa `.env`, aplikasi berjalan **lokal tanpa login** (data di browser, berisi d
 ## Menyiapkan Supabase
 
 1. Buat proyek di [supabase.com](https://supabase.com).
-2. **SQL Editor** → jalankan seluruh isi [`supabase/migrations/0001_init.sql`](supabase/migrations/0001_init.sql). Ini membuat tabel dan kebijakan RLS (setiap pengguna hanya bisa mengakses datanya sendiri).
+2. **SQL Editor** → jalankan berurutan:
+   - [`0001_init.sql`](supabase/migrations/0001_init.sql): tabel dan kebijakan RLS (setiap pengguna hanya bisa mengakses datanya sendiri).
+   - [`0002_delete_account.sql`](supabase/migrations/0002_delete_account.sql): fungsi yang dipakai tombol **Hapus akun** di Pengaturan.
 3. **Settings → API Keys**: salin **Project URL** dan **Publishable key** ke `.env`:
    ```
    NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
    ```
-   Hanya dua nilai ini yang dipakai aplikasi. **Jangan** memasukkan `secret` / `service_role` key: kunci itu mem-bypass RLS.
+   Hanya dua nilai ini yang wajib. (Opsional: `NEXT_PUBLIC_CONTACT_EMAIL` untuk alamat kontak di halaman Privasi dan Syarat.)
+   Hanya dua nilai ini yang dipakai untuk koneksi. **Jangan** memasukkan `secret` / `service_role` key: kunci itu mem-bypass RLS.
 4. **Authentication → URL Configuration**: isi **Site URL** dan **Redirect URLs** dengan alamat aplikasi (`http://localhost:5173` untuk pengembangan, domain produksi setelah deploy).
 5. Opsional: **Authentication → Providers → Google** untuk tombol "Lanjutkan dengan Google" (tombol muncul sendiri begitu Google aktif).
 

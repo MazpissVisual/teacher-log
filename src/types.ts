@@ -26,4 +26,4 @@ export interface DB {
 }
 
 export type Collection = 'journals' | 'plans' | 'resources' | 'tasks';
-export type Page = 'dashboard' | 'journal' | 'planner' | 'library' | 'tasks' | 'journey' | 'search' | 'settings';
+export type Page = 'dashboard' | 'journal' | 'planner' | 'library' | 'tasks' | 'journey' | 'search' | 'settings' | 'privacy' | 'terms';
