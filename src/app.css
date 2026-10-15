@@ -37,7 +37,8 @@ form.panel{display:block}
   .topbar .searchbar{max-width:none}
   .filters .field{max-width:none;flex:1 1 140px}
 }
-@media(max-width:420px){.bottom-nav .nav .nav-text{font-size:9px}}
+@media(max-width:420px){.bottom-nav .nav .nav-text{font-size:10px}.bottom-nav .nav{padding:7px 0}}
+.nav.active{color:#5248c4}
 
 /* auth + sync */
 .auth-wrap{min-height:100vh;display:grid;place-items:center;padding:20px}

@@ -1,1 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#635bdb"/><text x="256" y="340" font-size="280" text-anchor="middle" fill="#fff" font-family="sans-serif">✦</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#635bdb"/><polygon points="256,106 294,218 406,256 294,294 256,406 218,294 106,256 218,218" fill="#fff" stroke="#fff" stroke-width="14" stroke-linejoin="round"/></svg>

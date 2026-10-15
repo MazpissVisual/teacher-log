@@ -30,6 +30,7 @@ export function useSyncStatus(): SyncStatus {
   useEffect(() => {
     const s = () => force((n) => n + 1);
     subs.add(s);
+    s(); // catch updates that happened between first render and this effect
     return () => { subs.delete(s); };
   }, []);
   return status;

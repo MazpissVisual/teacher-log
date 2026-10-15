@@ -5,6 +5,7 @@ import { cloudEnabled } from '../supabase';
 import { signOut, useAuth } from '../auth';
 import { syncNow, useSyncStatus } from '../sync';
 import { todayIn } from '../util';
+import { useInstall } from '../pwa';
 import { PageHead } from './shared';
 
 function ListEditor({ kind, label, items }: { kind: 'classes' | 'subjects'; label: string; items: string[] }) {
@@ -39,6 +40,7 @@ export function Settings() {
   const file = useRef<HTMLInputElement>(null);
   const auth = useAuth();
   const sync = useSyncStatus();
+  const { state: installState, install } = useInstall();
 
   const onImport = async (e: Event) => {
     const input = e.currentTarget as HTMLInputElement;
@@ -71,6 +73,23 @@ export function Settings() {
                 <button class="btn secondary" onClick={() => { void syncNow(); }}>⟳ Sinkronkan</button>
                 <button class="btn danger" onClick={() => { void signOut(); }}>Keluar</button>
               </div>
+            </div>
+          )}
+          {installState !== 'installed' && (
+            <div class="panel">
+              <h2>Pasang di perangkat</h2>
+              {installState === 'available' && (
+                <>
+                  <p class="muted" style="line-height:1.7;margin-bottom:14px">Pasang GuruLog seperti aplikasi biasa: ikon di layar utama, tampil layar penuh, dan tetap bisa dibuka offline.</p>
+                  <button class="btn" onClick={() => { void install(); }}>⬇ Pasang aplikasi</button>
+                </>
+              )}
+              {installState === 'ios' && (
+                <p class="muted" style="line-height:1.8">Di iPhone/iPad: buka lewat <b>Safari</b>, ketuk tombol <b>Bagikan</b> (kotak dengan panah ke atas), lalu pilih <b>Tambah ke Layar Utama</b>.</p>
+              )}
+              {installState === 'unavailable' && (
+                <p class="muted" style="line-height:1.8">Opsi pasang belum tersedia di browser ini. Di Chrome/Edge, gunakan menu browser → <b>Instal GuruLog</b> atau <b>Tambahkan ke layar utama</b>.</p>
+              )}
             </div>
           )}
           <form class="panel" onSubmit={(e) => { e.preventDefault(); actions.setProfile({ name: name.trim() || 'Guru', tz }); toast('Profil diperbarui'); }}>

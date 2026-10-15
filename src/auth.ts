@@ -14,6 +14,7 @@ export function useAuth(): AuthState {
   useEffect(() => {
     const s = () => force((n) => n + 1);
     subs.add(s);
+    s(); // catch updates that happened between first render and this effect
     return () => { subs.delete(s); };
   }, []);
   return state;
@@ -53,6 +54,21 @@ function teardown() {
 
 export function initAuth() {
   if (!supabase) return set({ ready: true });
+
+  // Don't depend solely on the auth event to leave the splash screen: read the stored session
+  // directly, and never wait more than a few seconds (e.g. unreachable network or bad config).
+  const giveUp = window.setTimeout(() => { if (!state.ready) set({ ready: true }); }, 4000);
+  supabase.auth.getSession().then(({ data, error }) => {
+    clearTimeout(giveUp);
+    if (error) console.error('[auth] getSession failed:', error.message);
+    if (!state.ready) set({ ready: true, session: data.session });
+    if (data.session) void bootstrap(data.session);
+  }).catch((e) => {
+    clearTimeout(giveUp);
+    console.error('[auth] getSession threw:', e);
+    set({ ready: true });
+  });
+
   supabase.auth.onAuthStateChange((event, session) => {
     // Never await supabase calls inside this callback (deadlocks the auth lock) — defer.
     setTimeout(() => {

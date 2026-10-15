@@ -15,8 +15,8 @@ h3{font-size:15px;margin-bottom:12px}
 .sidebar{width:246px;flex-shrink:0;background:#fff;border-right:1px solid var(--border);padding:29px 15px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
 .logo{display:flex;align-items:center;gap:11px;padding:0 13px 30px;font:800 22px 'Plus Jakarta Sans Variable','Plus Jakarta Sans';letter-spacing:-1px}
 .logo-mark{width:35px;height:35px;border-radius:11px;background:var(--primary);display:grid;place-items:center;color:white;font-size:19px}
-.menu-label{color:#a8aabd;font-size:10px;letter-spacing:1.4px;font-weight:800;margin:15px 13px 12px}
-.nav{display:flex;align-items:center;gap:12px;padding:12px 14px;margin:2px 0;border:0;background:transparent;color:#73798e;border-radius:11px;text-align:left;width:100%;font-weight:600}
+.menu-label{color:#666b80;font-size:10px;letter-spacing:1.4px;font-weight:800;margin:15px 13px 12px}
+.nav{display:flex;align-items:center;gap:12px;padding:12px 14px;margin:2px 0;border:0;background:transparent;color:#5a6076;border-radius:11px;text-align:left;width:100%;font-weight:600}
 .nav .ico{font-size:18px;width:22px;text-align:center}
 .nav:hover{background:#f7f7fc;color:var(--ink)}
 .nav.active{background:var(--primarylight);color:var(--primary)}
@@ -56,9 +56,9 @@ h3{font-size:15px;margin-bottom:12px}
 .schedule-item .details{flex:1}
 .schedule-item strong{font-weight:700}
 .schedule-item p{margin:5px 0 0;font-size:12px;color:var(--muted)}
-.pill{background:#e9f8f2;color:#199a74;border-radius:30px;padding:6px 10px;font-size:10px;font-weight:800;white-space:nowrap}
-.pill.lilac{background:#f1efff;color:#7669d1}
-.pill.peach{background:#fff1e5;color:#d68d47}
+.pill{background:#e9f8f2;color:#0e7556;border-radius:30px;padding:6px 10px;font-size:10px;font-weight:800;white-space:nowrap}
+.pill.lilac{background:#f1efff;color:#5a50c4}
+.pill.peach{background:#fff1e5;color:#9a5a14}
 .stack{display:grid;gap:20px}
 .quote{background:#f2f0ff;border:0}
 .quote p{line-height:1.75;color:#555179}
@@ -83,7 +83,7 @@ textarea.field{resize:vertical;min-height:94px}
 .journal-card h3{margin:0 0 8px;font-size:15px}
 .journal-card p{line-height:1.65;color:#686c80;font-size:13px;margin:0 0 12px}
 .card-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.tag{display:inline-flex;padding:5px 9px;background:#f2f1ff;color:#6c62c4;border-radius:7px;font-size:11px;font-weight:700}
+.tag{display:inline-flex;padding:5px 9px;background:#f2f1ff;color:#574ec0;border-radius:7px;font-size:11px;font-weight:700}
 .filters{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
 .filters .field{max-width:190px}
 .empty{text-align:center;padding:34px;color:var(--muted)}

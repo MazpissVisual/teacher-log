@@ -5,7 +5,9 @@ import './styles.css';
 import './app.css';
 import { App } from './App';
 import { initAuth } from './auth';
+import { initPWA } from './pwa';
 
 initAuth();
+initPWA();
 
 render(<App />, document.getElementById('app')!);

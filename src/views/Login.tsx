@@ -55,7 +55,7 @@ export function Login({ recovery }: { recovery: boolean }) {
   const title = { signin: 'Masuk ke GuruLog', signup: 'Buat akun GuruLog', reset: 'Reset kata sandi', newpass: 'Atur kata sandi baru' }[mode];
 
   return (
-    <div class="auth-wrap">
+    <main class="auth-wrap">
       <form class="panel auth-card" onSubmit={submit}>
         <div class="logo" style="padding:0 0 18px"><span class="logo-mark" aria-hidden="true">✦</span><span>GuruLog<span style="color:#776fe1">.</span></span></div>
         <h1 style="font-size:22px">{title}</h1>
@@ -89,6 +89,6 @@ export function Login({ recovery }: { recovery: boolean }) {
           </div>
         )}
       </form>
-    </div>
+    </main>
   );
 }

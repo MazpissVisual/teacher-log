@@ -15,6 +15,7 @@ function atom<T>(initial: T) {
       useEffect(() => {
         const s = () => force((n) => n + 1);
         subs.add(s);
+        s(); // catch updates that happened between first render and this effect
         return () => { subs.delete(s); };
       }, []);
       return value;
@@ -41,10 +42,10 @@ export function go(p: Page) {
 interface ToastState { msg: string; action?: { label: string; run: () => void } }
 const toastAtom = atom<ToastState | null>(null);
 let toastTimer: number | undefined;
-export function toast(msg: string, action?: ToastState['action']) {
+export function toast(msg: string, action?: ToastState['action'], ms?: number) {
   toastAtom.set({ msg, action });
   clearTimeout(toastTimer);
-  toastTimer = window.setTimeout(() => toastAtom.set(null), action ? 6000 : 2600);
+  toastTimer = window.setTimeout(() => toastAtom.set(null), ms ?? (action ? 6000 : 2600));
 }
 export function Toast() {
   const t = toastAtom.use();

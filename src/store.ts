@@ -76,7 +76,7 @@ export const setSyncHook = (fn: ((ops: Op[]) => void) | null) => { syncHook = fn
 
 const COLLECTIONS: Collection[] = ['journals', 'plans', 'resources', 'tasks'];
 
-function diff(a: DB, b: DB): Op[] {
+export function diff(a: DB, b: DB): Op[] {
   const ops: Op[] = [];
   for (const kind of COLLECTIONS) {
     const before = new Map((a[kind] as { id: string }[]).map((x) => [x.id, JSON.stringify(x)]));
@@ -126,6 +126,7 @@ export function useDB(): DB {
   useEffect(() => {
     const l = () => force((n) => n + 1);
     listeners.add(l);
+    l(); // catch updates that happened between first render and this effect
     return () => { listeners.delete(l); };
   }, []);
   return db;

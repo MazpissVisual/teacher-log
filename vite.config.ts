@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import preact from '@preact/preset-vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
@@ -8,8 +8,8 @@ export default defineConfig({
   plugins: [
     preact(),
     VitePWA({
-      registerType: 'autoUpdate',
-      includeAssets: ['icon.svg'],
+      registerType: 'prompt', // the app shows an "update available" toast instead of reloading mid-edit
+      includeAssets: ['icon.svg', 'apple-touch-icon.png'],
       manifest: {
         name: 'GuruLog — Personal Teaching Companion',
         short_name: 'GuruLog',
@@ -19,8 +19,19 @@ export default defineConfig({
         background_color: '#f7f8fc',
         display: 'standalone',
         start_url: '/',
-        icons: [{ src: 'icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any maskable' }],
+        scope: '/',
+        icons: [
+          { src: 'pwa-192.png', sizes: '192x192', type: 'image/png' },
+          { src: 'pwa-512.png', sizes: '512x512', type: 'image/png' },
+          { src: 'pwa-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: 'icon.svg', sizes: 'any', type: 'image/svg+xml' },
+        ],
+        shortcuts: [
+          { name: 'Catatan baru', short_name: 'Catat', url: '/#/journal' },
+          { name: 'Tugas', short_name: 'Tugas', url: '/#/tasks' },
+        ],
       },
     }),
   ],
+  test: { environment: 'jsdom', include: ['src/**/*.test.ts'] },
 });

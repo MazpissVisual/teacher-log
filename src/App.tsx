@@ -97,7 +97,7 @@ function SyncChip({ s }: { s: ReturnType<typeof useSyncStatus> }) {
 export function App() {
   const auth = useAuth();
   if (!cloudEnabled) return <Shell />;
-  if (!auth.ready) return <div class="auth-wrap"><p class="muted">Memuat…</p></div>;
+  if (!auth.ready) return <main class="auth-wrap"><p class="muted" role="status">Memuat…</p></main>;
   if (!auth.session || auth.recovery) return <Login recovery={auth.recovery} />;
   return <Shell />;
 }
