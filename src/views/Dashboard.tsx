@@ -44,9 +44,9 @@ export function Dashboard() {
         <div class="lead-main">
           <span class="kicker">Laporan utama</span>
           <h1 id="lead-title">{greet}, {db.profile.name}.</h1>
-          <p class="lead-deck dropcap">
+          <p class="lead-deck">
             Catat pengalaman, rencana, dan ide mengajarmu.
-            {todayPlans.length ? ` Hari ini kamu punya ${todayPlans.length} jadwal mengajar.` : ' Belum ada jadwal hari ini.'}
+            {todayPlans.length ? ` Hari ini kamu punya ${todayPlans.length} jadwal mengajar.` : ''}
             {overdue.length ? ` Ada ${overdue.length} tugas yang sudah lewat tenggat.` : ''}
           </p>
           <div class="compact-actions hero-actions" style="margin-top:20px">

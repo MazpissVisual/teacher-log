@@ -103,7 +103,7 @@ function Shell() {
             <button class="btn sm" onClick={() => { go('journal'); openJournal(); }}>Tulis catatan</button>
           </div>
           <div class="footer-meta"><span class="footer-brand"><Mark size={28} /> Edisi: Vol 1.0</span>
-            <span class="footer-legal"><a href="/privacy" onClick={(e) => { e.preventDefault(); go('privacy'); }}>Privasi</a><a href="/terms" onClick={(e) => { e.preventDefault(); go('terms'); }}>Syarat</a></span><span>Dikembangkan oleh Havidz Muhammad Iqbal, S.Kom.</span></div>
+            <span class="footer-legal"><a href="/privacy" onClick={(e) => { e.preventDefault(); go('privacy'); }}>Privasi</a><a href="/terms" onClick={(e) => { e.preventDefault(); go('terms'); }}>Syarat</a></span><span>Dikembangkan oleh<br />Havidz Muhammad Iqbal, S.Kom.</span></div>
         </div>
       </footer>
       <nav class="bottom-nav" aria-label="Navigasi seluler">
