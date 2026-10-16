@@ -1,11 +1,12 @@
 import { useEffect } from 'preact/hooks';
 import { setStorageErrorHandler, useDB } from './store';
 import type { Page } from './types';
-import { go, ModalRoot, pageAtom, searchAtom, Skeleton, Toast, toast } from './ui';
+import { go, ModalRoot, pageAtom, Skeleton, Toast, toast } from './ui';
 import { openJournal } from './forms';
 import { firstChar, todayIn } from './util';
-import { CloudCheck, CloudOff, CalendarDays, CheckSquare, House, Library as LibraryIcon, NotebookPen, RefreshCw, Search as SearchIcon, Settings as SettingsIcon, Sprout, TriangleAlert, type LucideIcon } from 'lucide-preact';
+import { CloudCheck, CloudOff, CalendarDays, CheckSquare, House, Library as LibraryIcon, NotebookPen, RefreshCw, Settings as SettingsIcon, Sprout, TriangleAlert, type LucideIcon } from 'lucide-preact';
 import { Icon } from './icons';
+import { SearchBox } from './SearchBox';
 import { Mark, Wordmark } from './Logo';
 import { Dashboard } from './views/Dashboard';
 import { Journal } from './views/Journal';
@@ -39,8 +40,7 @@ const PAGE_NAMES: Record<Page, string> = { dashboard: 'Beranda', journal: 'Jurna
 function Shell() {
   const db = useDB();
   const page = pageAtom.use();
-  const query = searchAtom.use();
-  const View = VIEWS[page as keyof typeof VIEWS];
+    const View = VIEWS[page as keyof typeof VIEWS];
   const sync = useSyncStatus();
   const today = todayIn(db.profile.tz);
   const dateLong = new Date(today + 'T12:00:00Z').toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
@@ -55,13 +55,7 @@ function Shell() {
     </button>
   );
 
-  const submitSearch = (e: Event) => { e.preventDefault(); if (query.trim()) go('search'); };
-  const searchInput = (
-    <form class="searchbar" role="search" onSubmit={submitSearch}>
-      <Icon as={SearchIcon} size={16} />
-      <input type="search" placeholder="Cari jurnal, rencana, sumber…" aria-label="Cari di aplikasi" value={query} onInput={(e) => searchAtom.set(e.currentTarget.value)} />
-    </form>
-  );
+  const searchInput = <SearchBox />;
 
   return (
     <div class="layout">

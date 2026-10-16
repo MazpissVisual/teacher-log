@@ -77,7 +77,7 @@ a { color: inherit; }
 }
 .nav.active { background: var(--ink); color: var(--paper); }
 
-.searchbar { display: flex; align-items: center; gap: 8px; margin: 0; min-width: 0; flex: 0 1 280px; }
+.searchbar { position: relative; display: flex; align-items: center; gap: 8px; margin: 0; min-width: 0; flex: 0 1 280px; }
 .searchbar input { width: 100%; min-height: 44px; border: 0; border-bottom: 2px solid var(--ink); background: transparent; font: 400 13px var(--f-mono); padding: 0 4px; }
 .searchbar input:focus { background: var(--field-focus); outline: none; }
 .searchbar input::placeholder { color: var(--n500); }
@@ -556,3 +556,10 @@ html { scroll-padding-top: 64px; }
 .hero-actions { flex-wrap: nowrap; }
 .hero-actions .btn { width: auto; flex: 0 1 auto; white-space: nowrap; padding-inline: 14px; }
 .task-desc { font-size: 14px; color: var(--muted, inherit); margin-top: 2px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.suggest { position: absolute; top: 100%; left: 0; right: 0; z-index: 60; margin: 0; padding: 0; list-style: none; background: var(--paper); border: 1px solid var(--ink); border-top: 0; box-shadow: 0 6px 16px rgba(0,0,0,.18); }
+.suggest li { display: flex; gap: 10px; align-items: baseline; padding: 10px 12px; cursor: pointer; min-height: 44px; box-sizing: border-box; border-bottom: 1px solid var(--n300, #ddd); }
+.suggest li:last-child { border-bottom: 0; }
+.suggest li.active, .suggest li:hover { background: var(--ink); color: var(--paper); }
+.suggest-kind { font: 700 10px var(--f-mono); text-transform: uppercase; letter-spacing: .08em; flex: none; }
+.suggest-title { font-size: 14px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.suggest-empty { cursor: default; font-style: italic; }
