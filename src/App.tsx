@@ -68,7 +68,7 @@ function Shell() {
       <a class="skip" href="#main" onClick={(e) => { e.preventDefault(); document.getElementById('main')?.focus(); }}>Lompat ke konten</a>
       <header class="masthead">
         <div class="edition-bar">
-          <span class="label">Vol. 1 · {dateLong}</span>
+          <span class="label">{dateLong}</span>
           <span class="edition-right">
             {cloudEnabled && <SyncChip s={sync} />}
             <button class="avatar" aria-label={'Pengaturan profil (' + db.profile.name + ')'} onClick={() => go('settings')}>{firstChar(db.profile.name)}</button>
@@ -103,7 +103,7 @@ function Shell() {
             <button class="btn sm" onClick={() => { go('journal'); openJournal(); }}>Tulis catatan</button>
           </div>
           <div class="footer-meta"><span class="footer-brand"><Mark size={28} /> Edisi: Vol 1.0</span>
-            <span class="footer-legal"><a href="/privacy" onClick={(e) => { e.preventDefault(); go('privacy'); }}>Privasi</a><a href="/terms" onClick={(e) => { e.preventDefault(); go('terms'); }}>Syarat</a></span><span>Dicetak di perangkatmu</span></div>
+            <span class="footer-legal"><a href="/privacy" onClick={(e) => { e.preventDefault(); go('privacy'); }}>Privasi</a><a href="/terms" onClick={(e) => { e.preventDefault(); go('terms'); }}>Syarat</a></span><span>Dikembangkan oleh Havidz Muhammad Iqbal, S.Kom.</span></div>
         </div>
       </footer>
       <nav class="bottom-nav" aria-label="Navigasi seluler">

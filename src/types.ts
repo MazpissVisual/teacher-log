@@ -12,7 +12,7 @@ export interface Plan {
   objective: string; activities: string;
 }
 export interface Resource { id: string; title: string; type: ResourceType; description: string; url: string }
-export interface Task { id: string; title: string; date: string; priority: Priority; done: boolean }
+export interface Task { id: string; title: string; description?: string; date: string; priority: Priority; done: boolean }
 
 export interface DB {
   version: 2;

@@ -151,7 +151,7 @@ function TaskForm({ task }: { task?: Task }) {
     e.preventDefault();
     const f = fd(e);
     actions.upsert('tasks', {
-      id: task?.id ?? uid(), title: s(f, 'title'), date: s(f, 'date'), priority: s(f, 'priority') as Priority, done: task?.done ?? false,
+      id: task?.id ?? uid(), title: s(f, 'title'), description: s(f, 'description'), date: s(f, 'date'), priority: s(f, 'priority') as Priority, done: task?.done ?? false,
     });
     closeModal();
     toast('Tugas tersimpan');
@@ -159,6 +159,7 @@ function TaskForm({ task }: { task?: Task }) {
   return (
     <form onSubmit={submit}>
       <div class="form-group"><label for="t-title">Nama tugas *</label><input id="t-title" class="field" name="title" value={task?.title ?? ''} required placeholder="Apa yang ingin kamu selesaikan?" /></div>
+      <div class="form-group"><label for="t-desc">Deskripsi</label><textarea id="t-desc" class="field" name="description" placeholder="Detail tugas, catatan, atau langkah-langkahnya">{task?.description ?? ''}</textarea></div>
       <div class="cols-2">
         <div class="form-group"><label for="t-date">Tenggat</label><input id="t-date" class="field" type="date" name="date" value={task?.date ?? todayIn(db.profile.tz)} /></div>
         <div class="form-group"><label for="t-prio">Prioritas</label><select id="t-prio" class="field" name="priority">{PRIOS.map((p) => <option value={p} selected={p === (task?.priority ?? 'medium')}>{PRIO_LABEL[p]}</option>)}</select></div>

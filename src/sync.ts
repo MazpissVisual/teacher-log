@@ -69,13 +69,13 @@ const toRow: Record<Collection, (x: any) => Record<string, unknown>> = {
   journals: (j) => ({ id: j.id, date: dateOrNull(j.date), type: j.type, title: j.title, content: j.content, class_name: j.className, subject: j.subject, mood: j.mood, topic: j.topic, worked: j.worked, improve: j.improve, pinned: j.pinned }),
   plans: (p) => ({ id: p.id, title: p.title, date: dateOrNull(p.date), time: p.time, class_name: p.className, subject: p.subject, objective: p.objective, activities: p.activities }),
   resources: (r) => ({ id: r.id, title: r.title, type: r.type, description: r.description, url: r.url }),
-  tasks: (t) => ({ id: t.id, title: t.title, date: dateOrNull(t.date), priority: t.priority, done: t.done }),
+  tasks: (t) => ({ id: t.id, title: t.title, description: t.description ?? '', date: dateOrNull(t.date), priority: t.priority, done: t.done }),
 };
 const fromRow = {
   journals: (r: any) => ({ id: r.id, date: r.date ?? '', type: r.type, title: r.title, content: r.content, className: r.class_name, subject: r.subject, mood: r.mood, topic: r.topic, worked: r.worked, improve: r.improve, pinned: r.pinned }),
   plans: (r: any) => ({ id: r.id, title: r.title, date: r.date ?? '', time: r.time, className: r.class_name, subject: r.subject, objective: r.objective, activities: r.activities }),
   resources: (r: any) => ({ id: r.id, title: r.title, type: r.type, description: r.description, url: r.url }),
-  tasks: (r: any) => ({ id: r.id, title: r.title, date: r.date ?? '', priority: r.priority, done: r.done }),
+  tasks: (r: any) => ({ id: r.id, title: r.title, description: r.description ?? '', date: r.date ?? '', priority: r.priority, done: r.done }),
 };
 
 const errMsg = (e: unknown) => (e instanceof Error ? e.message : String((e as any)?.message ?? e));

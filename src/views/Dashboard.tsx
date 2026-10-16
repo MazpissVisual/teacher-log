@@ -45,11 +45,11 @@ export function Dashboard() {
           <span class="kicker">Laporan utama</span>
           <h1 id="lead-title">{greet}, {db.profile.name}.</h1>
           <p class="lead-deck dropcap">
-            Satu tempat untuk menyimpan pengalaman mengajar, rencana pembelajaran, materi, dan ide-ide terbaikmu.
-            {todayPlans.length ? ` Hari ini kamu punya ${todayPlans.length} jadwal mengajar.` : ' Hari ini belum ada jadwal mengajar, ruang yang pas untuk menulis refleksi.'}
+            Catat pengalaman, rencana, dan ide mengajarmu.
+            {todayPlans.length ? ` Hari ini kamu punya ${todayPlans.length} jadwal mengajar.` : ' Belum ada jadwal hari ini.'}
             {overdue.length ? ` Ada ${overdue.length} tugas yang sudah lewat tenggat.` : ''}
           </p>
-          <div class="compact-actions" style="margin-top:20px">
+          <div class="compact-actions hero-actions" style="margin-top:20px">
             <button class="btn" onClick={() => openJournal()}><Icon as={Plus} size={16} /> Catatan cepat</button>
             <button class="btn secondary" onClick={() => go('planner')}>Buka perencana</button>
           </div>

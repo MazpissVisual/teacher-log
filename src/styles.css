@@ -129,7 +129,7 @@ a { color: inherit; }
 .lead-main { padding: 0 28px 28px 0; border-right: 1px solid var(--ink); }
 .lead-main h1 { margin-bottom: 18px; }
 .lead-deck { font-size: 17px; line-height: 1.7; text-align: justify; hyphens: auto; max-width: 70ch; }
-.dropcap::first-letter { float: left; font: 900 4.75rem/.8 var(--f-display); padding: 6px 10px 0 0; }
+.dropcap::first-letter { float: left; font: 900 2.2rem/1 var(--f-display); padding: 2px 6px 0 0; }
 .lead-side { padding: 0 0 24px 24px; }
 .lead-side h2 { font-size: 1.15rem; text-transform: uppercase; letter-spacing: .06em; border-bottom: 1px solid var(--ink); padding-bottom: 8px; }
 
@@ -307,7 +307,7 @@ select.field { appearance: none; padding-right: 32px; background-image: linear-g
   .tab { flex: 1; padding: 0 8px; }
   .modal { padding: 16px; }
   .lead-main { padding-bottom: 20px; }
-  .dropcap::first-letter { font-size: 4rem; }
+  .dropcap::first-letter { font-size: 2.2rem; }
   .footer-cta { display: none; }
   .footer-inner { padding-bottom: calc(76px + env(safe-area-inset-bottom)); gap: 20px; }
   .footer blockquote { font-size: 17px; }
@@ -329,7 +329,7 @@ main:focus { outline: none; }
 @media (max-width: 767px) {
   .lead-main h1 { font-size: clamp(1.9rem, 9vw, 2.4rem); overflow-wrap: anywhere; margin-bottom: 14px; }
   .lead-deck { text-align: left; hyphens: none; font-size: 16px; line-height: 1.65; }
-  .dropcap::first-letter { font-size: 3.4rem; padding: 4px 8px 0 0; }
+  .dropcap::first-letter { font-size: 2rem; padding: 2px 6px 0 0; }
   .lead-main { padding-bottom: 18px; }
   .lead-side.is-empty { display: none; }
   .lead { margin-bottom: 20px; }
@@ -552,3 +552,7 @@ html { scroll-padding-top: 64px; }
 .footer-legal a { color: inherit; text-decoration: underline; text-decoration-color: var(--paper); text-underline-offset: 3px; }
 .footer-legal a:hover { text-decoration-color: var(--red); }
 .footer :focus-visible { outline-color: var(--paper); }
+
+.hero-actions { flex-wrap: nowrap; }
+.hero-actions .btn { width: auto; flex: 0 1 auto; white-space: nowrap; padding-inline: 14px; }
+.task-desc { font-size: 14px; color: var(--muted, inherit); margin-top: 2px; white-space: pre-wrap; overflow-wrap: anywhere; }

@@ -36,7 +36,7 @@ export function normalize(raw: unknown): DB {
       description: str(x.description), url: str(x.url),
     })),
     tasks: arr(r.tasks).map((x): Task => ({
-      id: id(x), title: str(x.title), date: str(x.date), priority: oneOf<Priority>(x.priority, ['low', 'medium', 'high'], 'medium'), done: x.done === true,
+      id: id(x), title: str(x.title), description: str(x.description), date: str(x.date), priority: oneOf<Priority>(x.priority, ['low', 'medium', 'high'], 'medium'), done: x.done === true,
     })),
   };
 }

@@ -28,6 +28,7 @@ export function TaskRow({ t, today }: { t: Task; today: string }) {
       <input type="checkbox" checked={t.done} aria-label={`Selesaikan: ${t.title}`} onChange={() => { tap(); actions.patch('tasks', t.id, { done: !t.done }); }} />
       <div style="flex:1;min-width:0">
         <div class="task-title">{t.title}</div>
+        {t.description && <div class="task-desc">{t.description}</div>}
         <div class="task-meta">
           <span>{!t.done && relativeDay(t.date, today) ? relativeDay(t.date, today) + ' · ' : ''}{dateText(t.date)}</span>
           <span>Prioritas {prioLabel(t.priority)}</span>
