@@ -25,9 +25,15 @@ const b64url = (buf: ArrayBuffer | null) => {
   return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 };
 
+/** `ready` never resolves when no service worker is registered (e.g. `vite dev`), so don't wait forever. */
+const workerReady = (ms = 6000) => Promise.race([
+  navigator.serviceWorker.ready,
+  new Promise<never>((_, reject) => window.setTimeout(() => reject(new Error('no-sw')), ms)),
+]);
+
 async function currentSubscription(): Promise<PushSubscription | null> {
   try {
-    const reg = await navigator.serviceWorker.ready;
+    const reg = await workerReady(1500);
     return await reg.pushManager.getSubscription();
   } catch { return null; }
 }
@@ -46,7 +52,7 @@ export async function enablePush(): Promise<void> {
   const perm = await requestPermission();
   if (perm !== 'granted') throw new Error(perm === 'denied' ? 'Izin ditolak. Ubah di pengaturan situs browser.' : 'Izin notifikasi tidak diberikan.');
   try {
-    const reg = await navigator.serviceWorker.ready;
+    const reg = await workerReady();
     const sub = (await reg.pushManager.getSubscription()) ?? await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: keyBytes(VAPID_PUBLIC!) });
     const { error } = await supabase.from('push_subscriptions').upsert(rowOf(sub), { onConflict: 'user_id,endpoint' });
     if (error) throw error;
@@ -54,7 +60,8 @@ export async function enablePush(): Promise<void> {
     setPushActive(true);
   } catch (e) {
     setPushActive(false);
-    throw new Error(e instanceof Error && /push service|network|AbortError/i.test(e.message) ? 'Layanan push browser tidak bisa dihubungi.' : 'Gagal mengaktifkan notifikasi saat aplikasi tertutup.');
+    throw new Error(e instanceof Error && e.message === 'no-sw' ? 'Service worker belum aktif. Coba lagi dari versi build (npm run build lalu npm run preview) atau situs produksi.'
+      : e instanceof Error && /push service|network|AbortError/i.test(e.message) ? 'Layanan push browser tidak bisa dihubungi.' : 'Gagal mengaktifkan notifikasi saat aplikasi tertutup.');
   }
 }
 

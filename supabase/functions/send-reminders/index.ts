@@ -7,6 +7,15 @@ import { computeReminders, DEFAULT_PREFS, todayIn } from './reminders-core.js';
 
 const env = (k: string) => Deno.env.get(k) ?? '';
 
+// A user can register any endpoint string, so only ever POST to the real browser push services.
+const PUSH_HOSTS = ['fcm.googleapis.com', 'push.services.mozilla.com', 'push.apple.com', 'notify.windows.com'];
+const trustedEndpoint = (url: string) => {
+  try {
+    const u = new URL(url);
+    return u.protocol === 'https:' && PUSH_HOSTS.some((h) => u.hostname === h || u.hostname.endsWith('.' + h));
+  } catch { return false; }
+};
+
 Deno.serve(async (req) => {
   // Not JWT-protected (called by pg_cron), so a shared secret guards it.
   if (!env('CRON_SECRET') || req.headers.get('x-cron-secret') !== env('CRON_SECRET')) return new Response('forbidden', { status: 401 });
@@ -32,6 +41,8 @@ Deno.serve(async (req) => {
       sb.from('thesis_stages').select('id,title,status,date,note').eq('user_id', userId),
       sb.from('thesis_guidance').select('id,date,lecturer,notes,followup,followup_done').eq('user_id', userId),
     ]);
+    const failed = [p, tasks, plans, schedules, stages, guidance].find((r) => r.error);
+    if (failed) { console.error('load failed for a user (was migration 0004 run?)', failed.error.message); continue; }
     const db = {
       profile: { name: '', tz: p.data?.tz ?? 'Asia/Jakarta' },
       tasks: (tasks.data ?? []).map((r) => ({ ...r, date: r.date ?? '', done: false })),
@@ -43,6 +54,7 @@ Deno.serve(async (req) => {
     const today = todayIn(db.profile.tz, now);
 
     for (const dev of devices) {
+      if (!trustedEndpoint(dev.endpoint)) { await sb.from('push_subscriptions').delete().eq('id', dev.id); continue; }
       const prefs = { ...DEFAULT_PREFS, ...dev.prefs, enabled: true };
       const due = computeReminders(db, now, prefs);
       if (!due.length) continue;
@@ -57,12 +69,13 @@ Deno.serve(async (req) => {
           await webpush.sendNotification(
             { endpoint: dev.endpoint, keys: { p256dh: dev.p256dh, auth: dev.auth } },
             JSON.stringify({ title: r.title, body: r.body, tag: r.key, url: r.url }),
-            { TTL: 3600, urgency: 'high' },
+            { TTL: r.group === 'classes' ? 300 : 3600, urgency: 'high' }, // a stale "starts in 10 minutes" is worse than none
           );
           sent++;
         } catch (e) {
           if (e.statusCode === 404 || e.statusCode === 410) { await sb.from('push_subscriptions').delete().eq('id', dev.id); break; } // device is gone
           console.error('push failed', e.statusCode ?? e.message);
+          await sb.from('push_sent').delete().eq('subscription_id', dev.id).eq('key', r.key); // transient: try again next minute
         }
       }
     }

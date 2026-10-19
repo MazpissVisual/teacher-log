@@ -9,7 +9,7 @@ npx web-push generate-vapid-keys
 Simpan **public key** dan **private key**. Private key jangan pernah masuk ke repo atau `.env` aplikasi.
 
 ## 2. Jalankan migrasi
-SQL Editor → jalankan [`0005_push.sql`](migrations/0005_push.sql) (setelah 0001-0004).
+SQL Editor → jalankan berurutan [`0005_push.sql`](migrations/0005_push.sql) lalu [`0006_push_hardening.sql`](migrations/0006_push_hardening.sql) (setelah 0001-0004).
 
 ## 3. Deploy Edge Function
 Pakai [Supabase CLI](https://supabase.com/docs/guides/cli) yang sudah `supabase login` dan `supabase link`.
@@ -51,6 +51,7 @@ NEXT_PUBLIC_VAPID_PUBLIC_KEY=<public key>
 Tombol **Aktifkan notifikasi** di Pengaturan otomatis mendaftarkan perangkat untuk push begitu variabel ini ada.
 
 ## Catatan
+- **Mengujinya di komputer:** `npm run dev` tidak mendaftarkan service worker, jadi push tidak bisa diaktifkan di sana. Pakai `npm run build` lalu `npm run preview` (buka alamat yang ditampilkan, biasanya `http://localhost:4173`), atau situs produksi.
 - **iPhone/iPad** hanya menerima push kalau aplikasi sudah dipasang ke Layar Utama (iOS 16.4 ke atas).
 - Pengingat dikirim sekali per perangkat per hari. Jadwal kuliah dikirim saat masuk jendela "sekian menit sebelum mulai".
 - Perangkat yang sudah tidak aktif (endpoint 404/410) dihapus otomatis.

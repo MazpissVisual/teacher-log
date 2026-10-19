@@ -106,6 +106,7 @@ export async function deleteAccount(): Promise<void> {
   if (!supabase || !activeUser) throw new Error('Kamu belum masuk.');
   if (!navigator.onLine) throw new Error('Kamu sedang offline. Sambungkan internet untuk menghapus akun.');
   const uid = activeUser;
+  await disablePush(); // still signed in here, so the server row can be removed too
   stopSync(); // nothing queued may be pushed (or re-created) after this point
   clearOutbox(uid);
   const { error } = await supabase.rpc('delete_my_account');
