@@ -48,7 +48,7 @@ export const moodLabel = (m: string) => ({ great: 'Paham banget', good: 'Paham',
 
 export const excerpt = (s: string, n: number) => (s.length > n ? s.slice(0, n).trimEnd() + '…' : s);
 
-export const firstChar = (s: string) => Array.from(s.trim())[0]?.toUpperCase() ?? 'G';
+export const firstChar = (s: string) => Array.from(s.trim())[0]?.toUpperCase() ?? 'M';
 
 export const isHttpUrl = (u: string) => /^https?:\/\//i.test(u);
 
@@ -72,3 +72,33 @@ export function relativeDay(date: string, today: string): string | null {
 
 /** Tiny haptic tick on devices that support it (Android PWA); silently ignored elsewhere. */
 export const tap = (ms = 10) => { try { navigator.vibrate?.(ms); } catch { /* unsupported */ } };
+
+/** Day of week for a YYYY-MM-DD string: 0 = Sunday … 6 = Saturday. */
+export function weekdayOf(date: string): number {
+  const [y, m, d] = date.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+}
+
+/** Minutes since midnight in the given timezone. */
+export function minutesIn(tz: string, now = new Date()): number {
+  const p = new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(now);
+  const [h, m] = p.split(':').map(Number);
+  return h * 60 + m;
+}
+
+/** "08:30" → 510. Returns null when empty or malformed. */
+export function toMinutes(t: string): number | null {
+  const m = /^(\d{1,2}):(\d{2})$/.exec(t);
+  return m ? Number(m[1]) * 60 + Number(m[2]) : null;
+}
+
+/** Deadline countdown: "Terlambat 2 hari", "Hari ini", "H-3". `urgent` is true for late, today and tomorrow. Null when more than 30 days away or no date. */
+export function countdown(date: string, today: string): { text: string; urgent: boolean } | null {
+  if (!date) return null;
+  const d = dayDiff(date, today);
+  if (d < 0) return { text: 'Terlambat ' + -d + ' hari', urgent: true };
+  if (d === 0) return { text: 'Hari ini', urgent: true };
+  if (d === 1) return { text: 'H-1', urgent: true };
+  if (d <= 30) return { text: 'H-' + d, urgent: false };
+  return null;
+}

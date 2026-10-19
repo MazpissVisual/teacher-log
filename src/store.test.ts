@@ -58,7 +58,7 @@ describe('diff (drives cloud sync)', () => {
     const a = sampleData();
     const b = structuredClone(a);
     b.tasks[0].done = !b.tasks[0].done;
-    b.resources.push({ id: '00000000-0000-4000-8000-000000000001', title: 'new', type: 'Ide', description: '', url: '' });
+    b.resources.push({ id: '00000000-0000-4000-8000-000000000001', title: 'new', type: 'Ide', subject: '', description: '', url: '' });
     expect(diff(a, b)).toEqual([
       { t: 'upsert', kind: 'resources', id: '00000000-0000-4000-8000-000000000001' },
       { t: 'upsert', kind: 'tasks', id: a.tasks[0].id },

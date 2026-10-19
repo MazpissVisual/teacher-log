@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'preact/hooks';
-import type { Collection, DB, Journal, Mood, Plan, Priority, Resource, ResourceType, Task } from './types';
+import type { Collection, DB, Guidance, Journal, Mood, Plan, PlanKind, Priority, Resource, ResourceType, Schedule, Stage, StageStatus, Task } from './types';
 import { sampleData } from './sample';
 import { DEFAULT_TZ, UUID_RE, uid } from './util';
 
@@ -41,14 +41,24 @@ export function normalize(raw: unknown): DB {
     })),
     plans: arr(r.plans).map((x): Plan => ({
       id: id(x), title: str(x.title), date: str(x.date), time: str(x.time), className: str(x.className), subject: str(x.subject),
-      objective: str(x.objective), activities: str(x.activities),
+      objective: str(x.objective), activities: str(x.activities), kind: oneOf<PlanKind>(x.kind, ['kuliah', 'kuis', 'uts', 'uas', 'deadline'], 'kuliah'),
     })),
     resources: arr(r.resources).map((x): Resource => ({
       id: id(x), title: str(x.title), type: oneOf<ResourceType>(x.type, ['Materi', 'Ide', 'Link', 'Aktivitas'], 'Materi'),
-      description: str(x.description), url: str(x.url),
+      subject: str(x.subject), description: str(x.description), url: str(x.url),
     })),
     tasks: arr(r.tasks).map((x): Task => ({
-      id: id(x), title: str(x.title), description: str(x.description), date: str(x.date), priority: oneOf<Priority>(x.priority, ['low', 'medium', 'high'], 'medium'), done: x.done === true,
+      id: id(x), title: str(x.title), description: str(x.description), subject: str(x.subject), date: str(x.date), priority: oneOf<Priority>(x.priority, ['low', 'medium', 'high'], 'medium'), done: x.done === true,
+    })),
+    schedules: arr(r.schedules).map((x): Schedule => ({
+      id: id(x), subject: str(x.subject), className: str(x.className), day: Number.isInteger(x.day) && x.day >= 0 && x.day <= 6 ? x.day : 1,
+      start: str(x.start), end: str(x.end), room: str(x.room), until: str(x.until),
+    })),
+    stages: arr(r.stages).map((x): Stage => ({
+      id: id(x), title: str(x.title), status: oneOf<StageStatus>(x.status, ['todo', 'doing', 'done'], 'todo'), date: str(x.date), note: str(x.note),
+    })),
+    guidance: arr(r.guidance).map((x): Guidance => ({
+      id: id(x), date: str(x.date), lecturer: str(x.lecturer), notes: str(x.notes), followup: str(x.followup), followupDone: x.followupDone === true,
     })),
   };
 }
@@ -86,7 +96,7 @@ export type Op = { t: 'upsert'; kind: Collection; id: string } | { t: 'delete'; 
 let syncHook: ((ops: Op[]) => void) | null = null;
 export const setSyncHook = (fn: ((ops: Op[]) => void) | null) => { syncHook = fn; };
 
-const COLLECTIONS: Collection[] = ['journals', 'plans', 'resources', 'tasks'];
+const COLLECTIONS: Collection[] = ['journals', 'plans', 'resources', 'tasks', 'schedules', 'stages', 'guidance'];
 
 export function diff(a: DB, b: DB): Op[] {
   const ops: Op[] = [];

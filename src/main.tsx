@@ -7,8 +7,10 @@ import './styles.css';
 import { App } from './App';
 import { initAuth } from './auth';
 import { initPWA } from './pwa';
+import { startReminders } from './notify';
 
 initAuth();
 initPWA();
+startReminders();
 
 render(<App />, document.getElementById('app')!);

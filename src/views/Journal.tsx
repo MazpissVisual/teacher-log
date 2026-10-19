@@ -5,7 +5,7 @@ import { Empty } from '../ui';
 import { moodLabel } from '../util';
 import { Icon } from '../icons';
 import { Plus } from 'lucide-preact';
-import { JournalCard, PageHead } from './shared';
+import { JournalCard, PageHead, SectionTabs } from './shared';
 
 export function Journal() {
   const db = useDB();
@@ -20,6 +20,7 @@ export function Journal() {
 
   return (
     <>
+      <SectionTabs page="journal" />
       <PageHead kicker="Seksi · Jurnal" title="Jurnal Kuliahku" sub="Catat isi kuliah, refleksi, dan hal yang perlu dipelajari lagi." action={<button class="btn" onClick={() => openJournal()}><Icon as={Plus} size={16} /> Jurnal baru</button>} />
       <div class="panel">
         <div class="filters">

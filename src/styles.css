@@ -563,3 +563,8 @@ html { scroll-padding-top: 64px; }
 .suggest-kind { font: 700 10px var(--f-mono); text-transform: uppercase; letter-spacing: .08em; flex: none; }
 .suggest-title { font-size: 14px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .suggest-empty { cursor: default; font-style: italic; }
+
+/* ---- checkbox rows (notifications, thesis follow-ups) ---- */
+.check-row { display: flex; align-items: flex-start; gap: 10px; margin: 6px 0 14px; font-size: 14px; line-height: 1.5; cursor: pointer; }
+.check-row input { flex-shrink: 0; width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--ink); cursor: pointer; }
+.section-tabs { margin-bottom: 20px; }

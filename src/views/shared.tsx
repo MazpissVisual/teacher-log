@@ -1,11 +1,14 @@
 import type { ComponentChildren } from 'preact';
 import { BookOpen, Dices, ExternalLink, Lightbulb, Link2, Pencil, Pin, PinOff, Trash2, type LucideIcon } from 'lucide-preact';
-import { actions } from '../store';
-import type { Journal, Plan, Resource, Task } from '../types';
-import { openJournal, openPlan, openResource, openTask, prioLabel } from '../forms';
+import { actions, useDB } from '../store';
+import { useThesisMenu } from '../features';
+import type { Journal, Plan, Resource, Schedule, Task } from '../types';
+import { DAY_NAMES, KIND_LABEL } from '../agenda';
+import { openJournal, openPlan, openResource, openSchedule, openTask, prioLabel } from '../forms';
 import { Icon, MoodIcon } from '../icons';
-import { removeWithUndo, useLeaving } from '../ui';
-import { dateText, isHttpUrl, moodLabel, relativeDay, tap } from '../util';
+import { go, removeWithUndo, useLeaving } from '../ui';
+import type { Page } from '../types';
+import { countdown, dateText, isHttpUrl, moodLabel, tap } from '../util';
 
 export function PageHead({ kicker, title, sub, action }: { kicker: string; title: string; sub: string; action?: ComponentChildren }) {
   return (
@@ -21,7 +24,7 @@ export function PageHead({ kicker, title, sub, action }: { kicker: string; title
 }
 
 export function TaskRow({ t, today }: { t: Task; today: string }) {
-  const overdue = !t.done && t.date && t.date < today;
+  const cd = t.done ? null : countdown(t.date, today);
   const leaving = useLeaving(t.id);
   return (
     <div class={`task-row ${t.done ? 'done' : ''} ${leaving ? 'leaving' : ''}`}>
@@ -30,9 +33,10 @@ export function TaskRow({ t, today }: { t: Task; today: string }) {
         <div class="task-title">{t.title}</div>
         {t.description && <div class="task-desc">{t.description}</div>}
         <div class="task-meta">
-          <span>{!t.done && relativeDay(t.date, today) ? relativeDay(t.date, today) + ' · ' : ''}{dateText(t.date)}</span>
+          <span>{dateText(t.date)}</span>
+          {t.subject && <span class="tag">{t.subject}</span>}
           <span>Prioritas {prioLabel(t.priority)}</span>
-          {overdue && <span class="pill peach">Terlambat</span>}
+          {cd && <span class={'pill ' + (cd.urgent ? 'peach' : 'lilac')}>{cd.text}</span>}
         </div>
       </div>
       <button class="link" onClick={() => openTask(t)}>Ubah</button>
@@ -63,11 +67,17 @@ export function JournalCard({ j }: { j: Journal }) {
   );
 }
 
-export function PlanCard({ p }: { p: Plan }) {
+export function PlanCard({ p, today }: { p: Plan; today: string }) {
   const leaving = useLeaving(p.id);
+  const cd = countdown(p.date, today);
   return (
     <article class={'journal-card' + (leaving ? ' leaving' : '')}>
-      <div class="journal-meta"><span>{dateText(p.date)}{p.time && ` · ${p.time}`}</span><span class="tag">{p.className || 'Pribadi'}</span></div>
+      <div class="journal-meta">
+        <span>{dateText(p.date)}{p.time && ` · ${p.time}`}</span>
+        <span class="tag">{KIND_LABEL[p.kind]}</span>
+        {(p.subject || p.className) && <span class="tag">{p.subject || p.className}</span>}
+        {p.kind !== 'kuliah' && cd && <span class={'pill ' + (cd.urgent ? 'peach' : 'lilac')}>{cd.text}</span>}
+      </div>
       <h2 class="card-title">{p.title}</h2>
       <p>{p.objective || 'Belum ada target khusus'}</p>
       <div class="card-actions">
@@ -84,7 +94,7 @@ export function ResourceCard({ r }: { r: Resource }) {
   return (
     <article class={'resource-card' + (leaving ? ' leaving' : '')}>
       <span class="resource-icon"><Icon as={RICON[r.type] ?? BookOpen} size={20} /></span>
-      <span class="tag" style="width:max-content">{r.type}</span>
+      <span class="tag" style="width:max-content">{r.type}{r.subject ? ' · ' + r.subject : ''}</span>
       <h2 class="card-title">{r.title}</h2>
       <p>{r.description}</p>
       <div class="card-actions">
@@ -93,5 +103,35 @@ export function ResourceCard({ r }: { r: Resource }) {
         <button class="btn sm danger" onClick={() => removeWithUndo('resources', r, 'Sumber dihapus')}><Icon as={Trash2} size={14} /> Hapus</button>
       </div>
     </article>
+  );
+}
+
+export function ScheduleRow({ s }: { s: Schedule }) {
+  const leaving = useLeaving(s.id);
+  return (
+    <div class={'schedule-item' + (leaving ? ' leaving' : '')}>
+      <span class="time">{s.start || '--:--'}</span>
+      <div class="details">
+        <strong>{s.subject || 'Kuliah'}</strong>
+        <p>{DAY_NAMES[s.day]}{s.end ? ` · ${s.start}–${s.end}` : ''}{s.room ? ` · ${s.room}` : ''}{s.until ? ` · sampai ${dateText(s.until)}` : ''}</p>
+      </div>
+      <button class="link" onClick={() => openSchedule(s)}>Ubah</button>
+      <button class="icon-btn compact" aria-label={`Hapus jadwal: ${s.subject}`} onClick={() => removeWithUndo('schedules', s, 'Jadwal dihapus')}><Icon as={Trash2} size={16} /></button>
+    </div>
+  );
+}
+
+/** Pages that share one menu entry; each is still its own URL so links and the back button keep working. */
+export const GROUPS: Page[][] = [['journal', 'journey'], ['planner', 'tasks'], ['courses', 'thesis']];
+const TAB_LABEL: Partial<Record<Page, string>> = { journal: 'Catatan', journey: 'Perjalanan', planner: 'Kalender', tasks: 'Tugas', courses: 'Mata kuliah', thesis: 'Tesis' };
+export function SectionTabs({ page }: { page: Page }) {
+  const db = useDB();
+  const thesis = useThesisMenu(db);
+  const group = GROUPS.find((g) => g.includes(page))?.filter((p) => p !== 'thesis' || thesis.shown || page === 'thesis');
+  if (!group || group.length < 2) return null; // a lone tab is just noise
+  return (
+    <div class="tabs section-tabs" role="tablist" aria-label="Bagian">
+      {group.map((p) => <button role="tab" aria-selected={p === page} class={`tab ${p === page ? 'active' : ''}`} onClick={() => go(p)}>{TAB_LABEL[p]}</button>)}
+    </div>
   );
 }

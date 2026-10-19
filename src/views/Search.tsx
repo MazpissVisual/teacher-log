@@ -23,7 +23,7 @@ export function Search() {
       <PageHead kicker="Arsip" title="Hasil Pencarian" sub={q ? `${total} hasil untuk “${searchAtom.get().trim()}”` : 'Ketik kata kunci di kolom pencarian lalu tekan Enter.'} />
       {q && !total && <div class="panel"><Empty title="Tidak ada hasil" /></div>}
       <Section title="Jurnal" n={journals.length}>{journals.map((j) => <JournalCard j={j} />)}</Section>
-      <Section title="Rencana" n={plans.length}>{plans.map((p) => <PlanCard p={p} />)}</Section>
+      <Section title="Rencana" n={plans.length}>{plans.map((p) => <PlanCard p={p} today={today} />)}</Section>
       <Section title="Sumber" n={resources.length}><div class="list-grid">{resources.map((r) => <ResourceCard r={r} />)}</div></Section>
       <Section title="Tugas" n={tasks.length}>{tasks.map((t) => <TaskRow t={t} today={today} />)}</Section>
     </>

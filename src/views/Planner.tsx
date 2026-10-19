@@ -1,11 +1,12 @@
 import { useState } from 'preact/hooks';
 import { useDB } from '../store';
-import { openPlan } from '../forms';
+import { openPlan, openSchedule } from '../forms';
+import { agendaFor, sortSchedules } from '../agenda';
 import { Empty } from '../ui';
 import { excerpt, todayIn } from '../util';
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-preact';
 import { Icon } from '../icons';
-import { PageHead, PlanCard } from './shared';
+import { PageHead, PlanCard, ScheduleRow, SectionTabs } from './shared';
 
 const DAYS = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 
@@ -28,7 +29,8 @@ export function Planner() {
 
   return (
     <>
-      <PageHead kicker="Seksi · Perencana" title="Perencana Kuliah" sub="Rencanakan minggumu, satu langkah pada satu waktu." action={<button class="btn" onClick={() => openPlan()}><Icon as={Plus} size={16} /> Rencana baru</button>} />
+      <SectionTabs page="planner" />
+      <PageHead kicker="Seksi · Perencana" title="Perencana Kuliah" sub="Rencanakan minggumu, satu langkah pada satu waktu." action={<div class="compact-actions"><button class="btn secondary" onClick={() => openSchedule()}><Icon as={Plus} size={16} /> Jadwal mingguan</button><button class="btn" onClick={() => openPlan()}><Icon as={Plus} size={16} /> Rencana baru</button></div>} />
       <div class="grid-main">
         <div class="panel">
           <div class="panel-head">
@@ -45,11 +47,11 @@ export function Planner() {
             {Array.from({ length: days }, (_, i) => {
               const d = i + 1;
               const key = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-              const dayPlans = db.plans.filter((p) => p.date === key);
+              const dayPlans = agendaFor(db, key);
               return (
                 <button class={`day cell ${key === today ? 'today' : ''}`} onClick={() => openPlan(undefined, key)}>
                   <strong>{d}</strong>
-                  {dayPlans.slice(0, 2).map((x) => <span class="dot" aria-hidden="true">{excerpt(x.title, 9)}</span>)}
+                  {dayPlans.slice(0, 2).map((x) => <span class="dot" aria-hidden="true">{x.kind !== 'kuliah' ? x.kind.toUpperCase() + ' ' : ''}{excerpt(x.title, 9)}</span>)}
                   {dayPlans.length > 2 && <span class="dot more" aria-hidden="true">+{dayPlans.length - 2}</span>}
                   <span class="sr-only">{dayPlans.length ? dayPlans.map((x) => x.title).join(', ') + '. ' : ''}Tambah rencana</span>
                 </button>
@@ -57,9 +59,15 @@ export function Planner() {
             })}
           </div>
         </div>
+        <div class="stack">
+        <div class="panel">
+          <div class="panel-head"><h2>Jadwal mingguan</h2><button class="link" onClick={() => openSchedule()}>Tambah +</button></div>
+          {db.schedules.length ? sortSchedules(db.schedules).map((s) => <ScheduleRow s={s} />) : <Empty title="Belum ada jadwal mingguan" action={{ label: 'Tambah jadwal kuliah', run: () => openSchedule() }} />}
+        </div>
         <div class="panel">
           <div class="panel-head"><h2>Rencana kuliah</h2><button class="link" onClick={() => openPlan()}>Tambah +</button></div>
-          {plans.length ? plans.map((p) => <PlanCard p={p} />) : <Empty title="Belum ada rencana kuliah" action={db.plans.length === 0 ? { label: 'Buat rencana pertama', run: () => openPlan() } : undefined} />}
+          {plans.length ? plans.map((p) => <PlanCard p={p} today={today} />) : <Empty title="Belum ada rencana kuliah" action={db.plans.length === 0 ? { label: 'Buat rencana pertama', run: () => openPlan() } : undefined} />}
+        </div>
         </div>
       </div>
     </>

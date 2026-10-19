@@ -1,6 +1,6 @@
 # NgampusNotes
 
-Jurnal kuliah, perencana, bahan kuliah, dan daftar tugas untuk mahasiswa. PWA yang bisa dipasang di HP, bekerja offline, dan menyinkronkan data ke akun pengguna.
+Jurnal kuliah, perencana dengan jadwal mingguan dan hitung mundur deadline, ringkasan per mata kuliah, pelacak tesis, bahan kuliah, tugas, dan pengingat untuk mahasiswa. PWA yang bisa dipasang di HP, bekerja offline, dan menyinkronkan data ke akun pengguna.
 
 **Stack:** Vite · Preact · TypeScript · Supabase (Auth + Postgres + RLS) · `vite-plugin-pwa`. Desain: "Newsprint" (lihat `desingpromt.md`).
 
@@ -28,6 +28,8 @@ Tanpa `.env`, aplikasi berjalan **lokal tanpa login** (data di browser, berisi d
 2. **SQL Editor** → jalankan berurutan:
    - [`0001_init.sql`](supabase/migrations/0001_init.sql): tabel dan kebijakan RLS (setiap pengguna hanya bisa mengakses datanya sendiri).
    - [`0002_delete_account.sql`](supabase/migrations/0002_delete_account.sql): fungsi yang dipakai tombol **Hapus akun** di Pengaturan.
+   - [`0003_task_description.sql`](supabase/migrations/0003_task_description.sql): kolom deskripsi tugas.
+   - [`0004_student_features.sql`](supabase/migrations/0004_student_features.sql): jenis rencana (kuis/UTS/UAS/deadline), mata kuliah pada tugas dan bahan, jadwal mingguan, serta tabel tesis. **Jalankan sebelum men-deploy versi aplikasi ini**; tanpa ini sinkronisasi akan gagal.
 3. **Settings → API Keys**: salin **Project URL** dan **Publishable key** ke `.env`:
    ```
    NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co

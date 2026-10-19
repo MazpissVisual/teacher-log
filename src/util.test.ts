@@ -36,8 +36,8 @@ describe('strings', () => {
   });
   it('firstChar keeps whole emoji', () => {
     expect(firstChar('  budi')).toBe('B');
-    expect(firstChar('😀 Guru')).toBe('😀');
-    expect(firstChar('')).toBe('G');
+    expect(firstChar('😀 Budi')).toBe('😀');
+    expect(firstChar('')).toBe('M');
   });
   it('isHttpUrl rejects dangerous schemes', () => {
     expect(isHttpUrl('https://a.id')).toBe(true);

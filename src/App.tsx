@@ -4,7 +4,7 @@ import type { Page } from './types';
 import { go, ModalRoot, pageAtom, Skeleton, Toast, toast } from './ui';
 import { openJournal } from './forms';
 import { firstChar, todayIn } from './util';
-import { CloudCheck, CloudOff, CalendarDays, CheckSquare, House, Library as LibraryIcon, NotebookPen, RefreshCw, Settings as SettingsIcon, Sprout, TriangleAlert, type LucideIcon } from 'lucide-preact';
+import { CloudCheck, CloudOff, CalendarDays, GraduationCap, House, Library as LibraryIcon, NotebookPen, RefreshCw, Settings as SettingsIcon, TriangleAlert, type LucideIcon } from 'lucide-preact';
 import { Icon } from './icons';
 import { SearchBox } from './SearchBox';
 import { Mark, Wordmark } from './Logo';
@@ -13,6 +13,9 @@ import { Journal } from './views/Journal';
 import { Planner } from './views/Planner';
 import { Library } from './views/Library';
 import { Tasks } from './views/Tasks';
+import { Courses } from './views/Courses';
+import { Thesis } from './views/Thesis';
+import { GROUPS } from './views/shared';
 import { Journey } from './views/Journey';
 import { Search } from './views/Search';
 import { Settings } from './views/Settings';
@@ -26,16 +29,15 @@ const NAV: { page: Page; icon: LucideIcon; label: string; short?: string }[] = [
   { page: 'dashboard', icon: House, label: 'Beranda' },
   { page: 'journal', icon: NotebookPen, label: 'Jurnal' },
   { page: 'planner', icon: CalendarDays, label: 'Perencana', short: 'Rencana' },
+  { page: 'courses', icon: GraduationCap, label: 'Kuliah' },
   { page: 'library', icon: LibraryIcon, label: 'Bahan' },
-  { page: 'tasks', icon: CheckSquare, label: 'Tugas' },
-  { page: 'journey', icon: Sprout, label: 'Perjalanan', short: 'Jejak' },
 ];
 const SETTINGS = { page: 'settings' as Page, icon: SettingsIcon, label: 'Pengaturan', short: 'Atur' };
 const VIEWS: Record<Exclude<Page, 'privacy' | 'terms'>, () => preact.JSX.Element> = {
   dashboard: Dashboard, journal: Journal, planner: Planner, library: Library,
-  tasks: Tasks, journey: Journey, search: Search, settings: Settings,
+  tasks: Tasks, courses: Courses, thesis: Thesis, journey: Journey, search: Search, settings: Settings,
 };
-const PAGE_NAMES: Record<Page, string> = { dashboard: 'Beranda', journal: 'Jurnal', planner: 'Perencana', library: 'Bahan', tasks: 'Tugas', journey: 'Perjalanan', search: 'Pencarian', settings: 'Pengaturan', privacy: 'Kebijakan Privasi', terms: 'Syarat Penggunaan' };
+const PAGE_NAMES: Record<Page, string> = { dashboard: 'Beranda', journal: 'Jurnal', planner: 'Perencana', library: 'Bahan', tasks: 'Tugas', courses: 'Kuliah', thesis: 'Tesis', journey: 'Perjalanan', search: 'Pencarian', settings: 'Pengaturan', privacy: 'Kebijakan Privasi', terms: 'Syarat Penggunaan' };
 
 function Shell() {
   const db = useDB();
@@ -49,8 +51,12 @@ function Shell() {
   // Keep the document title meaningful per section (screen readers announce it on navigation).
   useEffect(() => { document.title = PAGE_NAMES[page] + ' — NgampusNotes'; }, [page]);
 
+  const items = NAV;
+  // a menu entry stays highlighted on every page of its group (e.g. Perencana on /tasks)
+  const isActive = (p: Page) => p === page || !!GROUPS.find((g) => g[0] === p)?.includes(page);
+
   const navBtn = (n: (typeof NAV)[number], compact = false) => (
-    <button class={'nav ' + (page === n.page ? 'active' : '')} aria-current={page === n.page ? 'page' : undefined} aria-label={compact ? n.short ?? n.label : n.label} onClick={() => go(n.page)}>
+    <button class={'nav ' + (isActive(n.page) ? 'active' : '')} aria-current={isActive(n.page) ? 'page' : undefined} aria-label={compact ? n.short ?? n.label : n.label} onClick={() => go(n.page)}>
       <Icon as={n.icon} size={compact ? 20 : 16} /><span class="nav-text">{compact ? n.short ?? n.label : n.label}</span>
     </button>
   );
@@ -75,7 +81,7 @@ function Shell() {
       </header>
       <div class="navrow">
         <div class="navrow-inner">
-          <nav class="topnav" aria-label="Navigasi utama">{NAV.map((n) => navBtn(n))}{navBtn(SETTINGS)}</nav>
+          <nav class="topnav" aria-label="Navigasi utama">{items.map((n) => navBtn(n))}{navBtn(SETTINGS)}</nav>
           {searchInput}
         </div>
       </div>
@@ -101,7 +107,7 @@ function Shell() {
         </div>
       </footer>
       <nav class="bottom-nav" aria-label="Navigasi seluler">
-        {[...NAV.slice(0, 5), SETTINGS].map((n) => navBtn(n, true))}
+        {[...items, SETTINGS].map((n) => navBtn(n, true))}
       </nav>
       <ModalRoot />
       <Toast />

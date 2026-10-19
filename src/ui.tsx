@@ -6,7 +6,7 @@ import { tap } from './util';
 import { Wordmark } from './Logo';
 
 /** Minimal observable value, used for page / modal / toast state. */
-function atom<T>(initial: T) {
+export function atom<T>(initial: T) {
   let value = initial;
   const subs = new Set<() => void>();
   return {
@@ -26,7 +26,7 @@ function atom<T>(initial: T) {
 }
 
 // ---------- navigation (clean URLs via the History API: /journal, /tasks, …) ----------
-const PAGES: Page[] = ['dashboard', 'journal', 'planner', 'library', 'tasks', 'journey', 'search', 'settings', 'privacy', 'terms'];
+const PAGES: Page[] = ['dashboard', 'journal', 'planner', 'library', 'tasks', 'courses', 'thesis', 'journey', 'search', 'settings', 'privacy', 'terms'];
 const pathOf = (p: Page) => (p === 'dashboard' ? '/' : '/' + p);
 const segment = () => location.pathname.replace(/^\/+|\/+$/g, '');
 const fromPath = (): Page => {

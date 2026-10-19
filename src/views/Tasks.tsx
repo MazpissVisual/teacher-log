@@ -3,7 +3,7 @@ import { useDB } from '../store';
 import { openTask } from '../forms';
 import { Empty } from '../ui';
 import { todayIn } from '../util';
-import { PageHead, TaskRow } from './shared';
+import { PageHead, TaskRow, SectionTabs } from './shared';
 import { Plus } from 'lucide-preact';
 import { Icon } from '../icons';
 
@@ -20,6 +20,7 @@ export function Tasks() {
 
   return (
     <>
+      <SectionTabs page="tasks" />
       <PageHead kicker="Seksi · Tugas" title="Tugasku" sub="Hal kecil yang ingin kamu selesaikan hari ini." action={<button class="btn" onClick={() => openTask()}><Icon as={Plus} size={16} /> Tugas baru</button>} />
       <div class="panel">
         <div class="tabs" role="tablist">

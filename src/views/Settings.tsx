@@ -7,8 +7,55 @@ import { syncNow, useSyncStatus } from '../sync';
 import { todayIn } from '../util';
 import { useInstall } from '../pwa';
 import { PageHead } from './shared';
+import { setThesisMenu, useThesisMenu } from '../features';
+import { checkReminders, notificationsSupported, permissionState, requestPermission, savePrefs, showNotification, usePrefs } from '../notify';
 import { Download, LogOut, RefreshCw, RotateCcw, Trash2, Upload, UserX } from 'lucide-preact';
 import { Icon } from '../icons';
+
+function NotificationSettings() {
+  const p = usePrefs();
+  const [perm, setPerm] = useState(permissionState());
+  const on = p.enabled && perm === 'granted';
+  const enable = async () => {
+    const r = await requestPermission();
+    setPerm(r);
+    if (r === 'granted') { savePrefs({ enabled: true }); checkReminders(); toast('Notifikasi aktif'); }
+    else toast(r === 'denied' ? 'Izin ditolak. Ubah di pengaturan situs browser.' : 'Browser ini belum mendukung notifikasi');
+  };
+  const toggle = (k: 'deadlines' | 'classes' | 'thesis') => (
+    <label class="check-row"><input type="checkbox" checked={p[k]} disabled={!on} onChange={(e) => savePrefs({ [k]: e.currentTarget.checked })} /> {({ deadlines: 'Tugas, kuis, UTS/UAS, dan deadline', classes: 'Jadwal kuliah akan dimulai', thesis: 'Tahap dan bimbingan skripsi' })[k]}</label>
+  );
+  return (
+    <div class="panel">
+      <h2>Notifikasi</h2>
+      {!notificationsSupported() ? (
+        <p class="muted" style="line-height:1.8">Browser ini belum mendukung notifikasi. Pengingat tetap tampil di Beranda.</p>
+      ) : (
+        <>
+          <p class="muted" style="line-height:1.7;margin-bottom:14px">
+            Pengingat muncul saat NgampusNotes terbuka atau baru kamu buka. Notifikasi saat aplikasi tertutup belum tersedia. Di iPhone, pasang aplikasi ke Layar Utama dulu.
+          </p>
+          {!on ? (
+            <button class="btn" onClick={() => { void enable(); }}>{perm === 'denied' ? 'Coba izinkan lagi' : 'Aktifkan notifikasi'}</button>
+          ) : (
+            <>
+              {toggle('deadlines')}{toggle('classes')}{toggle('thesis')}
+              <div class="form-group"><label for="n-lead">Ingatkan jadwal kuliah</label>
+                <select id="n-lead" class="field" value={String(p.leadMin)} onChange={(e) => savePrefs({ leadMin: Number(e.currentTarget.value) })}>
+                  {[5, 10, 15, 30, 60].map((m) => <option value={String(m)} selected={m === p.leadMin}>{m} menit sebelum mulai</option>)}
+                </select>
+              </div>
+              <div class="compact-actions">
+                <button class="btn secondary" onClick={() => { void showNotification('NgampusNotes', 'Notifikasi berjalan dengan baik.', 'test'); }}>Coba notifikasi</button>
+                <button class="btn secondary" onClick={() => savePrefs({ enabled: false })}>Matikan</button>
+              </div>
+            </>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
 
 function ListEditor({ kind, label, items }: { kind: 'classes' | 'subjects'; label: string; items: string[] }) {
   const [v, setV] = useState('');
@@ -50,8 +97,8 @@ function WipeConfirm({ cloud }: { cloud: boolean }) {
     <form onSubmit={submit}>
       <p>
         {cloud
-          ? 'Semua jurnal, rencana, sumber, dan tugas di akunmu akan terhapus permanen, di semua perangkat.'
-          : 'Semua jurnal, rencana, sumber, dan tugas di perangkat ini akan terhapus permanen.'}{' '}
+          ? 'Semua jurnal, rencana, jadwal, bahan, tugas, dan catatan tesis di akunmu akan terhapus permanen, di semua perangkat.'
+          : 'Semua jurnal, rencana, jadwal, bahan, tugas, dan catatan tesis di perangkat ini akan terhapus permanen.'}{' '}
         Tindakan ini tidak bisa dibatalkan.
       </p>
       <p class="muted small">Sebaiknya ekspor dulu sebagai cadangan.</p>
@@ -107,6 +154,7 @@ function DeleteAccountConfirm({ email }: { email: string }) {
 
 export function Settings() {
   const db = useDB();
+  const thesisMenu = useThesisMenu(db);
   const [name, setName] = useState(db.profile.name);
   const [tz, setTz] = useState(db.profile.tz);
   const file = useRef<HTMLInputElement>(null);
@@ -164,6 +212,12 @@ export function Settings() {
               )}
             </div>
           )}
+          <div class="panel">
+            <h2>Tab Kuliah</h2>
+            <label class="check-row"><input type="checkbox" checked={thesisMenu.shown} disabled={thesisMenu.hasData} onChange={(e) => setThesisMenu(e.currentTarget.checked)} /> Tampilkan tab Tesis di menu Kuliah</label>
+            <p class="muted small">{thesisMenu.hasData ? 'Selalu tampil karena kamu sudah punya data tesis.' : 'Untuk mencatat tahapan dan bimbingan tesis. Bisa dimatikan kapan saja selama belum ada datanya.'}</p>
+          </div>
+          <NotificationSettings />
           <form class="panel" onSubmit={(e) => { e.preventDefault(); actions.setProfile({ name: name.trim() || 'Mahasiswa', tz }); toast('Profil diperbarui'); }}>
             <h2>Profil</h2>
             <div class="form-group"><label for="s-name">Nama panggilan</label><input id="s-name" class="field" value={name} onInput={(e) => setName(e.currentTarget.value)} placeholder="Nama atau panggilanmu" /></div>

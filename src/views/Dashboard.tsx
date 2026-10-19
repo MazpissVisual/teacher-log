@@ -4,7 +4,9 @@ import { useDB } from '../store';
 import { openJournal } from '../forms';
 import { Icon, MoodIcon } from '../icons';
 import { CountUp, Empty, go } from '../ui';
-import { dateText, excerpt, hourIn, todayIn } from '../util';
+import { countdown, dateText, excerpt, hourIn, todayIn } from '../util';
+import { agendaFor, KIND_LABEL } from '../agenda';
+import { useReminders } from '../notify';
 import { TaskRow } from './shared';
 import { Onboarding } from './Onboarding';
 
@@ -17,7 +19,8 @@ export function Dashboard() {
   const greet = h < 11 ? 'Selamat pagi' : h < 15 ? 'Selamat siang' : h < 18 ? 'Selamat sore' : 'Selamat malam';
 
   const upcoming = db.plans.filter((p) => p.date >= today).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
-  const todayPlans = upcoming.filter((p) => p.date === today);
+  const todayPlans = agendaFor(db, today);
+  const reminders = useReminders(db);
   const recent = [...db.journals].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
   const openTasks = db.tasks.filter((t) => !t.done).sort((a, b) => (a.date || '9').localeCompare(b.date || '9'));
   const overdue = openTasks.filter((t) => t.date && t.date < today);
@@ -57,12 +60,21 @@ export function Dashboard() {
         <aside class={"lead-side" + (todayPlans.length ? "" : " is-empty")} aria-labelledby="today-title">
           <h2 id="today-title">Agenda hari ini</h2>
           {todayPlans.length ? todayPlans.map((p) => (
-            <div class="schedule-item"><span class="time">{p.time || '--:--'}</span><div class="details"><strong>{p.title}</strong><p>{p.className || p.subject || 'Rencana pribadi'}</p></div></div>
+            <div class="schedule-item"><span class="time">{p.time || '--:--'}</span><div class="details"><strong>{p.title}</strong><p>{[p.kind !== 'kuliah' ? KIND_LABEL[p.kind] : '', p.room, p.className || p.subject].filter(Boolean).join(' · ') || 'Rencana pribadi'}</p></div></div>
           )) : <p class="muted" style="font-style:italic">Tidak ada jadwal hari ini.</p>}
         </aside>
       </section>
 
       <Onboarding />
+
+      {reminders.length > 0 && (
+        <section class="panel" aria-labelledby="remind-title" style="margin-bottom:24px">
+          <div class="panel-head"><h2 id="remind-title">Pengingat</h2><button class="link" onClick={() => go('settings')}>Atur notifikasi →</button></div>
+          {reminders.slice(0, 6).map((r) => (
+            <div class="schedule-item"><span class={'pill ' + (r.urgent ? 'peach' : 'lilac')}>{r.group === 'classes' ? 'Kuliah' : r.group === 'thesis' ? 'Tesis' : 'Deadline'}</span><div class="details"><strong>{r.title}</strong><p>{r.body}</p></div></div>
+          ))}
+        </section>
+      )}
 
       <div class={'ticker' + (paused ? ' paused' : '')} role="marquee" aria-label="Ringkasan berita terkini">
         <span class="ticker-badge">Terkini</span>
@@ -87,7 +99,7 @@ export function Dashboard() {
           <section class="panel">
             <div class="panel-head"><h2>Rencana mendatang</h2><button class="link" onClick={() => go('planner')}>Lihat semua →</button></div>
             {upcoming.slice(0, 3).length ? upcoming.slice(0, 3).map((p) => (
-              <div class="schedule-item"><span class="time">{p.time || '--:--'}</span><div class="details"><strong>{p.title}</strong><p>{dateText(p.date)} · {p.className || p.subject || 'Rencana pribadi'}</p></div><span class="pill lilac">Terencana</span></div>
+              <div class="schedule-item"><span class="time">{p.time || '--:--'}</span><div class="details"><strong>{p.title}</strong><p>{dateText(p.date)} · {p.className || p.subject || 'Rencana pribadi'}</p></div>{(() => { const cd = countdown(p.date, today); return <span class={'pill ' + (cd?.urgent ? 'peach' : 'lilac')}>{p.kind !== 'kuliah' ? KIND_LABEL[p.kind] + (cd ? ' · ' + cd.text : '') : cd?.text ?? 'Terencana'}</span>; })()}</div>
             )) : <Empty title="Belum ada rencana mendatang" />}
           </section>
           <section class="panel">
