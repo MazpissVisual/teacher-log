@@ -4,7 +4,7 @@ import { openPlan, openSchedule } from '../forms';
 import { agendaFor, sortSchedules } from '../agenda';
 import { Empty } from '../ui';
 import { excerpt, todayIn } from '../util';
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-preact';
+import { CalendarCheck, ChevronLeft, ChevronRight, Plus } from 'lucide-preact';
 import { Icon } from '../icons';
 import { PageHead, PlanCard, ScheduleRow, SectionTabs } from './shared';
 
@@ -33,10 +33,10 @@ export function Planner() {
       <PageHead kicker="Seksi · Perencana" title="Perencana Kuliah" sub="Rencanakan minggumu, satu langkah pada satu waktu." action={<div class="compact-actions"><button class="btn secondary" onClick={() => openSchedule()}><Icon as={Plus} size={16} /> Jadwal mingguan</button><button class="btn" onClick={() => openPlan()}><Icon as={Plus} size={16} /> Rencana baru</button></div>} />
       <div class="grid-main">
         <div class="panel">
-          <div class="panel-head">
+          <div class="panel-head cal-head">
             <h2>{title}</h2>
             <div class="compact-actions">
-              <button class="btn sm secondary" disabled={y === ty && m === tm - 1} onClick={() => setCursor({ y: ty, m: tm - 1 })}>Hari ini</button>
+              <button class="btn sm secondary" disabled={y === ty && m === tm - 1} aria-label="Ke bulan ini" onClick={() => setCursor({ y: ty, m: tm - 1 })}><Icon as={CalendarCheck} size={16} /><span class="hide-sm">Hari ini</span></button>
               <button class="btn sm secondary" aria-label="Bulan sebelumnya" onClick={() => move(-1)}><Icon as={ChevronLeft} size={16} /></button>
               <button class="btn sm secondary" aria-label="Bulan berikutnya" onClick={() => move(1)}><Icon as={ChevronRight} size={16} /></button>
             </div>

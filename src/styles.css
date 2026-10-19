@@ -568,3 +568,23 @@ html { scroll-padding-top: 64px; }
 .check-row { display: flex; align-items: flex-start; gap: 10px; margin: 6px 0 14px; font-size: 14px; line-height: 1.5; cursor: pointer; }
 .check-row input { flex-shrink: 0; width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--ink); cursor: pointer; }
 .section-tabs { margin-bottom: 20px; }
+
+/* ---- compact task rows (details open in a dialog) ---- */
+.task-row { align-items: center; padding: 8px 0; }
+.task-row input { margin: 0; }
+.task-main { flex: 1; min-width: 0; display: block; text-align: left; background: none; border: 0; padding: 6px 8px; margin: -6px 0; color: inherit; font: inherit; cursor: pointer; }
+.task-main:hover { background: color-mix(in srgb, var(--ink) 6%, transparent); }
+.task-main:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
+.task-main .task-title { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.task-main .task-meta { margin-top: 3px; gap: 6px; }
+.task-main .pill, .task-main .tag { padding: 1px 6px; font-size: 9.5px; }
+.task-chev { flex-shrink: 0; color: var(--n500); }
+.detail-list { display: grid; grid-template-columns: max-content 1fr; gap: 8px 18px; margin: 0 0 16px; align-items: baseline; }
+.detail-list dt { font: 400 11px var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--n500); }
+.detail-list dd { margin: 0; overflow-wrap: anywhere; }
+
+/* ---- calendar header: month and arrows stay on one row ---- */
+.cal-head { align-items: center; flex-wrap: nowrap; }
+.cal-head h2 { font-size: clamp(1.15rem, 5.2vw, 1.75rem); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cal-head .compact-actions { flex-wrap: nowrap; flex-shrink: 0; gap: 6px; }
+@media (max-width: 480px) { .cal-head .hide-sm { display: none; } }

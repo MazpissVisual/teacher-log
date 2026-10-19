@@ -102,3 +102,10 @@ export function countdown(date: string, today: string): { text: string; urgent: 
   if (d <= 30) return { text: 'H-' + d, urgent: false };
   return null;
 }
+
+/** "18 Okt" (no year), for compact lists. */
+export function dateShort(d: string): string {
+  if (!d) return 'Tanpa tanggal';
+  const [y, m, day] = d.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, day)).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', timeZone: 'UTC' });
+}
