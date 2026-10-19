@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "logo": "node scripts/make-logo.mjs",
+    "functions:build": "rolldown src/reminders-core.ts --format esm --file supabase/functions/send-reminders/reminders-core.js",
     "test": "vitest run"
   },
   "dependencies": {

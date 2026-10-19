@@ -9,21 +9,39 @@ import { useInstall } from '../pwa';
 import { PageHead } from './shared';
 import { setThesisMenu, useThesisMenu } from '../features';
 import { checkReminders, notificationsSupported, permissionState, requestPermission, savePrefs, showNotification, usePrefs } from '../notify';
+import { disablePush, enablePush, pushSupported, usePushState } from '../push';
 import { Download, LogOut, RefreshCw, RotateCcw, Trash2, Upload, UserX } from 'lucide-preact';
 import { Icon } from '../icons';
 
 function NotificationSettings() {
   const p = usePrefs();
+  const push = usePushState();
   const [perm, setPerm] = useState(permissionState());
+  const [busy, setBusy] = useState(false);
   const on = p.enabled && perm === 'granted';
   const enable = async () => {
-    const r = await requestPermission();
-    setPerm(r);
-    if (r === 'granted') { savePrefs({ enabled: true }); checkReminders(); toast('Notifikasi aktif'); }
-    else toast(r === 'denied' ? 'Izin ditolak. Ubah di pengaturan situs browser.' : 'Browser ini belum mendukung notifikasi');
+    setBusy(true);
+    try {
+      if (pushSupported()) {
+        await enablePush();
+        setPerm(permissionState());
+        toast('Notifikasi aktif, juga saat aplikasi tertutup');
+      } else {
+        const r = await requestPermission();
+        setPerm(r);
+        if (r !== 'granted') return toast(r === 'denied' ? 'Izin ditolak. Ubah di pengaturan situs browser.' : 'Browser ini belum mendukung notifikasi');
+        savePrefs({ enabled: true });
+        checkReminders();
+        toast('Notifikasi aktif');
+      }
+    } catch (e) {
+      setPerm(permissionState());
+      toast(e instanceof Error ? e.message : 'Gagal mengaktifkan notifikasi');
+    } finally { setBusy(false); }
   };
+  const disable = async () => { savePrefs({ enabled: false }); await disablePush(); };
   const toggle = (k: 'deadlines' | 'classes' | 'thesis') => (
-    <label class="check-row"><input type="checkbox" checked={p[k]} disabled={!on} onChange={(e) => savePrefs({ [k]: e.currentTarget.checked })} /> {({ deadlines: 'Tugas, kuis, UTS/UAS, dan deadline', classes: 'Jadwal kuliah akan dimulai', thesis: 'Tahap dan bimbingan skripsi' })[k]}</label>
+    <label class="check-row"><input type="checkbox" checked={p[k]} disabled={!on} onChange={(e) => savePrefs({ [k]: e.currentTarget.checked })} /> {({ deadlines: 'Tugas, kuis, UTS/UAS, dan deadline', classes: 'Jadwal kuliah akan dimulai', thesis: 'Tahap dan bimbingan tesis' })[k]}</label>
   );
   return (
     <div class="panel">
@@ -33,10 +51,15 @@ function NotificationSettings() {
       ) : (
         <>
           <p class="muted" style="line-height:1.7;margin-bottom:14px">
-            Pengingat muncul saat NgampusNotes terbuka atau baru kamu buka. Notifikasi saat aplikasi tertutup belum tersedia. Di iPhone, pasang aplikasi ke Layar Utama dulu.
+            {on && push === 'on'
+              ? 'Pengingat dikirim ke perangkat ini, termasuk saat NgampusNotes tertutup.'
+              : pushSupported()
+                ? 'Aktifkan agar pengingat sampai ke perangkat ini, termasuk saat NgampusNotes tertutup.'
+                : 'Pengingat muncul saat NgampusNotes terbuka atau baru kamu buka. Notifikasi saat aplikasi tertutup butuh akun dan pengaturan server.'}
+            {' '}Di iPhone, pasang aplikasi ke Layar Utama dulu.
           </p>
           {!on ? (
-            <button class="btn" onClick={() => { void enable(); }}>{perm === 'denied' ? 'Coba izinkan lagi' : 'Aktifkan notifikasi'}</button>
+            <button class="btn" disabled={busy} onClick={() => { void enable(); }}>{perm === 'denied' ? 'Coba izinkan lagi' : 'Aktifkan notifikasi'}</button>
           ) : (
             <>
               {toggle('deadlines')}{toggle('classes')}{toggle('thesis')}
@@ -45,9 +68,10 @@ function NotificationSettings() {
                   {[5, 10, 15, 30, 60].map((m) => <option value={String(m)} selected={m === p.leadMin}>{m} menit sebelum mulai</option>)}
                 </select>
               </div>
+              {pushSupported() && push === 'off' && <p class="legend" style="margin-bottom:12px">Perangkat ini belum terdaftar untuk push, jadi pengingat hanya muncul saat aplikasi terbuka. <button class="link" disabled={busy} onClick={() => { void enable(); }}>Daftarkan sekarang</button></p>}
               <div class="compact-actions">
                 <button class="btn secondary" onClick={() => { void showNotification('NgampusNotes', 'Notifikasi berjalan dengan baik.', 'test'); }}>Coba notifikasi</button>
-                <button class="btn secondary" onClick={() => savePrefs({ enabled: false })}>Matikan</button>
+                <button class="btn secondary" onClick={() => { void disable(); }}>Matikan</button>
               </div>
             </>
           )}

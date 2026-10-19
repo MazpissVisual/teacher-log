@@ -87,3 +87,20 @@ describe('normalize (new fields)', () => {
     expect(db.stages).toEqual([]);
   });
 });
+
+describe('Edge Function bundle', () => {
+  it('stays in step with src/reminders-core.ts (run `npm run functions:build` if this fails)', async () => {
+    const path = '../supabase/functions/send-reminders/reminders-core.js';
+    const mod: any = await import(/* @vite-ignore */ path as string);
+    const db = base({
+      tasks: [{ id: 'a', title: 'A', date: '2026-10-19' }, { id: 'c', title: 'C', date: '2026-10-17' }],
+      plans: [{ id: 'p', title: 'UTS', date: '2026-10-22', kind: 'uts' }],
+      schedules: [{ id: 's', subject: 'Basis Data', day: 1, start: '08:00', end: '09:40', room: 'Lab', until: '' }],
+      stages: [{ id: 'g', title: 'Proposal', date: '2026-10-20' }],
+      guidance: [{ id: 'q', date: '2026-10-19', followup: 'x' }],
+    });
+    const p = { ...DEFAULT_PREFS, enabled: true };
+    expect(mod.computeReminders(db, MON_0750, p)).toEqual(computeReminders(db, MON_0750, p));
+    expect(computeReminders(db, MON_0750, p).length).toBeGreaterThan(4);
+  });
+});

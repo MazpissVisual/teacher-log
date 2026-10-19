@@ -3,3 +3,6 @@ dist
 .env
 .env.local
 dist-local
+
+# Supabase CLI local state (project link)
+supabase/.temp/

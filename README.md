@@ -30,6 +30,7 @@ Tanpa `.env`, aplikasi berjalan **lokal tanpa login** (data di browser, berisi d
    - [`0002_delete_account.sql`](supabase/migrations/0002_delete_account.sql): fungsi yang dipakai tombol **Hapus akun** di Pengaturan.
    - [`0003_task_description.sql`](supabase/migrations/0003_task_description.sql): kolom deskripsi tugas.
    - [`0004_student_features.sql`](supabase/migrations/0004_student_features.sql): jenis rencana (kuis/UTS/UAS/deadline), mata kuliah pada tugas dan bahan, jadwal mingguan, serta tabel tesis. **Jalankan sebelum men-deploy versi aplikasi ini**; tanpa ini sinkronisasi akan gagal.
+   - [`0005_push.sql`](supabase/migrations/0005_push.sql): tabel langganan push. Opsional; hanya untuk notifikasi saat aplikasi tertutup, lihat [`supabase/push-setup.md`](supabase/push-setup.md).
 3. **Settings → API Keys**: salin **Project URL** dan **Publishable key** ke `.env`:
    ```
    NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co

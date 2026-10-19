@@ -16,7 +16,7 @@ export const sortSchedules = (list: Schedule[]) =>
   [...list].sort((a, b) => WEEK_ORDER.indexOf(a.day) - WEEK_ORDER.indexOf(b.day) || a.start.localeCompare(b.start));
 
 /** Everything happening on `date`: one-off plans plus the weekly classes that fall on that weekday. */
-export function agendaFor(db: DB, date: string): AgendaItem[] {
+export function agendaFor(db: Pick<DB, 'plans' | 'schedules'>, date: string): AgendaItem[] {
   const plans = db.plans.filter((p) => p.date === date);
   const items: AgendaItem[] = plans.map((p) => ({
     key: 'plan:' + p.id, date, time: p.time, end: '', title: p.title, subject: p.subject, className: p.className, room: '', kind: p.kind, plan: p,

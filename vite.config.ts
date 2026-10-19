@@ -19,6 +19,7 @@ export default defineConfig({
     preact(),
     { name: 'site-url', transformIndexHtml: (html) => html.replaceAll('__SITE_URL__', siteUrl) },
     VitePWA({
+      workbox: { importScripts: ['push-sw.js'] }, // push + notificationclick handlers (public/push-sw.js)
       registerType: 'prompt', // the app shows an "update available" toast instead of reloading mid-edit
       includeAssets: ['icon.svg', 'apple-touch-icon.png'],
       manifest: {
