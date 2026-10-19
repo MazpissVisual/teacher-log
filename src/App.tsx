@@ -26,7 +26,7 @@ const NAV: { page: Page; icon: LucideIcon; label: string; short?: string }[] = [
   { page: 'dashboard', icon: House, label: 'Beranda' },
   { page: 'journal', icon: NotebookPen, label: 'Jurnal' },
   { page: 'planner', icon: CalendarDays, label: 'Perencana', short: 'Rencana' },
-  { page: 'library', icon: LibraryIcon, label: 'Sumber' },
+  { page: 'library', icon: LibraryIcon, label: 'Bahan' },
   { page: 'tasks', icon: CheckSquare, label: 'Tugas' },
   { page: 'journey', icon: Sprout, label: 'Perjalanan', short: 'Jejak' },
 ];
@@ -35,7 +35,7 @@ const VIEWS: Record<Exclude<Page, 'privacy' | 'terms'>, () => preact.JSX.Element
   dashboard: Dashboard, journal: Journal, planner: Planner, library: Library,
   tasks: Tasks, journey: Journey, search: Search, settings: Settings,
 };
-const PAGE_NAMES: Record<Page, string> = { dashboard: 'Beranda', journal: 'Jurnal', planner: 'Perencana', library: 'Sumber', tasks: 'Tugas', journey: 'Perjalanan', search: 'Pencarian', settings: 'Pengaturan', privacy: 'Kebijakan Privasi', terms: 'Syarat Penggunaan' };
+const PAGE_NAMES: Record<Page, string> = { dashboard: 'Beranda', journal: 'Jurnal', planner: 'Perencana', library: 'Bahan', tasks: 'Tugas', journey: 'Perjalanan', search: 'Pencarian', settings: 'Pengaturan', privacy: 'Kebijakan Privasi', terms: 'Syarat Penggunaan' };
 
 function Shell() {
   const db = useDB();
@@ -47,7 +47,7 @@ function Shell() {
 
   useEffect(() => { setStorageErrorHandler(toast); }, []);
   // Keep the document title meaningful per section (screen readers announce it on navigation).
-  useEffect(() => { document.title = PAGE_NAMES[page] + ' — GuruLog'; }, [page]);
+  useEffect(() => { document.title = PAGE_NAMES[page] + ' — NgampusNotes'; }, [page]);
 
   const navBtn = (n: (typeof NAV)[number], compact = false) => (
     <button class={'nav ' + (page === n.page ? 'active' : '')} aria-current={page === n.page ? 'page' : undefined} aria-label={compact ? n.short ?? n.label : n.label} onClick={() => go(n.page)}>
@@ -70,7 +70,7 @@ function Shell() {
         </div>
         <div class="nameplate">
           <a class="nameplate-title" href="/" onClick={(e) => { e.preventDefault(); go('dashboard'); }}><Wordmark /></a>
-          <p class="nameplate-sub">Catatan kecil, perjalanan mengajar yang berarti</p>
+          <p class="nameplate-sub">Catatan kecil, perjalanan kuliah yang berarti</p>
         </div>
       </header>
       <div class="navrow">
@@ -88,12 +88,12 @@ function Shell() {
         <div class="footer-inner">
           <div>
             <span class="label">Pengingat kecil</span>
-            <blockquote>“Menjadi guru hebat bukan tentang selalu sempurna, tetapi tentang terus belajar dari setiap pertemuan.”</blockquote>
+            <blockquote>“Kamu tidak harus langsung paham semuanya, cukup terus belajar sedikit demi sedikit dari setiap kuliah.”</blockquote>
           </div>
           <div class="footer-cta">
             <span class="label">Edisi hari ini</span>
             <span class="num">{db.journals.length}</span>
-            <span class="muted">catatan jurnal tersimpan di edisimu</span>
+            <span class="muted">catatan kuliah tersimpan di edisimu</span>
             <button class="btn sm" onClick={() => { go('journal'); openJournal(); }}>Tulis catatan</button>
           </div>
           <div class="footer-meta"><span class="footer-brand"><Mark size={28} /> Edisi: Vol 1.0</span>
@@ -122,7 +122,7 @@ function SyncChip({ s }: { s: ReturnType<typeof useSyncStatus> }) {
 export function App() {
   const auth = useAuth();
   const page = pageAtom.use();
-  useEffect(() => { if (page === 'privacy' || page === 'terms') document.title = PAGE_NAMES[page] + ' — GuruLog'; }, [page]);
+  useEffect(() => { if (page === 'privacy' || page === 'terms') document.title = PAGE_NAMES[page] + ' — NgampusNotes'; }, [page]);
   if (page === 'privacy') return <Privacy />;
   if (page === 'terms') return <Terms />;
   if (!cloudEnabled) return <Shell />;

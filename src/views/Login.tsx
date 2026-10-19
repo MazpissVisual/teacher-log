@@ -53,7 +53,7 @@ export function friendly(raw: string): string {
   return 'Terjadi kendala. Coba lagi sebentar lagi.';
 }
 
-const TITLES: Record<Mode, string> = { signin: 'Masuk ke GuruLog', signup: 'Buat akun GuruLog', reset: 'Atur ulang kata sandi', newpass: 'Atur kata sandi baru' };
+const TITLES: Record<Mode, string> = { signin: 'Masuk ke NgampusNotes', signup: 'Buat akun NgampusNotes', reset: 'Atur ulang kata sandi', newpass: 'Atur kata sandi baru' };
 
 export function Login({ recovery }: { recovery: boolean }) {
   const [mode, setMode] = useState<Mode>('signin');
@@ -72,7 +72,7 @@ export function Login({ recovery }: { recovery: boolean }) {
   const m: Mode = recovery ? 'newpass' : mode;
   const failed = !!msg && !msg.ok;
 
-  useEffect(() => { document.title = (sent ? 'Cek email' : TITLES[m]) + ' — GuruLog'; }, [m, sent]);
+  useEffect(() => { document.title = (sent ? 'Cek email' : TITLES[m]) + ' — NgampusNotes'; }, [m, sent]);
   useEffect(() => { if (failed) notice.current?.focus(); }, [msg]);
   useEffect(() => {
     if (cool <= 0) return;
@@ -192,7 +192,7 @@ export function Login({ recovery }: { recovery: boolean }) {
         <p class="muted" style="margin-bottom:20px">
           {m === 'reset' ? 'Masukkan email akunmu. Kami kirim tautan untuk membuat kata sandi baru.'
             : m === 'newpass' ? 'Pilih kata sandi baru untuk akunmu.'
-            : 'Catatan mengajarmu tersimpan privat di akunmu, dan bisa dibuka dari perangkat mana pun.'}
+            : 'Catatan kuliahmu tersimpan privat di akunmu, dan bisa dibuka dari perangkat mana pun.'}
         </p>
 
         {googleOn && (m === 'signin' || m === 'signup') && (
@@ -243,7 +243,7 @@ export function Login({ recovery }: { recovery: boolean }) {
           {busy ? 'Memproses…' : { signin: 'Masuk', signup: 'Buat akun', reset: 'Kirim tautan', newpass: 'Simpan kata sandi' }[m]}
         </button>
 
-        {m === 'signup' && <p class="legend auth-note">Dengan mendaftar, catatanmu disimpan di akunmu. Jangan memasukkan data pribadi siswa seperti alamat atau nomor telepon.</p>}
+        {m === 'signup' && <p class="legend auth-note">Dengan mendaftar, catatanmu disimpan di akunmu. Jangan memasukkan data pribadi orang lain, seperti alamat atau nomor telepon dosen dan teman.</p>}
         <p class="legend auth-legal">
           {m === 'signup' ? 'Dengan membuat akun, kamu menyetujui ' : 'Dengan masuk, kamu menyetujui '}
           <a href="/terms" onClick={(e) => { e.preventDefault(); go('terms'); }}>Syarat</a> dan{' '}

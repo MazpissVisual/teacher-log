@@ -43,9 +43,9 @@ const bbox = (paths) => {
   const bs = paths.map((p) => p.getBoundingBox());
   return { x1: Math.min(...bs.map((b) => b.x1)), y1: Math.min(...bs.map((b) => b.y1)), x2: Math.max(...bs.map((b) => b.x2)), y2: Math.max(...bs.map((b) => b.y2)) };
 };
-// ---------- wordmark: "GuruLog" (ink) + "." (red) ----------
+// ---------- wordmark: "NgampusNotes" (ink) + "." (red) ----------
 const SIZE = 200;
-const parts = layout('GuruLog.', SIZE, -0.03);
+const parts = layout('NgampusNotes.', SIZE, -0.03);
 const inkParts = parts.slice(0, -1).map((p) => p.path);
 const dotPart = parts[parts.length - 1].path;
 const all = bbox([...inkParts, dotPart]);
@@ -53,19 +53,19 @@ const PAD = 6;
 const wmW = Math.ceil(all.x2 - all.x1 + PAD * 2);
 const wmH = Math.ceil(all.y2 - all.y1 + PAD * 2);
 const ox = PAD - all.x1, oy = PAD - all.y1;
-const placed = layout('GuruLog.', SIZE, -0.03, ox, oy);
+const placed = layout('NgampusNotes.', SIZE, -0.03, ox, oy);
 const wmInk = join(placed.slice(0, -1).map((p) => p.path));
 const wmDot = pathData(placed[placed.length - 1].path);
 if (/NaN/.test(wmInk + wmDot)) throw new Error('NaN in wordmark path');
 const wordmarkSvg = (ink, dot) =>
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${wmW} ${wmH}" role="img" aria-label="GuruLog"><path fill="${ink}" d="${wmInk}"/><path fill="${dot}" d="${wmDot}"/></svg>`;
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${wmW} ${wmH}" role="img" aria-label="NgampusNotes"><path fill="${ink}" d="${wmInk}"/><path fill="${dot}" d="${wmDot}"/></svg>`;
 writeFileSync('public/logo.svg', wordmarkSvg(INK, RED));
 
-// ---------- monogram: "G" + red full stop, centred on a paper tile ----------
+// ---------- monogram: "N" + red full stop, centred on a paper tile ----------
 function markSvg({ frame, glyphSize }) {
-  const g = layout('G.', glyphSize, -0.02);
+  const g = layout('N.', glyphSize, -0.02);
   const b = bbox(g.map((x) => x.path));
-  const placedG = layout('G.', glyphSize, -0.02, 256 - (b.x1 + b.x2) / 2, 256 - (b.y1 + b.y2) / 2);
+  const placedG = layout('N.', glyphSize, -0.02, 256 - (b.x1 + b.x2) / 2, 256 - (b.y1 + b.y2) / 2);
   const gInk = pathData(placedG[0].path);
   const gDot = pathData(placedG[1].path);
   const border = frame ? `<rect x="30" y="30" width="452" height="452" fill="none" stroke="${INK}" stroke-width="10"/>` : '';
@@ -90,9 +90,9 @@ await sharp(Buffer.from(markAny), { density: 300 }).resize(48, 48).png().toFile(
 
 // ---------- inline paths for the app (no extra request, recolourable via CSS) ----------
 const mk = (frame, glyphSize) => {
-  const g = layout('G.', glyphSize, -0.02);
+  const g = layout('N.', glyphSize, -0.02);
   const b = bbox(g.map((x) => x.path));
-  const pg = layout('G.', glyphSize, -0.02, 256 - (b.x1 + b.x2) / 2, 256 - (b.y1 + b.y2) / 2);
+  const pg = layout('N.', glyphSize, -0.02, 256 - (b.x1 + b.x2) / 2, 256 - (b.y1 + b.y2) / 2);
   return { ink: pathData(pg[0].path), dot: pathData(pg[1].path) };
 };
 const mono = mk(false, 330);

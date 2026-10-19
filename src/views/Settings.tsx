@@ -61,7 +61,7 @@ function WipeConfirm({ cloud }: { cloud: boolean }) {
       </div>
       <div class="compact-actions">
         <button class="btn danger" type="submit" disabled={!ok}>Hapus semua data</button>
-        <button class="btn secondary" type="button" onClick={() => { download('gurulog-cadangan.json', exportJSON()); toast('Cadangan diunduh'); }}>Ekspor dulu</button>
+        <button class="btn secondary" type="button" onClick={() => { download('ngampusnotes-cadangan.json', exportJSON()); toast('Cadangan diunduh'); }}>Ekspor dulu</button>
         <button class="btn ghost" type="button" onClick={closeModal}>Batal</button>
       </div>
     </form>
@@ -98,7 +98,7 @@ function DeleteAccountConfirm({ email }: { email: string }) {
       {err && <div class="notice error" role="alert">{err}</div>}
       <div class="compact-actions">
         <button class="btn danger" type="submit" disabled={!ok || busy} aria-busy={busy}>{busy ? 'Menghapus…' : 'Hapus akun permanen'}</button>
-        <button class="btn secondary" type="button" onClick={() => { download('gurulog-cadangan.json', exportJSON()); toast('Cadangan diunduh'); }}>Ekspor dulu</button>
+        <button class="btn secondary" type="button" onClick={() => { download('ngampusnotes-cadangan.json', exportJSON()); toast('Cadangan diunduh'); }}>Ekspor dulu</button>
         <button class="btn ghost" type="button" onClick={closeModal}>Batal</button>
       </div>
     </form>
@@ -124,13 +124,13 @@ export function Settings() {
       actions.importJSON(await f.text());
       toast('Data berhasil diimpor');
     } catch {
-      toast('File tidak valid. Gunakan file hasil ekspor GuruLog.');
+      toast('File tidak valid. Gunakan file hasil ekspor NgampusNotes.');
     }
   };
 
   return (
     <>
-      <PageHead kicker="Redaksi" title="Pengaturan" sub="Atur ruang kerja sesuai caramu mengajar." />
+      <PageHead kicker="Redaksi" title="Pengaturan" sub="Atur ruang kerja sesuai caramu belajar." />
       <div class="grid-main">
         <div class="stack">
           {cloudEnabled && (
@@ -152,7 +152,7 @@ export function Settings() {
               <h2>Pasang di perangkat</h2>
               {installState === 'available' && (
                 <>
-                  <p class="muted" style="line-height:1.7;margin-bottom:14px">Pasang GuruLog seperti aplikasi biasa: ikon di layar utama, tampil layar penuh, dan tetap bisa dibuka offline.</p>
+                  <p class="muted" style="line-height:1.7;margin-bottom:14px">Pasang NgampusNotes seperti aplikasi biasa: ikon di layar utama, tampil layar penuh, dan tetap bisa dibuka offline.</p>
                   <button class="btn" onClick={() => { void install(); }}><Icon as={Download} size={16} /> Pasang aplikasi</button>
                 </>
               )}
@@ -160,11 +160,11 @@ export function Settings() {
                 <p class="muted" style="line-height:1.8">Di iPhone/iPad: buka lewat <b>Safari</b>, ketuk tombol <b>Bagikan</b> (kotak dengan panah ke atas), lalu pilih <b>Tambah ke Layar Utama</b>.</p>
               )}
               {installState === 'unavailable' && (
-                <p class="muted" style="line-height:1.8">Opsi pasang belum tersedia di browser ini. Di Chrome/Edge, gunakan menu browser → <b>Instal GuruLog</b> atau <b>Tambahkan ke layar utama</b>.</p>
+                <p class="muted" style="line-height:1.8">Opsi pasang belum tersedia di browser ini. Di Chrome/Edge, gunakan menu browser → <b>Instal NgampusNotes</b> atau <b>Tambahkan ke layar utama</b>.</p>
               )}
             </div>
           )}
-          <form class="panel" onSubmit={(e) => { e.preventDefault(); actions.setProfile({ name: name.trim() || 'Guru', tz }); toast('Profil diperbarui'); }}>
+          <form class="panel" onSubmit={(e) => { e.preventDefault(); actions.setProfile({ name: name.trim() || 'Mahasiswa', tz }); toast('Profil diperbarui'); }}>
             <h2>Profil</h2>
             <div class="form-group"><label for="s-name">Nama panggilan</label><input id="s-name" class="field" value={name} onInput={(e) => setName(e.currentTarget.value)} placeholder="Nama atau panggilanmu" /></div>
             <div class="form-group"><label for="s-tz">Zona waktu</label>
@@ -177,10 +177,10 @@ export function Settings() {
             <button class="btn" type="submit">Simpan Profil</button>
           </form>
           <div class="panel">
-            <h2>Kelas &amp; Mata Pelajaran</h2>
+            <h2>Semester &amp; Mata Kuliah</h2>
             <p class="muted small" style="margin-bottom:16px">Dipakai pada dropdown dan filter di jurnal dan perencana.</p>
-            <ListEditor kind="classes" label="Kelas" items={db.classes} />
-            <ListEditor kind="subjects" label="Mata pelajaran" items={db.subjects} />
+            <ListEditor kind="classes" label="Semester" items={db.classes} />
+            <ListEditor kind="subjects" label="Mata kuliah" items={db.subjects} />
           </div>
         </div>
         <div class="panel" style="align-self:start">
@@ -188,12 +188,12 @@ export function Settings() {
           <p class="small legal-inline"><a href="/privacy" onClick={(e) => { e.preventDefault(); go('privacy'); }}>Kebijakan Privasi</a> · <a href="/terms" onClick={(e) => { e.preventDefault(); go('terms'); }}>Syarat Penggunaan</a></p>
           <p class="muted" style="line-height:1.8">{cloudEnabled ? 'Datamu tersimpan di akunmu (terlindungi per pengguna) dan di-cache di perangkat ini agar bisa dipakai offline. Ekspor secara berkala sebagai cadangan tambahan.' : 'Data disimpan di browser perangkat ini (localStorage) tanpa akun. Ekspor secara berkala sebagai cadangan.'}</p>
           <div class="compact-actions">
-            <button class="btn secondary" onClick={() => { download(`gurulog-data-${todayIn(db.profile.tz)}.json`, exportJSON()); toast('Data berhasil diekspor'); }}><Icon as={Download} size={16} /> Ekspor JSON</button>
+            <button class="btn secondary" onClick={() => { download(`ngampusnotes-data-${todayIn(db.profile.tz)}.json`, exportJSON()); toast('Data berhasil diekspor'); }}><Icon as={Download} size={16} /> Ekspor JSON</button>
             <button class="btn secondary" onClick={() => file.current?.click()}><Icon as={Upload} size={16} /> Impor JSON</button>
             <input ref={file} type="file" accept="application/json,.json" class="hidden" onChange={onImport} />
           </div>
           <div class="compact-actions" style="margin-top:12px">
-            {!cloudEnabled && <button class="btn danger" onClick={() => { if (confirm('Kembalikan data contoh? Semua perubahan akan hilang.')) { actions.reset(); setName('Guru'); toast('Data contoh dikembalikan'); } }}><Icon as={RotateCcw} size={16} /> Reset ke data contoh</button>}
+            {!cloudEnabled && <button class="btn danger" onClick={() => { if (confirm('Kembalikan data contoh? Semua perubahan akan hilang.')) { actions.reset(); setName('Mahasiswa'); toast('Data contoh dikembalikan'); } }}><Icon as={RotateCcw} size={16} /> Reset ke data contoh</button>}
             <button class="btn danger" onClick={() => openModal('Hapus semua data?', <WipeConfirm cloud={cloudEnabled} />)}><Icon as={Trash2} size={16} /> Hapus semua</button>
             {cloudEnabled && auth.session?.user.email && (
               <button class="btn danger" onClick={() => openModal('Hapus akun?', <DeleteAccountConfirm email={auth.session!.user.email!} />)}><Icon as={UserX} size={16} /> Hapus akun</button>

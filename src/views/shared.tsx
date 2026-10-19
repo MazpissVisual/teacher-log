@@ -69,7 +69,7 @@ export function PlanCard({ p }: { p: Plan }) {
     <article class={'journal-card' + (leaving ? ' leaving' : '')}>
       <div class="journal-meta"><span>{dateText(p.date)}{p.time && ` · ${p.time}`}</span><span class="tag">{p.className || 'Pribadi'}</span></div>
       <h2 class="card-title">{p.title}</h2>
-      <p>{p.objective || 'Belum ada tujuan khusus'}</p>
+      <p>{p.objective || 'Belum ada target khusus'}</p>
       <div class="card-actions">
         <button class="btn sm secondary" onClick={() => openPlan(p)}><Icon as={Pencil} size={14} /> Ubah</button>
         <button class="btn sm danger" onClick={() => removeWithUndo('plans', p, 'Rencana dihapus')}><Icon as={Trash2} size={14} /> Hapus</button>

@@ -15,7 +15,7 @@ export function Library() {
 
   return (
     <>
-      <PageHead kicker="Seksi · Perpustakaan" title="Perpustakaan Sumber" sub="Semua ide, materi, dan referensi dalam satu tempat." action={<button class="btn" onClick={() => openResource()}><Icon as={Plus} size={16} /> Tambah sumber</button>} />
+      <PageHead kicker="Seksi · Perpustakaan" title="Bahan Kuliah" sub="Semua materi, referensi, dan ide dalam satu tempat." action={<button class="btn" onClick={() => openResource()}><Icon as={Plus} size={16} /> Tambah bahan</button>} />
       <div class="panel">
         <div class="filters">
           <input class="field" placeholder="Cari referensi..." aria-label="Cari referensi" value={q} onInput={(e) => setQ(e.currentTarget.value)} />

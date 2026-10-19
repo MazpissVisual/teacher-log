@@ -9,7 +9,7 @@ const CONTACT = (import.meta.env.NEXT_PUBLIC_CONTACT_EMAIL as string | undefined
 
 const Contact = () => CONTACT
   ? <>Hubungi kami di <a href={'mailto:' + CONTACT}>{CONTACT}</a>.</>
-  : <>Hubungi pengelola aplikasi yang membagikan tautan GuruLog kepadamu.</>;
+  : <>Hubungi pengelola aplikasi yang membagikan tautan NgampusNotes kepadamu.</>;
 
 function Shell({ title, kicker, children }: { title: string; kicker: string; children: preact.ComponentChildren }) {
   const back = () => { if (history.length > 1 && document.referrer.startsWith(location.origin)) history.back(); else go('dashboard'); };
@@ -36,13 +36,13 @@ function Shell({ title, kicker, children }: { title: string; kicker: string; chi
 export function Privacy() {
   return (
     <Shell kicker="Dokumen" title="Kebijakan Privasi">
-      <p class="legal-lead">GuruLog adalah buku catatan pribadi untuk guru. Kami menyimpan sedikit data, hanya untuk menjalankan aplikasi, dan tidak menjualnya.</p>
+      <p class="legal-lead">NgampusNotes adalah buku catatan pribadi untuk mahasiswa. Kami menyimpan sedikit data, hanya untuk menjalankan aplikasi, dan tidak menjualnya.</p>
 
       <h2>1. Data yang kami simpan</h2>
       <ul>
         <li><b>Akun:</b> alamat email, kata sandi (disimpan dalam bentuk terenkripsi/hash oleh penyedia autentikasi, bukan teks asli), dan nama panggilan jika kamu mengisinya.</li>
         <li><b>Masuk dengan Google:</b> nama dan alamat email dari akun Google-mu. Kami tidak mendapat kata sandi Google-mu.</li>
-        <li><b>Isi yang kamu tulis:</b> jurnal mengajar, rencana pembelajaran, sumber belajar, tugas, serta pengaturan seperti zona waktu, daftar kelas, dan mata pelajaran.</li>
+        <li><b>Isi yang kamu tulis:</b> jurnal kuliah, rencana kuliah, bahan kuliah, tugas, serta pengaturan seperti zona waktu, daftar semester, dan mata kuliah.</li>
       </ul>
       <p>Kami <b>tidak</b> mengumpulkan lokasi, kontak, foto, mikrofon, atau kamera, dan tidak memasang iklan atau pelacak pihak ketiga. Font dimuat dari server kami sendiri.</p>
 
@@ -57,8 +57,8 @@ export function Privacy() {
         <li>Pengelola teknis aplikasi secara teknis dapat mengakses basis data untuk pemeliharaan. Kami tidak membaca isi catatanmu kecuali untuk memperbaiki masalah yang kamu laporkan.</li>
       </ul>
 
-      <h2>4. Jangan menyimpan data pribadi siswa</h2>
-      <p>GuruLog tidak dirancang untuk data sensitif. Hindari menulis nama lengkap siswa, alamat, nomor telepon, nomor induk, atau nilai yang dapat mengidentifikasi seseorang. Gunakan inisial atau catatan umum.</p>
+      <h2>4. Jangan menyimpan data pribadi orang lain</h2>
+      <p>NgampusNotes tidak dirancang untuk data sensitif. Hindari menulis nama lengkap dosen atau teman, alamat, nomor telepon, NIM, atau nilai yang dapat mengidentifikasi seseorang. Gunakan inisial atau catatan umum.</p>
 
       <h2>5. Hakmu</h2>
       <ul>
@@ -69,10 +69,10 @@ export function Privacy() {
       <p>Cadangan sistem milik penyedia layanan, jika ada, dapat bertahan sementara sesuai kebijakan penyedia tersebut.</p>
 
       <h2>6. Penyimpanan di browser</h2>
-      <p>GuruLog memakai penyimpanan lokal browser untuk menyimpan sesi masuk dan salinan datamu. Kami tidak memakai cookie pelacak.</p>
+      <p>NgampusNotes memakai penyimpanan lokal browser untuk menyimpan sesi masuk dan salinan datamu. Kami tidak memakai cookie pelacak.</p>
 
       <h2>7. Pengguna anak-anak</h2>
-      <p>GuruLog ditujukan untuk guru dan tenaga pendidik dewasa, bukan untuk anak-anak.</p>
+      <p>NgampusNotes ditujukan untuk mahasiswa dan pembelajar dewasa, bukan untuk anak-anak.</p>
 
       <h2>8. Perubahan dan kontak</h2>
       <p>Jika kebijakan ini berubah secara berarti, kami akan memperbarui tanggal di atas dan memberi tahu di aplikasi. <Contact /></p>
@@ -83,22 +83,22 @@ export function Privacy() {
 export function Terms() {
   return (
     <Shell kicker="Dokumen" title="Syarat Penggunaan">
-      <p class="legal-lead">Dengan memakai GuruLog, kamu menyetujui syarat sederhana berikut.</p>
+      <p class="legal-lead">Dengan memakai NgampusNotes, kamu menyetujui syarat sederhana berikut.</p>
 
       <h2>1. Layanan</h2>
-      <p>GuruLog membantu guru mencatat jurnal, merencanakan pembelajaran, dan menyimpan sumber belajar. Layanan diberikan <b>apa adanya</b>; kami berusaha menjaganya tetap berjalan tetapi tidak menjamin tersedia tanpa gangguan.</p>
+      <p>NgampusNotes membantu mahasiswa mencatat kuliah, merencanakan jadwal dan deadline, dan menyimpan bahan belajar. Layanan diberikan <b>apa adanya</b>; kami berusaha menjaganya tetap berjalan tetapi tidak menjamin tersedia tanpa gangguan.</p>
 
       <h2>2. Akunmu</h2>
       <ul>
         <li>Gunakan email yang kamu miliki dan jaga kerahasiaan kata sandimu.</li>
         <li>Kamu bertanggung jawab atas aktivitas di akunmu.</li>
-        <li>Satu akun untuk satu guru.</li>
+        <li>Satu akun untuk satu mahasiswa.</li>
       </ul>
 
       <h2>3. Isi yang kamu simpan</h2>
       <ul>
         <li>Isi catatan adalah milikmu dan tanggung jawabmu.</li>
-        <li>Jangan menyimpan data pribadi siswa atau materi yang melanggar hukum atau hak orang lain.</li>
+        <li>Jangan menyimpan data pribadi orang lain atau materi yang melanggar hukum atau hak orang lain.</li>
         <li>Jangan menyalahgunakan layanan (misalnya mencoba mengakses data pengguna lain atau membebani sistem).</li>
       </ul>
 

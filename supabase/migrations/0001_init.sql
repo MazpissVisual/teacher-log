@@ -1,4 +1,4 @@
--- GuruLog initial schema. Run in Supabase Dashboard → SQL Editor (or `supabase db push`).
+-- NgampusNotes initial schema. Run in Supabase Dashboard → SQL Editor (or `supabase db push`).
 -- Every table is owned by a user and protected by Row Level Security.
 
 create or replace function public.set_updated_at() returns trigger

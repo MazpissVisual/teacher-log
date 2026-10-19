@@ -22,9 +22,9 @@ export default defineConfig({
       registerType: 'prompt', // the app shows an "update available" toast instead of reloading mid-edit
       includeAssets: ['icon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'GuruLog — Personal Teaching Companion',
-        short_name: 'GuruLog',
-        description: 'Jurnal, perencanaan, dan sumber belajar guru dalam satu tempat.',
+        name: 'NgampusNotes — Personal Study Companion',
+        short_name: 'NgampusNotes',
+        description: 'Catatan kuliah, jadwal, bahan belajar, dan tugas mahasiswa dalam satu tempat.',
         lang: 'id',
         theme_color: '#f9f9f7',
         background_color: '#f7f8fc',

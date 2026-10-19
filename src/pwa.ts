@@ -20,7 +20,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
   deferred = e as BeforeInstallPromptEvent;
   emit();
 });
-window.addEventListener('appinstalled', () => { deferred = null; emit(); toast('GuruLog terpasang'); });
+window.addEventListener('appinstalled', () => { deferred = null; emit(); toast('NgampusNotes terpasang'); });
 
 export type InstallState = 'installed' | 'available' | 'ios' | 'unavailable';
 
@@ -48,7 +48,7 @@ export function useInstall() {
 export function initPWA() {
   const update = registerSW({
     onNeedRefresh() {
-      toast('Versi baru GuruLog tersedia', { label: 'Muat ulang', run: () => { void update(true); } }, 60000);
+      toast('Versi baru NgampusNotes tersedia', { label: 'Muat ulang', run: () => { void update(true); } }, 60000);
     },
     onOfflineReady() {
       toast('Siap dipakai offline');

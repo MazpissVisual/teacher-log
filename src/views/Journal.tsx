@@ -20,12 +20,12 @@ export function Journal() {
 
   return (
     <>
-      <PageHead kicker="Seksi · Jurnal" title="Jurnal Mengajarku" sub="Catat momen mengajar, refleksi, dan ide untuk besok." action={<button class="btn" onClick={() => openJournal()}><Icon as={Plus} size={16} /> Jurnal baru</button>} />
+      <PageHead kicker="Seksi · Jurnal" title="Jurnal Kuliahku" sub="Catat isi kuliah, refleksi, dan hal yang perlu dipelajari lagi." action={<button class="btn" onClick={() => openJournal()}><Icon as={Plus} size={16} /> Jurnal baru</button>} />
       <div class="panel">
         <div class="filters">
           <input class="field" placeholder="Cari jurnal..." aria-label="Cari jurnal" value={q} onInput={(e) => setQ(e.currentTarget.value)} />
-          <select class="field" aria-label="Filter kelas" value={cls} onChange={(e) => setCls(e.currentTarget.value)}>
-            <option value="">Semua Kelas</option>
+          <select class="field" aria-label="Filter semester" value={cls} onChange={(e) => setCls(e.currentTarget.value)}>
+            <option value="">Semua Semester</option>
             {db.classes.map((c) => <option value={c}>{c}</option>)}
           </select>
           <select class="field" aria-label="Filter mood" value={mood} onChange={(e) => setMood(e.currentTarget.value)}>

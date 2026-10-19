@@ -28,7 +28,7 @@ export function Planner() {
 
   return (
     <>
-      <PageHead kicker="Seksi · Perencana" title="Perencana Mengajar" sub="Rencanakan minggumu, satu langkah pada satu waktu." action={<button class="btn" onClick={() => openPlan()}><Icon as={Plus} size={16} /> Rencana baru</button>} />
+      <PageHead kicker="Seksi · Perencana" title="Perencana Kuliah" sub="Rencanakan minggumu, satu langkah pada satu waktu." action={<button class="btn" onClick={() => openPlan()}><Icon as={Plus} size={16} /> Rencana baru</button>} />
       <div class="grid-main">
         <div class="panel">
           <div class="panel-head">
@@ -58,8 +58,8 @@ export function Planner() {
           </div>
         </div>
         <div class="panel">
-          <div class="panel-head"><h2>Rencana pembelajaran</h2><button class="link" onClick={() => openPlan()}>Tambah +</button></div>
-          {plans.length ? plans.map((p) => <PlanCard p={p} />) : <Empty title="Belum ada rencana pembelajaran" action={db.plans.length === 0 ? { label: 'Buat rencana pertama', run: () => openPlan() } : undefined} />}
+          <div class="panel-head"><h2>Rencana kuliah</h2><button class="link" onClick={() => openPlan()}>Tambah +</button></div>
+          {plans.length ? plans.map((p) => <PlanCard p={p} />) : <Empty title="Belum ada rencana kuliah" action={db.plans.length === 0 ? { label: 'Buat rencana pertama', run: () => openPlan() } : undefined} />}
         </div>
       </div>
     </>

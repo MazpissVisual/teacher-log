@@ -3,8 +3,20 @@ import type { Collection, DB, Journal, Mood, Plan, Priority, Resource, ResourceT
 import { sampleData } from './sample';
 import { DEFAULT_TZ, UUID_RE, uid } from './util';
 
-const LOCAL_KEY = 'gurulog-v2';
-const LEGACY_KEY = 'gurulog-demo-v1';
+const LOCAL_KEY = 'ngampusnotes-v2';
+const LEGACY_KEY = 'ngampusnotes-demo-v1';
+
+/** One-time move of data saved under the old GuruLog name, so existing users keep their notes. */
+(function migrateOldKeys() {
+  try {
+    for (const k of Object.keys(localStorage)) {
+      if (!k.startsWith('gurulog-')) continue;
+      const next = 'ngampusnotes-' + k.slice('gurulog-'.length);
+      if (localStorage.getItem(next) === null) localStorage.setItem(next, localStorage.getItem(k) ?? '');
+      localStorage.removeItem(k);
+    }
+  } catch { /* blocked storage */ }
+})();
 const userKey = (uid: string) => `${LOCAL_KEY}:${uid}`;
 
 const str = (v: unknown, d = '') => (typeof v === 'string' ? v : d);
@@ -18,11 +30,11 @@ export function normalize(raw: unknown): DB {
   const id = (x: any) => (typeof x.id === 'string' && UUID_RE.test(x.id) ? x.id : uid());
   return {
     version: 2,
-    profile: { name: str(r.profile?.name, 'Guru').trim() || 'Guru', tz: str(r.profile?.tz, DEFAULT_TZ) },
+    profile: { name: str(r.profile?.name, 'Mahasiswa').trim() || 'Mahasiswa', tz: str(r.profile?.tz, DEFAULT_TZ) },
     classes: strList(r.classes),
     subjects: strList(r.subjects),
     journals: arr(r.journals).map((x): Journal => ({
-      id: id(x), date: str(x.date), type: oneOf(x.type, ['quick', 'detailed'] as const, 'quick'), title: str(x.title, 'Catatan Mengajarku'),
+      id: id(x), date: str(x.date), type: oneOf(x.type, ['quick', 'detailed'] as const, 'quick'), title: str(x.title, 'Catatan Kuliahku'),
       content: str(x.content), className: str(x.className), subject: str(x.subject),
       mood: oneOf<Mood>(x.mood, ['great', 'good', 'neutral', 'challenging'], 'good'),
       topic: str(x.topic), worked: str(x.worked), improve: str(x.improve), pinned: x.pinned === true,

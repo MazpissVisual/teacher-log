@@ -41,7 +41,7 @@ async function bootstrap(session: Session) {
     // Name chosen at sign-up (user_metadata) wins; otherwise fall back to the part of the email before "@".
     const um = session.user.user_metadata ?? {};
     const meta = [um.name, um.full_name].find((v): v is string => typeof v === 'string' && v.trim() !== '')?.trim().slice(0, 40) ?? '';
-    const name = meta || session.user.email?.split('@')[0] || 'Guru';
+    const name = meta || session.user.email?.split('@')[0] || 'Mahasiswa';
     const local = readLocalOnly();
     const hasLocal = local && (local.journals.length || local.plans.length || local.resources.length || local.tasks.length);
     if (hasLocal && confirm('Unggah data yang ada di perangkat ini ke akun barumu?')) {

@@ -26,15 +26,15 @@ export function Dashboard() {
   const ticks = [
     ...overdue.map((t) => `Terlambat: ${t.title}`),
     ...upcoming.slice(0, 3).map((p) => `${dateText(p.date)}${p.time ? ' ' + p.time : ''} — ${p.title}`),
-    `${db.journals.length} catatan jurnal`,
+    `${db.journals.length} catatan kuliah`,
     `${openTasks.length} tugas aktif`,
-    `${db.resources.length} sumber belajar`,
+    `${db.resources.length} bahan kuliah`,
   ];
 
   const stats: [typeof NotebookPen, string, number, string][] = [
-    [NotebookPen, 'Catatan jurnal', db.journals.length, 'Cerita perjalananmu'],
-    [CalendarDays, 'Rencana mengajar', db.plans.length, 'Pelajaran terorganisir'],
-    [BookOpen, 'Sumber belajar', db.resources.length, 'Ide di perpustakaanmu'],
+    [NotebookPen, 'Catatan kuliah', db.journals.length, 'Cerita perjalananmu'],
+    [CalendarDays, 'Rencana kuliah', db.plans.length, 'Jadwal terorganisir'],
+    [BookOpen, 'Bahan kuliah', db.resources.length, 'Referensi di perpustakaanmu'],
     [CheckSquare, 'Tugas aktif', openTasks.length, 'Hal yang perlu diingat'],
   ];
 
@@ -45,8 +45,8 @@ export function Dashboard() {
           <span class="kicker">Laporan utama</span>
           <h1 id="lead-title">{greet}, {db.profile.name}.</h1>
           <p class="lead-deck">
-            Catat pengalaman, rencana, dan ide mengajarmu.
-            {todayPlans.length ? ` Hari ini kamu punya ${todayPlans.length} jadwal mengajar.` : ''}
+            Catat kuliah, rencana, dan bahan belajarmu.
+            {todayPlans.length ? ` Hari ini kamu punya ${todayPlans.length} jadwal kuliah.` : ''}
             {overdue.length ? ` Ada ${overdue.length} tugas yang sudah lewat tenggat.` : ''}
           </p>
           <div class="compact-actions hero-actions" style="margin-top:20px">
@@ -57,7 +57,7 @@ export function Dashboard() {
         <aside class={"lead-side" + (todayPlans.length ? "" : " is-empty")} aria-labelledby="today-title">
           <h2 id="today-title">Agenda hari ini</h2>
           {todayPlans.length ? todayPlans.map((p) => (
-            <div class="schedule-item"><span class="time">{p.time || '--:--'}</span><div class="details"><strong>{p.title}</strong><p>{p.className || 'Rencana pribadi'}</p></div></div>
+            <div class="schedule-item"><span class="time">{p.time || '--:--'}</span><div class="details"><strong>{p.title}</strong><p>{p.className || p.subject || 'Rencana pribadi'}</p></div></div>
           )) : <p class="muted" style="font-style:italic">Tidak ada jadwal hari ini.</p>}
         </aside>
       </section>
@@ -87,7 +87,7 @@ export function Dashboard() {
           <section class="panel">
             <div class="panel-head"><h2>Rencana mendatang</h2><button class="link" onClick={() => go('planner')}>Lihat semua →</button></div>
             {upcoming.slice(0, 3).length ? upcoming.slice(0, 3).map((p) => (
-              <div class="schedule-item"><span class="time">{p.time || '--:--'}</span><div class="details"><strong>{p.title}</strong><p>{dateText(p.date)} · {p.className || 'Rencana pribadi'}</p></div><span class="pill lilac">Terencana</span></div>
+              <div class="schedule-item"><span class="time">{p.time || '--:--'}</span><div class="details"><strong>{p.title}</strong><p>{dateText(p.date)} · {p.className || p.subject || 'Rencana pribadi'}</p></div><span class="pill lilac">Terencana</span></div>
             )) : <Empty title="Belum ada rencana mendatang" />}
           </section>
           <section class="panel">

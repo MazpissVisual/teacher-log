@@ -1,6 +1,6 @@
-# GuruLog
+# NgampusNotes
 
-Jurnal mengajar, perencana, perpustakaan sumber, dan daftar tugas untuk guru. PWA yang bisa dipasang di HP, bekerja offline, dan menyinkronkan data ke akun pengguna.
+Jurnal kuliah, perencana, bahan kuliah, dan daftar tugas untuk mahasiswa. PWA yang bisa dipasang di HP, bekerja offline, dan menyinkronkan data ke akun pengguna.
 
 **Stack:** Vite · Preact · TypeScript · Supabase (Auth + Postgres + RLS) · `vite-plugin-pwa`. Desain: "Newsprint" (lihat `desingpromt.md`).
 
@@ -38,7 +38,7 @@ Tanpa `.env`, aplikasi berjalan **lokal tanpa login** (data di browser, berisi d
 4. **Authentication → URL Configuration**: isi **Site URL** dan **Redirect URLs** dengan alamat aplikasi (`http://localhost:5173` untuk pengembangan, domain produksi setelah deploy).
 5. Opsional: **Authentication → Providers → Google** untuk tombol "Lanjutkan dengan Google" (tombol muncul sendiri begitu Google aktif).
 
-### Sebelum dipakai guru sungguhan
+### Sebelum dipakai pengguna sungguhan
 - Pasang **SMTP kustom** (Authentication → SMTP). Layanan email bawaan hanya mengirim beberapa email per jam.
 - Nyalakan kembali **Confirm email** bila sebelumnya dimatikan untuk uji coba.
 - Pasang **CAPTCHA** (Authentication → Attack Protection).

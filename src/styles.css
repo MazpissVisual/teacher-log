@@ -1,4 +1,4 @@
-/* GuruLog — "Newsprint" design system.
+/* NgampusNotes — "Newsprint" design system.
    Zero radius, ink-on-paper, visible grid rules, red only as an editorial accent. */
 
 :root {
@@ -462,10 +462,10 @@ html { scroll-padding-top: 64px; }
 .list-grid > .empty { grid-column: 1 / -1; }
 
 /* ---- logo ---- */
-.nameplate-title { line-height: 0; padding-bottom: 0; }
-.nameplate-title .wordmark { display: block; height: clamp(3.4rem, 12.5vw, 7.6rem); width: auto; color: var(--ink); }
-.auth-card .nameplate-title .wordmark { height: 4.25rem; }
-.sk-logo { display: block; height: 3rem; width: auto; margin-bottom: 18px; color: var(--ink); }
+.nameplate-title { display: block; max-width: 52rem; margin: 0 auto; line-height: 0; padding-bottom: 0; }
+.nameplate-title .wordmark { display: block; width: 100%; max-width: 52rem; height: auto; margin: 0 auto; color: var(--ink); }
+.auth-card .nameplate-title .wordmark { max-width: 20rem; }
+.sk-logo { display: block; height: auto; width: min(18rem, 100%); margin-bottom: 18px; color: var(--ink); }
 .footer-brand { display: inline-flex; align-items: center; gap: 12px; }
 .footer-brand .mark { display: block; }
 
@@ -534,7 +534,7 @@ html { scroll-padding-top: 64px; }
 /* ---- legal pages + links ---- */
 .legal-head { max-width: var(--max); width: 100%; margin: 0 auto; padding: 20px var(--pad) 0; }
 .legal-brand { display: inline-block; line-height: 0; color: var(--ink); }
-.legal-brand .wordmark { height: 2.4rem; width: auto; }
+.legal-brand .wordmark { width: 14rem; max-width: 100%; height: auto; }
 .legal { max-width: 760px; }
 .legal h1 { margin-bottom: 6px; }
 .legal h2 { font-size: 1.35rem; margin: 30px 0 8px; padding-top: 14px; border-top: 1px solid var(--ink); }

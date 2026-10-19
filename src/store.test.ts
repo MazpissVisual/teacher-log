@@ -9,7 +9,7 @@ describe('normalize', () => {
       const db = normalize(bad);
       expect(db.journals).toEqual([]);
       expect(db.tasks).toEqual([]);
-      expect(db.profile.name).toBe('Guru');
+      expect(db.profile.name).toBe('Mahasiswa');
       expect(db.version).toBe(2);
     }
   });

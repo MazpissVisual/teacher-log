@@ -28,13 +28,13 @@ export function Journey() {
 
   return (
     <>
-      <PageHead kicker="Seksi · Perjalanan" title="Perjalanan Mengajarku" sub="Setiap pengalaman adalah langkah untuk berkembang." action={<button class="btn secondary" onClick={() => { download(`gurulog-data-${today}.json`, exportJSON()); toast('Data berhasil diekspor'); }}><Icon as={Download} size={16} /> Ekspor data</button>} />
+      <PageHead kicker="Seksi · Perjalanan" title="Perjalanan Belajarku" sub="Setiap pengalaman adalah langkah untuk berkembang." action={<button class="btn secondary" onClick={() => { download(`ngampusnotes-data-${today}.json`, exportJSON()); toast('Data berhasil diekspor'); }}><Icon as={Download} size={16} /> Ekspor data</button>} />
       <div class="cards4">
         {stats.map(([Ico, l, n]) => <div class="stat"><div class="stat-top"><span>{l}</span><span class="stat-icon"><Icon as={Ico} size={16} /></span></div><strong><CountUp value={n} /></strong><p>Aktivitas pribadi</p></div>)}
       </div>
       <div class="grid-main">
         <div class="panel">
-          <div class="panel-head"><h2>Linimasa Mengajar</h2></div>
+          <div class="panel-head"><h2>Linimasa Belajar</h2></div>
           <div class="timeline">
             {journals.length ? journals.map((x) => (
               <div class="timeline-item">
@@ -43,7 +43,7 @@ export function Journey() {
                 <p>{x.content}</p>
                 <button class="link" onClick={() => openJournal(x)}>Buka refleksi →</button>
               </div>
-            )) : <Empty title="Perjalanan mengajarmu dimulai dengan satu catatan" />}
+            )) : <Empty title="Perjalanan belajarmu dimulai dengan satu catatan" />}
           </div>
         </div>
         <div class="stack">
@@ -62,7 +62,7 @@ export function Journey() {
           </div>
           <div class="panel quote inverted">
             <h2>Renungkan &amp; Tumbuh</h2>
-            <p>Catatan bukan alat untuk menilai apakah kamu guru yang baik. Ini adalah ruang aman untuk melihat apa yang telah dipelajari sepanjang perjalananmu.</p>
+            <p>Catatan bukan alat untuk menilai apakah kamu mahasiswa yang baik. Ini adalah ruang aman untuk melihat apa yang telah dipelajari sepanjang perjalananmu.</p>
           </div>
         </div>
       </div>

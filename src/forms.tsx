@@ -38,7 +38,7 @@ function JournalForm({ journal }: { journal?: Journal }) {
     const detailed = type === 'detailed';
     actions.upsert('journals', {
       id: journal?.id ?? uid(), date: s(f, 'date'), type, mood, content,
-      title: s(f, 'title') || 'Catatan Mengajarku',
+      title: s(f, 'title') || 'Catatan Kuliahku',
       className: s(f, 'className'), subject: s(f, 'subject'),
       topic: detailed ? s(f, 'topic') : '', worked: detailed ? s(f, 'worked') : '', improve: detailed ? s(f, 'improve') : '',
       pinned: journal?.pinned ?? false,
@@ -58,23 +58,23 @@ function JournalForm({ journal }: { journal?: Journal }) {
         <div class="form-group"><label for="j-title">Judul catatan</label><input id="j-title" class="field" name="title" placeholder="Judul singkat..." value={journal?.title ?? ''} /></div>
       </div>
       <div class="cols-2">
-        <div class="form-group"><label for="j-class">Kelas (opsional)</label><select id="j-class" class="field" name="className"><option value="">Tanpa kelas</option><Options list={db.classes} current={journal?.className} /></select></div>
-        <div class="form-group"><label for="j-subj">Mapel (opsional)</label><select id="j-subj" class="field" name="subject"><option value="">Tanpa mapel</option><Options list={db.subjects} current={journal?.subject} /></select></div>
+        <div class="form-group"><label for="j-class">Semester (opsional)</label><select id="j-class" class="field" name="className"><option value="">Tanpa semester</option><Options list={db.classes} current={journal?.className} /></select></div>
+        <div class="form-group"><label for="j-subj">Mata kuliah (opsional)</label><select id="j-subj" class="field" name="subject"><option value="">Tanpa mata kuliah</option><Options list={db.subjects} current={journal?.subject} /></select></div>
       </div>
       <div class="form-group">
-        <span class="group-label" id="mood-label">Bagaimana pembelajaranmu?</span>
+        <span class="group-label" id="mood-label">Seberapa paham kamu hari ini?</span>
         <div class="moods" role="group" aria-labelledby="mood-label">
           {MOODS.map((m) => (
             <button type="button" class={`mood ${mood === m ? 'selected' : ''}`} aria-pressed={mood === m} aria-label={moodLabel(m)} title={moodLabel(m)} onClick={() => setMood(m)}><MoodIcon m={m} size={22} /></button>
           ))}
         </div>
       </div>
-      <div class="form-group"><label for="j-content">Catatan bebas *</label><textarea id="j-content" class="field" name="content" required placeholder="Apa yang ingin kamu ingat dari hari ini?">{journal?.content ?? ''}</textarea></div>
+      <div class="form-group"><label for="j-content">Catatan bebas *</label><textarea id="j-content" class="field" name="content" required placeholder="Apa yang ingin kamu ingat dari kuliah hari ini?">{journal?.content ?? ''}</textarea></div>
       {type === 'detailed' && (
         <>
-          <div class="form-group"><label for="j-topic">Topik pembelajaran</label><input id="j-topic" class="field" name="topic" value={journal?.topic ?? ''} /></div>
-          <div class="form-group"><label for="j-worked">Apa yang berhasil?</label><textarea id="j-worked" class="field" name="worked">{journal?.worked ?? ''}</textarea></div>
-          <div class="form-group"><label for="j-improve">Apa yang perlu diperbaiki?</label><textarea id="j-improve" class="field" name="improve">{journal?.improve ?? ''}</textarea></div>
+          <div class="form-group"><label for="j-topic">Topik kuliah</label><input id="j-topic" class="field" name="topic" value={journal?.topic ?? ''} /></div>
+          <div class="form-group"><label for="j-worked">Apa yang sudah paham?</label><textarea id="j-worked" class="field" name="worked">{journal?.worked ?? ''}</textarea></div>
+          <div class="form-group"><label for="j-improve">Apa yang masih bingung?</label><textarea id="j-improve" class="field" name="improve">{journal?.improve ?? ''}</textarea></div>
         </>
       )}
       <Actions label="Simpan Jurnal" />
@@ -82,7 +82,7 @@ function JournalForm({ journal }: { journal?: Journal }) {
     </form>
   );
 }
-export const openJournal = (j?: Journal) => openModal(j ? 'Ubah Jurnal' : 'Jurnal Mengajar Baru', <JournalForm journal={j} />);
+export const openJournal = (j?: Journal) => openModal(j ? 'Ubah Jurnal' : 'Jurnal Kuliah Baru', <JournalForm journal={j} />);
 
 // ---------------- Plan ----------------
 function PlanForm({ plan }: { plan?: Plan }) {
@@ -105,17 +105,17 @@ function PlanForm({ plan }: { plan?: Plan }) {
         <div class="form-group"><label for="p-time">Jam</label><input id="p-time" class="field" type="time" name="time" value={plan?.time ?? '08:00'} /></div>
       </div>
       <div class="cols-2">
-        <div class="form-group"><label for="p-class">Kelas</label><select id="p-class" class="field" name="className"><option value="">Tidak ditentukan</option><Options list={db.classes} current={plan?.className} /></select></div>
-        <div class="form-group"><label for="p-subj">Mapel</label><select id="p-subj" class="field" name="subject"><option value="">Tidak ditentukan</option><Options list={db.subjects} current={plan?.subject} /></select></div>
+        <div class="form-group"><label for="p-class">Semester</label><select id="p-class" class="field" name="className"><option value="">Tidak ditentukan</option><Options list={db.classes} current={plan?.className} /></select></div>
+        <div class="form-group"><label for="p-subj">Mata kuliah</label><select id="p-subj" class="field" name="subject"><option value="">Tidak ditentukan</option><Options list={db.subjects} current={plan?.subject} /></select></div>
       </div>
-      <div class="form-group"><label for="p-obj">Tujuan Pembelajaran</label><textarea id="p-obj" class="field" name="objective">{plan?.objective ?? ''}</textarea></div>
-      <div class="form-group"><label for="p-act">Rencana Aktivitas</label><textarea id="p-act" class="field" name="activities">{plan?.activities ?? ''}</textarea></div>
+      <div class="form-group"><label for="p-obj">Target Belajar</label><textarea id="p-obj" class="field" name="objective">{plan?.objective ?? ''}</textarea></div>
+      <div class="form-group"><label for="p-act">Rencana Kegiatan</label><textarea id="p-act" class="field" name="activities">{plan?.activities ?? ''}</textarea></div>
       <Actions label="Simpan Rencana" />
     </form>
   );
 }
 export const openPlan = (p?: Plan, date?: string) =>
-  openModal(p ? 'Ubah Rencana Pembelajaran' : 'Rencana Pembelajaran Baru', <PlanForm plan={p ?? (date ? ({ date } as Plan) : undefined)} />);
+  openModal(p ? 'Ubah Rencana Kuliah' : 'Rencana Kuliah Baru', <PlanForm plan={p ?? (date ? ({ date } as Plan) : undefined)} />);
 
 // ---------------- Resource ----------------
 const RTYPES: ResourceType[] = ['Materi', 'Ide', 'Link', 'Aktivitas'];

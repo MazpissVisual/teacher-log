@@ -37,7 +37,7 @@ export function useSyncStatus(): SyncStatus {
 }
 
 // ---------- outbox persistence ----------
-const obKey = () => `gurulog-outbox:${userId}`;
+const obKey = () => `ngampusnotes-outbox:${userId}`;
 function saveOutbox() {
   try { localStorage.setItem(obKey(), JSON.stringify([...outbox.entries()])); } catch { /* quota/private mode: stays in memory */ }
 }
@@ -45,7 +45,7 @@ function loadOutbox() {
   try { outbox = new Map(JSON.parse(localStorage.getItem(obKey()) ?? '[]')); } catch { outbox = new Map(); }
 }
 export function clearOutbox(uid: string) {
-  try { localStorage.removeItem(`gurulog-outbox:${uid}`); } catch { /* ignore */ }
+  try { localStorage.removeItem(`ngampusnotes-outbox:${uid}`); } catch { /* ignore */ }
 }
 
 function enqueue(ops: Op[]) {
