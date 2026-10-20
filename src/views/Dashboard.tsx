@@ -2,12 +2,12 @@ import { useState } from 'preact/hooks';
 import { BookOpen, CalendarDays, CheckSquare, NotebookPen, Pause, Play, Plus } from 'lucide-preact';
 import { useDB } from '../store';
 import { openJournal } from '../forms';
-import { Icon, MoodIcon } from '../icons';
+import { Icon } from '../icons';
 import { CountUp, Empty, go } from '../ui';
-import { countdown, dateText, excerpt, hourIn, todayIn } from '../util';
+import { dateText, hourIn, todayIn } from '../util';
 import { agendaFor, KIND_LABEL } from '../agenda';
 import { useReminders } from '../notify';
-import { TaskRow } from './shared';
+import { JournalCard, PlanCard, TaskRow } from './shared';
 import { Onboarding } from './Onboarding';
 
 export function Dashboard() {
@@ -99,13 +99,13 @@ export function Dashboard() {
           <section class="panel">
             <div class="panel-head"><h2>Rencana mendatang</h2><button class="link" onClick={() => go('planner')}>Lihat semua →</button></div>
             {upcoming.slice(0, 3).length ? upcoming.slice(0, 3).map((p) => (
-              <div class="schedule-item"><span class="time">{p.time || '--:--'}</span><div class="details"><strong>{p.title}</strong><p>{dateText(p.date)} · {p.className || p.subject || 'Rencana pribadi'}</p></div>{(() => { const cd = countdown(p.date, today); return <span class={'pill ' + (cd?.urgent ? 'peach' : 'lilac')}>{p.kind !== 'kuliah' ? KIND_LABEL[p.kind] + (cd ? ' · ' + cd.text : '') : cd?.text ?? 'Terencana'}</span>; })()}</div>
+              <PlanCard p={p} today={today} />
             )) : <Empty title="Belum ada rencana mendatang" />}
           </section>
           <section class="panel">
             <div class="panel-head"><h2>Jurnal terbaru</h2><button class="link" onClick={() => go('journal')}>Lihat semua →</button></div>
             {recent.length ? recent.map((j) => (
-              <div class="schedule-item"><span class="time"><MoodIcon m={j.mood} /></span><div class="details"><strong>{j.title}</strong><p>{excerpt(j.content, 104)}</p></div><span class="label">{dateText(j.date)}</span></div>
+              <JournalCard j={j} />
             )) : <Empty title="Mulai dengan satu catatan kecil" />}
           </section>
         </div>
