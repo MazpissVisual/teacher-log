@@ -1,14 +1,39 @@
 import { useState } from 'preact/hooks';
 import { useDB } from '../store';
 import { openPlan, openSchedule } from '../forms';
+import { KIND_LABEL } from '../agenda';
 import { agendaFor, sortSchedules } from '../agenda';
-import { Empty } from '../ui';
+import { Empty, openModal } from '../ui';
 import { excerpt, todayIn } from '../util';
 import { CalendarCheck, ChevronLeft, ChevronRight, Plus } from 'lucide-preact';
 import { Icon } from '../icons';
 import { PageHead, PlanCard, ScheduleRow, SectionTabs } from './shared';
 
 const DAYS = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+
+/** Everything on one day: weekly classes and one-off plans. Opens when a calendar cell is tapped. */
+function DayDialog({ date }: { date: string }) {
+  const db = useDB();
+  const today = todayIn(db.profile.tz);
+  const items = agendaFor(db, date);
+  return (
+    <div>
+      {items.length ? items.map((a) => {
+        if (a.plan) return <PlanCard p={a.plan} today={today} />;
+        const sc = a.schedule!;
+        return (
+          <div class="schedule-item">
+            <span class="time">{a.time || '--:--'}</span>
+            <div class="details"><strong>{a.title}</strong><p>{[a.end && `${a.time}–${a.end}`, a.room, a.className].filter(Boolean).join(' · ') || 'Jadwal mingguan'}</p></div>
+            <button class="link" onClick={() => openSchedule(sc)}>Ubah</button>
+          </div>
+        );
+      }) : <p class="muted" style="margin-bottom:16px">Tidak ada kegiatan di hari ini.</p>}
+      <button class="btn" style="width:100%;justify-content:center;margin-top:12px" onClick={() => openPlan(undefined, date)}><Icon as={Plus} size={16} /> Tambah rencana</button>
+    </div>
+  );
+}
+const openDay = (date: string) => openModal(new Date(date + 'T12:00:00Z').toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }), <DayDialog date={date} />);
 
 export function Planner() {
   const db = useDB();
@@ -49,11 +74,17 @@ export function Planner() {
               const key = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
               const dayPlans = agendaFor(db, key);
               return (
-                <button class={`day cell ${key === today ? 'today' : ''}`} onClick={() => openPlan(undefined, key)}>
+                <button class={`day cell ${key === today ? 'today' : ''}`} onClick={() => openDay(key)}>
                   <strong>{d}</strong>
-                  {dayPlans.slice(0, 2).map((x) => <span class="dot" aria-hidden="true">{x.kind !== 'kuliah' ? x.kind.toUpperCase() + ' ' : ''}{excerpt(x.title, 9)}</span>)}
-                  {dayPlans.length > 2 && <span class="dot more" aria-hidden="true">+{dayPlans.length - 2}</span>}
-                  <span class="sr-only">{dayPlans.length ? dayPlans.map((x) => x.title).join(', ') + '. ' : ''}Tambah rencana</span>
+                  <span class="chips" aria-hidden="true">
+                    {dayPlans.slice(0, 2).map((x) => <span class="dot">{x.kind !== 'kuliah' ? x.kind.toUpperCase() + ' ' : ''}{excerpt(x.title, 9)}</span>)}
+                    {dayPlans.length > 2 && <span class="dot more">+{dayPlans.length - 2}</span>}
+                  </span>
+                  <span class="pips" aria-hidden="true">
+                    {dayPlans.slice(0, 3).map((x) => <i class={'pip' + (x.kind !== 'kuliah' ? ' exam' : '')} />)}
+                    {dayPlans.length > 3 && <span class="pip-more">+{dayPlans.length - 3}</span>}
+                  </span>
+                  <span class="sr-only">{dayPlans.length ? dayPlans.map((x) => (x.kind !== 'kuliah' ? KIND_LABEL[x.kind] + ' ' : '') + x.title).join(', ') + '. ' : 'Tidak ada kegiatan. '}Buka hari ini</span>
                 </button>
               );
             })}

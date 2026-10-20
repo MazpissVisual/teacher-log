@@ -597,3 +597,16 @@ html { scroll-padding-top: 64px; }
 .dialog-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .dialog-actions > .btn { width: 100%; justify-content: center; }
 .dialog-actions > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+
+/* ---- calendar cells: chips on wide screens, dots on phones (tap opens the day dialog) ---- */
+.day .chips { display: block; }
+.day .pips { display: none; }
+@media (max-width: 560px) {
+  .day.cell { min-height: 52px; height: 52px; padding: 4px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; overflow: hidden; }
+  .day .chips { display: none; }
+  .day .pips { display: flex; align-items: center; gap: 3px; min-height: 8px; }
+  .day .pip { display: block; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .day .pip.exam { background: transparent; border: 2px solid var(--red); width: 9px; height: 9px; }
+  .day.today .pip.exam { border-color: var(--paper); }
+  .day .pip-more { font-size: 8px; line-height: 1; }
+}
