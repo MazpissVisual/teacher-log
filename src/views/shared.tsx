@@ -64,25 +64,45 @@ export function TaskRow({ t, today }: { t: Task; today: string }) {
   );
 }
 
+function JournalDetail({ j }: { j: Journal }) {
+  return (
+    <div>
+      <dl class="detail-list">
+        <dt>Tanggal</dt><dd>{dateText(j.date)}</dd>
+        <dt>Jenis</dt><dd>{j.type === 'quick' ? 'Catatan cepat' : 'Jurnal lengkap'}</dd>
+        <dt>Pemahaman</dt><dd><span style="display:inline-flex;align-items:center;gap:6px"><MoodIcon m={j.mood} size={16} /> {moodLabel(j.mood)}</span></dd>
+        {j.subject && <><dt>Mata kuliah</dt><dd>{j.subject}</dd></>}
+        {j.className && <><dt>Semester</dt><dd>{j.className}</dd></>}
+        {j.topic && <><dt>Topik</dt><dd>{j.topic}</dd></>}
+      </dl>
+      <p class="task-desc" style="margin-bottom:16px">{j.content}</p>
+      {j.worked && <><span class="label">Yang sudah paham</span><p class="task-desc" style="margin:4px 0 16px">{j.worked}</p></>}
+      {j.improve && <><span class="label">Yang masih bingung</span><p class="task-desc" style="margin:4px 0 16px">{j.improve}</p></>}
+      <div class="compact-actions">
+        <button class="btn" onClick={() => openJournal(j)}><Icon as={Pencil} size={16} /> Ubah</button>
+        <button class="btn secondary" onClick={() => { actions.patch('journals', j.id, { pinned: !j.pinned }); closeModal(); }}><Icon as={j.pinned ? PinOff : Pin} size={16} /> {j.pinned ? 'Lepas sematan' : 'Sematkan'}</button>
+        <button class="btn danger" onClick={() => { closeModal(); removeWithUndo('journals', j, 'Jurnal dihapus'); }}><Icon as={Trash2} size={16} /> Hapus</button>
+      </div>
+    </div>
+  );
+}
+
+/** One compact entry per journal; tapping it opens the full note in a dialog (same pattern as tasks and plans). */
 export function JournalCard({ j }: { j: Journal }) {
   const leaving = useLeaving(j.id);
   return (
-    <article class={'journal-card' + (leaving ? ' leaving' : '')}>
-      <div class="journal-meta">
-        <span>{dateText(j.date)}</span>
-        <span style="display:inline-flex;align-items:center;gap:6px" title={moodLabel(j.mood)}><MoodIcon m={j.mood} size={16} /> {j.type === 'quick' ? 'Catatan Cepat' : 'Jurnal Lengkap'}</span>
-        {j.className && <span class="tag">{j.className}</span>}
-        {j.pinned && <span class="tag"><Icon as={Pin} size={12} /> Disematkan</span>}
-      </div>
-      <h2 class="card-title">{j.title}</h2>
-      <p>{j.content}</p>
-      {j.worked && <p style="font-size:13px"><strong>Yang berhasil:</strong> {j.worked}</p>}
-      <div class="card-actions">
-        <button class="btn sm secondary" onClick={() => openJournal(j)}><Icon as={Pencil} size={14} /> Ubah</button>
-        <button class="btn sm ghost" onClick={() => actions.patch('journals', j.id, { pinned: !j.pinned })}><Icon as={j.pinned ? PinOff : Pin} size={14} /> {j.pinned ? 'Lepas' : 'Sematkan'}</button>
-        <button class="btn sm danger" onClick={() => removeWithUndo('journals', j, 'Jurnal dihapus')}><Icon as={Trash2} size={14} /> Hapus</button>
-      </div>
-    </article>
+    <div class={'task-row' + (leaving ? ' leaving' : '')}>
+      <button class="task-main" aria-label={`Buka jurnal: ${j.title}`} onClick={() => openModal(j.title, <JournalDetail j={j} />)}>
+        <span class="task-title">{j.pinned && <Icon as={Pin} size={13} class="pin-mark" />}{j.title}</span>
+        <span class="task-meta">
+          <span>{dateShort(j.date)}</span>
+          <span style="display:inline-flex;align-items:center;gap:4px"><MoodIcon m={j.mood} size={14} /> {moodLabel(j.mood)}</span>
+          {(j.subject || j.className) && <span class="tag">{j.subject || j.className}</span>}
+        </span>
+        <span class="task-excerpt">{j.content}</span>
+      </button>
+      <Icon as={ChevronRight} size={16} class="task-chev" />
+    </div>
   );
 }
 

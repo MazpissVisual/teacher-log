@@ -588,3 +588,7 @@ html { scroll-padding-top: 64px; }
 .cal-head h2 { font-size: clamp(1.15rem, 5.2vw, 1.75rem); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cal-head .compact-actions { flex-wrap: nowrap; flex-shrink: 0; gap: 6px; }
 @media (max-width: 480px) { .cal-head .hide-sm { display: none; } }
+
+/* ---- journal entries reuse the compact row; one line of preview ---- */
+.task-excerpt { display: block; margin-top: 4px; font-size: 13px; color: var(--n500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pin-mark { display: inline-block; vertical-align: -1px; margin-right: 6px; }
