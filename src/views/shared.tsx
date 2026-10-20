@@ -34,7 +34,7 @@ function TaskDetail({ t, today }: { t: Task; today: string }) {
         <dt>Status</dt><dd>{t.done ? 'Selesai' : 'Belum selesai'}</dd>
       </dl>
       {t.description ? <p class="task-desc" style="margin-bottom:20px">{t.description}</p> : <p class="muted small" style="margin-bottom:20px">Tidak ada deskripsi.</p>}
-      <div class="compact-actions">
+      <div class="compact-actions dialog-actions">
         <button class="btn" onClick={() => openTask(t)}><Icon as={Pencil} size={16} /> Ubah</button>
         <button class="btn secondary" onClick={() => { tap(); actions.patch('tasks', t.id, { done: !t.done }); closeModal(); }}>{t.done ? 'Batalkan selesai' : 'Tandai selesai'}</button>
         <button class="btn danger" onClick={() => { closeModal(); removeWithUndo('tasks', t, 'Tugas dihapus'); }}><Icon as={Trash2} size={16} /> Hapus</button>
@@ -78,7 +78,7 @@ function JournalDetail({ j }: { j: Journal }) {
       <p class="task-desc" style="margin-bottom:16px">{j.content}</p>
       {j.worked && <><span class="label">Yang sudah paham</span><p class="task-desc" style="margin:4px 0 16px">{j.worked}</p></>}
       {j.improve && <><span class="label">Yang masih bingung</span><p class="task-desc" style="margin:4px 0 16px">{j.improve}</p></>}
-      <div class="compact-actions">
+      <div class="compact-actions dialog-actions">
         <button class="btn" onClick={() => openJournal(j)}><Icon as={Pencil} size={16} /> Ubah</button>
         <button class="btn secondary" onClick={() => { actions.patch('journals', j.id, { pinned: !j.pinned }); closeModal(); }}><Icon as={j.pinned ? PinOff : Pin} size={16} /> {j.pinned ? 'Lepas sematan' : 'Sematkan'}</button>
         <button class="btn danger" onClick={() => { closeModal(); removeWithUndo('journals', j, 'Jurnal dihapus'); }}><Icon as={Trash2} size={16} /> Hapus</button>
@@ -99,7 +99,6 @@ export function JournalCard({ j }: { j: Journal }) {
           <span style="display:inline-flex;align-items:center;gap:4px"><MoodIcon m={j.mood} size={14} /> {moodLabel(j.mood)}</span>
           {(j.subject || j.className) && <span class="tag">{j.subject || j.className}</span>}
         </span>
-        <span class="task-excerpt">{j.content}</span>
       </button>
       <Icon as={ChevronRight} size={16} class="task-chev" />
     </div>
@@ -119,7 +118,7 @@ function PlanDetail({ p, today }: { p: Plan; today: string }) {
       {p.objective && <><span class="label">Target belajar</span><p class="task-desc" style="margin:4px 0 16px">{p.objective}</p></>}
       {p.activities && <><span class="label">Rencana kegiatan</span><p class="task-desc" style="margin:4px 0 16px">{p.activities}</p></>}
       {!p.objective && !p.activities && <p class="muted small" style="margin-bottom:20px">Belum ada target atau rencana kegiatan.</p>}
-      <div class="compact-actions">
+      <div class="compact-actions dialog-actions">
         <button class="btn" onClick={() => openPlan(p)}><Icon as={Pencil} size={16} /> Ubah</button>
         <button class="btn danger" onClick={() => { closeModal(); removeWithUndo('plans', p, 'Rencana dihapus'); }}><Icon as={Trash2} size={16} /> Hapus</button>
       </div>

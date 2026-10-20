@@ -589,6 +589,11 @@ html { scroll-padding-top: 64px; }
 .cal-head .compact-actions { flex-wrap: nowrap; flex-shrink: 0; gap: 6px; }
 @media (max-width: 480px) { .cal-head .hide-sm { display: none; } }
 
-/* ---- journal entries reuse the compact row; one line of preview ---- */
-.task-excerpt { display: block; margin-top: 4px; font-size: 13px; color: var(--n500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* ---- journal entries reuse the compact row ---- */
 .pin-mark { display: inline-block; vertical-align: -1px; margin-right: 6px; }
+
+
+/* ---- dialog buttons: two per row, a lone last button spans the full width ---- */
+.dialog-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.dialog-actions > .btn { width: 100%; justify-content: center; }
+.dialog-actions > :last-child:nth-child(odd) { grid-column: 1 / -1; }
