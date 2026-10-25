@@ -1,6 +1,7 @@
 import { useState } from 'preact/hooks';
 import { actions, useDB } from './store';
 import type { Guidance, Journal, Mood, Plan, PlanKind, Priority, Resource, ResourceType, Schedule, Stage, StageStatus, Task } from './types';
+import { MarkdownEditor } from './MarkdownEditor';
 import { DAY_NAMES, KIND_LABEL, KINDS, WEEK_ORDER } from './agenda';
 import { closeModal, openModal, toast } from './ui';
 import { Check, Zap, BookOpen } from 'lucide-preact';
@@ -70,12 +71,12 @@ function JournalForm({ journal }: { journal?: Journal }) {
           ))}
         </div>
       </div>
-      <div class="form-group"><label for="j-content">Catatan bebas *</label><textarea id="j-content" class="field" name="content" required placeholder="Apa yang ingin kamu ingat dari kuliah hari ini?">{journal?.content ?? ''}</textarea></div>
+      <div class="form-group"><label for="j-content">Catatan bebas *</label><MarkdownEditor id="j-content" name="content" rows={8} placeholder="Apa yang ingin kamu ingat dari kuliah hari ini?" value={journal?.content ?? ''} /></div>
       {type === 'detailed' && (
         <>
           <div class="form-group"><label for="j-topic">Topik kuliah</label><input id="j-topic" class="field" name="topic" value={journal?.topic ?? ''} /></div>
-          <div class="form-group"><label for="j-worked">Apa yang sudah paham?</label><textarea id="j-worked" class="field" name="worked">{journal?.worked ?? ''}</textarea></div>
-          <div class="form-group"><label for="j-improve">Apa yang masih bingung?</label><textarea id="j-improve" class="field" name="improve">{journal?.improve ?? ''}</textarea></div>
+          <div class="form-group"><label for="j-worked">Apa yang sudah paham?</label><MarkdownEditor id="j-worked" name="worked" rows={4} value={journal?.worked ?? ''} /></div>
+          <div class="form-group"><label for="j-improve">Apa yang masih bingung?</label><MarkdownEditor id="j-improve" name="improve" rows={4} value={journal?.improve ?? ''} /></div>
         </>
       )}
       <Actions label="Simpan Jurnal" />

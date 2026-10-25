@@ -1,4 +1,7 @@
 import type { ComponentChildren } from 'preact';
+import { useState } from 'preact/hooks';
+import { Markdown } from '../Markdown';
+import { toggleTask } from '../mdparse';
 import { BookOpen, ChevronRight, Dices, ExternalLink, Lightbulb, Link2, Pencil, Pin, PinOff, Trash2, type LucideIcon } from 'lucide-preact';
 import { actions, useDB } from '../store';
 import { useThesisMenu } from '../features';
@@ -64,6 +67,18 @@ export function TaskRow({ t, today }: { t: Task; today: string }) {
   );
 }
 
+/** One formatted note field. Ticking a checkbox saves straight away. */
+function MdField({ j, field }: { j: Journal; field: 'content' | 'worked' | 'improve' }) {
+  const [text, setText] = useState(j[field]);
+  return (
+    <Markdown text={text} onToggleTask={(line) => {
+      const next = toggleTask(text, line);
+      setText(next);
+      actions.patch('journals', j.id, { [field]: next } as Partial<Journal>);
+    }} />
+  );
+}
+
 function JournalDetail({ j }: { j: Journal }) {
   return (
     <div>
@@ -75,9 +90,9 @@ function JournalDetail({ j }: { j: Journal }) {
         {j.className && <><dt>Semester</dt><dd>{j.className}</dd></>}
         {j.topic && <><dt>Topik</dt><dd>{j.topic}</dd></>}
       </dl>
-      <p class="task-desc" style="margin-bottom:16px">{j.content}</p>
-      {j.worked && <><span class="label">Yang sudah paham</span><p class="task-desc" style="margin:4px 0 16px">{j.worked}</p></>}
-      {j.improve && <><span class="label">Yang masih bingung</span><p class="task-desc" style="margin:4px 0 16px">{j.improve}</p></>}
+      <div style="margin-bottom:16px"><MdField j={j} field="content" /></div>
+      {j.worked && <><span class="label">Yang sudah paham</span><div style="margin:4px 0 16px"><MdField j={j} field="worked" /></div></>}
+      {j.improve && <><span class="label">Yang masih bingung</span><div style="margin:4px 0 16px"><MdField j={j} field="improve" /></div></>}
       <div class="compact-actions dialog-actions">
         <button class="btn" onClick={() => openJournal(j)}><Icon as={Pencil} size={16} /> Ubah</button>
         <button class="btn secondary" onClick={() => { actions.patch('journals', j.id, { pinned: !j.pinned }); closeModal(); }}><Icon as={j.pinned ? PinOff : Pin} size={16} /> {j.pinned ? 'Lepas sematan' : 'Sematkan'}</button>
