@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'preact/hooks';
 import { disablePush } from './push';
+import { clearImageCache, purgeImages } from './images';
 import type { Session } from '@supabase/supabase-js';
 import { actions, clearUserCache, getDB, hasUserCache, readLocalOnly, switchUser } from './store';
 import { clearOutbox, flush, pendingCount, pull, startSync, stopSync } from './sync';
@@ -93,6 +94,7 @@ export async function signOut(): Promise<boolean> {
   if (pendingCount() > 0 && !confirm('Ada perubahan yang belum tersinkron dan akan hilang jika keluar. Tetap keluar?')) return false;
   const uid = activeUser;
   await disablePush(); // stop reminders for this account on this device while we still have a session
+  clearImageCache();
   await supabase.auth.signOut();
   if (uid) { clearUserCache(uid); clearOutbox(uid); } // don't leave a teacher's data on a shared device
   return true;
@@ -107,6 +109,7 @@ export async function deleteAccount(): Promise<void> {
   if (!navigator.onLine) throw new Error('Kamu sedang offline. Sambungkan internet untuk menghapus akun.');
   const uid = activeUser;
   await disablePush(); // still signed in here, so the server row can be removed too
+  await purgeImages(); // storage files are not covered by ON DELETE CASCADE
   stopSync(); // nothing queued may be pushed (or re-created) after this point
   clearOutbox(uid);
   const { error } = await supabase.rpc('delete_my_account');

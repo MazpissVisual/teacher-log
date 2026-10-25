@@ -2,6 +2,7 @@ import { useEffect, useState } from 'preact/hooks';
 import type { Collection, DB } from './types';
 import { getDB, normalize, replaceFromRemote, setSyncHook, type Op } from './store';
 import { supabase } from './supabase';
+import { maybeSweep } from './images';
 
 /**
  * Local-first sync. The UI always reads/writes the local store; changes are queued in an outbox
@@ -176,6 +177,7 @@ export async function pull(): Promise<boolean> {
     });
     replaceFromRemote(next);
     setStatus({ state: 'idle', lastSync: Date.now(), error: undefined });
+    void maybeSweep(next); // drop uploaded pictures no note uses any more
     return hasProfile;
   } catch (e) {
     setStatus({ state: navigator.onLine ? 'error' : 'offline', error: errMsg(e) });

@@ -9,6 +9,7 @@ import { useInstall } from '../pwa';
 import { PageHead } from './shared';
 import { setThesisMenu, useThesisMenu } from '../features';
 import { checkReminders, notificationsSupported, permissionState, requestPermission, savePrefs, showNotification, usePrefs } from '../notify';
+import { purgeImages } from '../images';
 import { disablePush, enablePush, pushSupported, usePushState } from '../push';
 import { Download, LogOut, RefreshCw, RotateCcw, Trash2, Upload, UserX } from 'lucide-preact';
 import { Icon } from '../icons';
@@ -114,6 +115,7 @@ function WipeConfirm({ cloud }: { cloud: boolean }) {
     e.preventDefault();
     if (!ok) return;
     actions.clearAll();
+    void purgeImages();
     closeModal();
     toast('Semua data dihapus');
   };

@@ -43,6 +43,7 @@ export function Privacy() {
         <li><b>Akun:</b> alamat email, kata sandi (disimpan dalam bentuk terenkripsi/hash oleh penyedia autentikasi, bukan teks asli), dan nama panggilan jika kamu mengisinya.</li>
         <li><b>Masuk dengan Google:</b> nama dan alamat email dari akun Google-mu. Kami tidak mendapat kata sandi Google-mu.</li>
         <li><b>Isi yang kamu tulis:</b> jurnal kuliah, rencana kuliah, jadwal mingguan, bahan kuliah, tugas, catatan tesis dan bimbingan, serta pengaturan seperti zona waktu, daftar semester, dan mata kuliah.</li>
+        <li><b>Gambar (opsional):</b> gambar yang kamu sisipkan ke jurnal disimpan di penyimpanan pribadi akunmu, bukan di tempat umum. Sebelum diunggah, gambar diperkecil di perangkatmu dan data kamera atau lokasi di dalamnya dihapus. Batas 10 gambar per catatan dan 100 MB per akun. Gambar yang tidak dipakai lagi dihapus otomatis, dan semuanya terhapus saat kamu menghapus akun.</li>
         <li><b>Notifikasi (opsional):</b> jika kamu mengaktifkannya, kami menyimpan alamat langganan push perangkatmu dan pilihan notifikasimu. Isi pengingat (misalnya judul tugas) dikirim ke perangkatmu lewat layanan push milik browser (Google, Apple, Mozilla, atau Microsoft) dalam bentuk terenkripsi. Kamu bisa mematikannya kapan saja di Pengaturan.</li>
       </ul>
       <p>Kami <b>tidak</b> mengumpulkan lokasi, kontak, foto, mikrofon, atau kamera, dan tidak memasang iklan atau pelacak pihak ketiga. Font dimuat dari server kami sendiri.</p>

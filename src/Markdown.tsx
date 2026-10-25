@@ -1,11 +1,26 @@
 import type { ComponentChildren } from 'preact';
 import { parseBlocks, type Block, type Inline } from './mdparse';
+import { useImageUrl } from './images';
+import { openModal } from './ui';
+
+/** A picture stored in the private bucket; tapping it opens a larger view. */
+function NoteImage({ id, alt }: { id: string; alt: string }) {
+  const { url, failed } = useImageUrl(id);
+  if (failed) return <span class="note-img-missing">Gambar tidak tersedia</span>;
+  if (!url) return <span class="note-img-ph" aria-label="Memuat gambar" />;
+  return (
+    <button type="button" class="note-img-btn" aria-label={`Perbesar gambar${alt ? ': ' + alt : ''}`} onClick={() => openModal(alt || 'Gambar', <img class="note-img-large" src={url} alt={alt} />)}>
+      <img class="note-img" src={url} alt={alt} loading="lazy" />
+    </button>
+  );
+}
 
 function inline(nodes: Inline[]): ComponentChildren {
   return nodes.map((n) => {
     switch (n.t) {
       case 'text': return n.v;
       case 'code': return <code>{n.v}</code>;
+      case 'img': return <NoteImage id={n.id} alt={n.alt} />;
       case 'b': return <strong>{inline(n.c)}</strong>;
       case 'i': return <em>{inline(n.c)}</em>;
       case 's': return <s>{inline(n.c)}</s>;

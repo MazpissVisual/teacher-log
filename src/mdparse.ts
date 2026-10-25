@@ -8,6 +8,7 @@
 export type Inline =
   | { t: 'text'; v: string }
   | { t: 'code'; v: string }
+  | { t: 'img'; id: string; alt: string }
   | { t: 'b' | 'i' | 's'; c: Inline[] }
   | { t: 'a'; href: string; c: Inline[] };
 export interface Item { c: Inline[]; checked: boolean | null; line: number }
@@ -20,7 +21,7 @@ export type Block =
   | { t: 'hr' };
 
 const SAFE_URL = /^(https?:\/\/|mailto:)/i;
-const INLINE = /`([^`]+)`|\*\*(.+?)\*\*(?!\*)|~~(.+?)~~|\*(?!\s)(.+?)\*|\[([^\]]+)\]\(([^)\s]+)\)/;
+const INLINE = /!\[([^\]]*)\]\(img:([0-9a-fA-F-]{36})\)|`([^`]+)`|\*\*(.+?)\*\*(?!\*)|~~(.+?)~~|\*(?!\s)(.+?)\*|\[([^\]]+)\]\(([^)\s]+)\)/;
 const LIST = /^\s*([-*]|\d+\.)\s+(.*)$/;
 const TASK = /^\[( |x|X)\]\s+(.*)$/;
 const HR = /^(-{3,}|\*{3,})\s*$/;
@@ -32,11 +33,12 @@ export function parseInline(s: string): Inline[] {
     const m = INLINE.exec(rest);
     if (!m) { out.push({ t: 'text', v: rest }); break; }
     if (m.index > 0) out.push({ t: 'text', v: rest.slice(0, m.index) });
-    if (m[1] !== undefined) out.push({ t: 'code', v: m[1] });
-    else if (m[2] !== undefined) out.push({ t: 'b', c: parseInline(m[2]) });
-    else if (m[3] !== undefined) out.push({ t: 's', c: parseInline(m[3]) });
-    else if (m[4] !== undefined) out.push({ t: 'i', c: parseInline(m[4]) });
-    else if (SAFE_URL.test(m[6])) out.push({ t: 'a', href: m[6], c: parseInline(m[5]) }); // javascript: and friends stay plain text
+    if (m[2] !== undefined) out.push({ t: 'img', id: m[2].toLowerCase(), alt: m[1] });
+    else if (m[3] !== undefined) out.push({ t: 'code', v: m[3] });
+    else if (m[4] !== undefined) out.push({ t: 'b', c: parseInline(m[4]) });
+    else if (m[5] !== undefined) out.push({ t: 's', c: parseInline(m[5]) });
+    else if (m[6] !== undefined) out.push({ t: 'i', c: parseInline(m[6]) });
+    else if (SAFE_URL.test(m[8])) out.push({ t: 'a', href: m[8], c: parseInline(m[7]) }); // javascript: and friends stay plain text
     else out.push({ t: 'text', v: m[0] });
     rest = rest.slice(m.index + m[0].length);
   }

@@ -97,3 +97,15 @@ describe('continueList', () => {
     expect(continueList('**tebal**', 9)).toBeNull();
   });
 });
+
+describe('images', () => {
+  const id = '3f2b8c1e-5a4d-4e6f-9b7a-1c2d3e4f5a6b';
+  it('parses ![alt](img:<uuid>) into an image node, anywhere in a line', () => {
+    expect(parseInline(`a ![diagram](img:${id}) b`)).toEqual([{ t: 'text', v: 'a ' }, { t: 'img', id, alt: 'diagram' }, { t: 'text', v: ' b' }]);
+  });
+  it('only accepts uuid ids, so external image URLs never become <img>', () => {
+    for (const bad of ['![x](https://evil.example/a.png)', '![x](img:../../etc)', '![x](img:123)', '![x](javascript:alert(1))']) {
+      expect(parseInline(bad).some((n) => n.t === 'img')).toBe(false);
+    }
+  });
+});
