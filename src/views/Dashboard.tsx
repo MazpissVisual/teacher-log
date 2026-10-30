@@ -46,8 +46,8 @@ export function Dashboard() {
 
       <div class="grid-main">
         <section class="panel">
-          <div class="panel-head"><h2>Ulangan &amp; tugas mendatang</h2><button class="link" onClick={() => go('mengajar')}>Lihat semua →</button></div>
-          {upcoming.length ? upcoming.map((p) => <PlanCard p={p} today={today} />) : <Empty title="Belum ada ulangan atau tugas mendatang" />}
+          <div class="panel-head"><h2>Ulangan &amp; tugas</h2><button class="link" onClick={() => go('mengajar')}>Lihat semua →</button></div>
+          {upcoming.length ? upcoming.map((p) => <PlanCard p={p} today={today} />) : <Empty title="Belum ada ulangan atau tugas" />}
         </section>
         <section class="panel">
           <div class="panel-head"><h2>Jurnal terbaru</h2><button class="link" onClick={() => go('journal')}>Lihat semua →</button></div>
