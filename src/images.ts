@@ -10,7 +10,7 @@ import { uid } from './util';
  */
 export const BUCKET = 'note-images';
 const ORPHAN_AFTER_MS = 7 * 24 * 3600 * 1000; // long enough for an unsynced note on another device to catch up
-const SWEEP_KEY = 'ngampusnotes-image-sweep';
+const SWEEP_KEY = 'teachernotes-image-sweep';
 
 async function currentUserId(): Promise<string | null> {
   if (!supabase) return null;
@@ -123,7 +123,7 @@ export async function maybeSweep(db: DB): Promise<void> {
     if (Date.now() - last < 24 * 3600 * 1000) return;
     const user = await currentUserId();
     if (!user) return;
-    const used = new Set(db.journals.flatMap((j) => [j.content, j.worked, j.improve]).flatMap(imageIds));
+    const used = new Set(db.journals.flatMap((j) => imageIds(j.content)));
     const stale = (await listAll(user)).filter((f) => !used.has(f.name.toLowerCase()) && f.created_at && Date.now() - Date.parse(f.created_at) > ORPHAN_AFTER_MS);
     if (stale.length) await supabase.storage.from(BUCKET).remove(stale.map((f) => imagePath(user, f.name)));
     localStorage.setItem(SWEEP_KEY, String(Date.now()));

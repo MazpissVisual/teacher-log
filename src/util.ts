@@ -44,11 +44,9 @@ export function dateText(d: string): string {
   return new Date(Date.UTC(y, m - 1, day)).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
 }
 
-export const moodLabel = (m: string) => ({ great: 'Paham banget', good: 'Paham', neutral: 'Biasa', challenging: 'Bingung' } as Record<string, string>)[m] ?? 'Catatan';
-
 export const excerpt = (s: string, n: number) => (s.length > n ? s.slice(0, n).trimEnd() + '…' : s);
 
-export const firstChar = (s: string) => Array.from(s.trim())[0]?.toUpperCase() ?? 'M';
+export const firstChar = (s: string) => Array.from(s.trim())[0]?.toUpperCase() ?? 'G';
 
 export const isHttpUrl = (u: string) => /^https?:\/\//i.test(u);
 

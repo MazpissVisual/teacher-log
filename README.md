@@ -1,8 +1,10 @@
-# NgampusNotes
+# TeacherNotes
 
-Jurnal kuliah, perencana dengan jadwal mingguan dan hitung mundur deadline, ringkasan per mata kuliah, pelacak tesis, bahan kuliah, tugas, dan pengingat untuk mahasiswa. PWA yang bisa dipasang di HP, bekerja offline, dan menyinkronkan data ke akun pengguna.
+Jurnal mengajar, jadwal mingguan, serta rencana ulangan dan tugas untuk guru. PWA yang bisa dipasang di HP, bekerja offline, dan menyinkronkan data ke akun pengguna.
 
 **Stack:** Vite · Preact · TypeScript · Supabase (Auth + Postgres + RLS) · `vite-plugin-pwa`. Desain: "Newsprint" (lihat `desingpromt.md`).
+
+**Menu:** Beranda · Jurnal · Mengajar (kalender, jadwal mingguan, rencana/ulangan/tugas) · Bahan (materi, ide, tautan, aktivitas) · Pengaturan.
 
 ## Menjalankan di komputer
 
@@ -12,7 +14,7 @@ cp .env.example .env      # lalu isi dua nilai Supabase (lihat bawah)
 npm run dev               # http://localhost:5173
 ```
 
-Tanpa `.env`, aplikasi berjalan **lokal tanpa login** (data di browser, berisi data contoh). Berguna untuk mencoba tampilan.
+Tanpa `.env`, aplikasi berjalan **lokal tanpa login** (data di browser, mulai dari kosong).
 
 | Perintah | Fungsi |
 |---|---|
@@ -25,19 +27,13 @@ Tanpa `.env`, aplikasi berjalan **lokal tanpa login** (data di browser, berisi d
 ## Menyiapkan Supabase
 
 1. Buat proyek di [supabase.com](https://supabase.com).
-2. **SQL Editor** → jalankan berurutan:
-   - [`0001_init.sql`](supabase/migrations/0001_init.sql): tabel dan kebijakan RLS (setiap pengguna hanya bisa mengakses datanya sendiri).
-   - [`0002_delete_account.sql`](supabase/migrations/0002_delete_account.sql): fungsi yang dipakai tombol **Hapus akun** di Pengaturan.
-   - [`0003_task_description.sql`](supabase/migrations/0003_task_description.sql): kolom deskripsi tugas.
-   - [`0004_student_features.sql`](supabase/migrations/0004_student_features.sql): jenis rencana (kuis/UTS/UAS/deadline), mata kuliah pada tugas dan bahan, jadwal mingguan, serta tabel tesis. **Jalankan sebelum men-deploy versi aplikasi ini**; tanpa ini sinkronisasi akan gagal.
-   - [`0005_push.sql`](supabase/migrations/0005_push.sql): tabel langganan push. Opsional; hanya untuk notifikasi saat aplikasi tertutup, lihat [`supabase/push-setup.md`](supabase/push-setup.md).
+2. **SQL Editor** → jalankan [`0001_init.sql`](supabase/migrations/0001_init.sql). Satu file ini membuat tabel (`profiles`, `journals`, `plans`, `resources`, `schedules`), kebijakan RLS (setiap pengguna hanya bisa mengakses datanya sendiri), fungsi tombol **Hapus akun**, dan bucket privat `note-images` untuk gambar di jurnal.
 3. **Settings → API Keys**: salin **Project URL** dan **Publishable key** ke `.env`:
    ```
    NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
    ```
-   Hanya dua nilai ini yang wajib. (Opsional: `NEXT_PUBLIC_CONTACT_EMAIL` untuk alamat kontak di halaman Privasi dan Syarat.)
-   Hanya dua nilai ini yang dipakai untuk koneksi. **Jangan** memasukkan `secret` / `service_role` key: kunci itu mem-bypass RLS.
+   Hanya dua nilai ini yang dipakai untuk koneksi. (Opsional: `NEXT_PUBLIC_CONTACT_EMAIL` untuk alamat kontak di halaman Privasi dan Syarat.) **Jangan** memasukkan `secret` / `service_role` key: kunci itu mem-bypass RLS.
 4. **Authentication → URL Configuration**: isi **Site URL** dan **Redirect URLs** dengan alamat aplikasi (`http://localhost:5173` untuk pengembangan, domain produksi setelah deploy).
 5. Opsional: **Authentication → Providers → Google** untuk tombol "Lanjutkan dengan Google" (tombol muncul sendiri begitu Google aktif).
 
@@ -65,7 +61,7 @@ src/
   sync.ts       antrean (outbox) dan sinkronisasi ke Supabase
   auth.ts       sesi, bootstrap akun baru, keluar
   ui.tsx        router (History API), toast, modal, animasi hapus
-  views/        halaman: Dashboard, Journal, Planner, Library, Tasks, Journey, Settings, Login
+  views/        halaman: Dashboard, Journal, Teaching, Settings, Login
   styles.css    token desain + komponen (Newsprint)
 supabase/migrations/   skema SQL + RLS
 scripts/make-logo.mjs  pembuat logo/ikon

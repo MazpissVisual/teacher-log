@@ -25,8 +25,8 @@ export function atom<T>(initial: T) {
   };
 }
 
-// ---------- navigation (clean URLs via the History API: /journal, /tasks, …) ----------
-const PAGES: Page[] = ['dashboard', 'journal', 'planner', 'library', 'tasks', 'courses', 'thesis', 'journey', 'search', 'settings', 'privacy', 'terms'];
+// ---------- navigation (clean URLs via the History API: /journal, /mengajar, …) ----------
+const PAGES: Page[] = ['dashboard', 'journal', 'mengajar', 'bahan', 'settings', 'privacy', 'terms'];
 const pathOf = (p: Page) => (p === 'dashboard' ? '/' : '/' + p);
 const segment = () => location.pathname.replace(/^\/+|\/+$/g, '');
 const fromPath = (): Page => {
@@ -43,16 +43,14 @@ if (/^#\/[a-z]+$/.test(location.hash)) {
 }
 
 export const pageAtom = atom<Page>(fromPath());
-export const searchAtom = atom(fromPath() === 'search' ? new URLSearchParams(location.search).get('q') ?? '' : '');
 
 window.addEventListener('popstate', () => {
-  searchAtom.set(fromPath() === 'search' ? new URLSearchParams(location.search).get('q') ?? '' : '');
   pageAtom.set(fromPath());
   window.scrollTo({ top: 0 });
 });
 
 export function go(p: Page) {
-  const url = p === 'search' ? '/search?q=' + encodeURIComponent(searchAtom.get().trim()) : pathOf(p);
+  const url = pathOf(p);
   if (location.pathname + location.search !== url) history.pushState(null, '', url);
   pageAtom.set(p);
   window.scrollTo({ top: 0 });
@@ -158,7 +156,6 @@ export function ModalRoot() {
 export function Empty({ title, action }: { title: string; action?: { label: string; run: () => void } }) {
   return (
     <div class="empty">
-      <div class="ornament" style="padding:0;font-size:20px" aria-hidden="true">✧ ✧ ✧</div>
       <b>{title}</b>
       <span>Ruang ini siap untuk ide berikutnya.</span>
       {action && <button class="btn sm" style="margin-top:16px" onClick={action.run}>{action.label}</button>}

@@ -1,84 +1,83 @@
 import { describe, expect, it } from 'vitest';
 import { diff, normalize } from './store';
-import { sampleData } from './sample';
 import { UUID_RE } from './util';
+
+const ID = '00000000-0000-4000-8000-000000000001';
 
 describe('normalize', () => {
   it('turns garbage into a valid empty DB', () => {
     for (const bad of [null, undefined, 42, 'x', [], {}]) {
       const db = normalize(bad);
       expect(db.journals).toEqual([]);
-      expect(db.tasks).toEqual([]);
-      expect(db.profile.name).toBe('Mahasiswa');
-      expect(db.version).toBe(2);
+      expect(db.plans).toEqual([]);
+      expect(db.schedules).toEqual([]);
+      expect(db.resources).toEqual([]);
+      expect(db.profile.name).toBe('Guru');
+      expect(db.version).toBe(3);
     }
   });
 
-  it('migrates v1 data: non-UUID ids are replaced, valid fields survive', () => {
+  it('keeps valid fields and replaces non-UUID ids', () => {
     const db = normalize({
       profile: { name: 'Bu Sari', tz: 'Asia/Makassar' },
-      classes: ['VII A', '', 7],
-      journals: [{ id: 'j1', date: '2026-01-02', title: 'T', content: 'C', mood: 'great', type: 'detailed', className: 'VII A' }],
-      tasks: [{ id: 't1', title: 'x', done: true, priority: 'high' }],
+      classes: ['Matematika 8B', '', 7],
+      journals: [{ id: 'j1', date: '2026-01-02', title: 'T', content: 'C', className: 'Matematika 8B' }],
     });
-    expect(db.classes).toEqual(['VII A']);
+    expect(db.classes).toEqual(['Matematika 8B']);
     expect(db.profile).toEqual({ name: 'Bu Sari', tz: 'Asia/Makassar' });
     expect(UUID_RE.test(db.journals[0].id)).toBe(true);
-    expect(db.journals[0]).toMatchObject({ title: 'T', mood: 'great', type: 'detailed', className: 'VII A' });
-    expect(db.tasks[0]).toMatchObject({ done: true, priority: 'high' });
+    expect(db.journals[0]).toMatchObject({ title: 'T', content: 'C', className: 'Matematika 8B' });
   });
 
   it('coerces invalid enums and drops non-object rows', () => {
-    const db = normalize({ journals: [{ mood: 'angry', type: 'weird', content: 5 }, null, 'str'], resources: [{ type: 'Nope' }], tasks: [{ priority: 'urgent' }] });
+    const db = normalize({ journals: [{ content: 5 }, null, 'str'], plans: [{ kind: 'kuliah', done: 'yes' }], schedules: [{ day: 9 }, { day: 3 }], resources: [{ type: 'Nope' }] });
     expect(db.journals).toHaveLength(1);
-    expect(db.journals[0]).toMatchObject({ mood: 'good', type: 'quick', content: '' });
+    expect(db.journals[0]).toMatchObject({ title: 'Catatan Mengajar', content: '' });
+    expect(db.plans[0]).toMatchObject({ kind: 'pelajaran', done: false });
+    expect(db.schedules.map((s) => s.day)).toEqual([1, 3]);
     expect(db.resources[0].type).toBe('Materi');
-    expect(db.tasks[0].priority).toBe('medium');
   });
 
   it('keeps valid UUIDs stable', () => {
-    const a = normalize(sampleData());
+    const a = normalize({ journals: [{ id: ID }, {}] });
     const b = normalize(a);
     expect(b.journals.map((j) => j.id)).toEqual(a.journals.map((j) => j.id));
-  });
-
-  it('sample data is already normalized', () => {
-    const s = sampleData();
-    expect(normalize(s).plans.map((p) => p.id)).toEqual(s.plans.map((p) => p.id));
+    expect(a.journals[0].id).toBe(ID);
   });
 });
 
 describe('diff (drives cloud sync)', () => {
+  const base = () => normalize({ journals: [{ id: ID, title: 'A' }], plans: [{ id: '00000000-0000-4000-8000-000000000002', kind: 'tugas' }] });
+
   it('is empty when nothing changed', () => {
-    const a = sampleData();
+    const a = base();
     expect(diff(a, structuredClone(a))).toEqual([]);
   });
 
   it('reports upserts for added and edited items', () => {
-    const a = sampleData();
+    const a = base();
     const b = structuredClone(a);
-    b.tasks[0].done = !b.tasks[0].done;
-    b.resources.push({ id: '00000000-0000-4000-8000-000000000001', title: 'new', type: 'Ide', subject: '', description: '', url: '' });
+    b.plans[0].done = true;
+    b.schedules.push({ id: '00000000-0000-4000-8000-000000000003', className: 'X', day: 1, start: '', end: '', room: '', until: '' });
     expect(diff(a, b)).toEqual([
-      { t: 'upsert', kind: 'resources', id: '00000000-0000-4000-8000-000000000001' },
-      { t: 'upsert', kind: 'tasks', id: a.tasks[0].id },
+      { t: 'upsert', kind: 'plans', id: a.plans[0].id },
+      { t: 'upsert', kind: 'schedules', id: '00000000-0000-4000-8000-000000000003' },
     ]);
   });
 
   it('reports deletes', () => {
-    const a = sampleData();
+    const a = base();
     const b = structuredClone(a);
-    const gone = b.journals.pop()!;
-    expect(diff(a, b)).toEqual([{ t: 'delete', kind: 'journals', id: gone.id }]);
+    b.journals.pop();
+    expect(diff(a, b)).toEqual([{ t: 'delete', kind: 'journals', id: ID }]);
   });
 
-  it('reports profile changes for name, tz, classes and subjects', () => {
-    const a = sampleData();
+  it('reports profile changes for name, tz and classes', () => {
+    const a = base();
     for (const mutate of [
       (d: typeof a) => { d.profile.name = 'Lain'; },
       (d: typeof a) => { d.profile.tz = 'Asia/Jayapura'; },
       (d: typeof a) => { d.classes.push('X'); },
-      (d: typeof a) => { d.subjects = []; },
     ]) {
       const b = structuredClone(a);
       mutate(b);

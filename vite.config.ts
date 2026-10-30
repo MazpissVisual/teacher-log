@@ -19,16 +19,15 @@ export default defineConfig({
     preact(),
     { name: 'site-url', transformIndexHtml: (html) => html.replaceAll('__SITE_URL__', siteUrl) },
     VitePWA({
-      workbox: { importScripts: ['push-sw.js'] }, // push + notificationclick handlers (public/push-sw.js)
       registerType: 'prompt', // the app shows an "update available" toast instead of reloading mid-edit
       includeAssets: ['icon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'NgampusNotes — Personal Study Companion',
-        short_name: 'NgampusNotes',
-        description: 'Catatan kuliah, jadwal, bahan belajar, dan tugas mahasiswa dalam satu tempat.',
+        name: 'TeacherNotes — Jurnal Mengajar',
+        short_name: 'TeacherNotes',
+        description: 'Jurnal mengajar, jadwal, ulangan, dan tugas guru dalam satu tempat.',
         lang: 'id',
-        theme_color: '#f9f9f7',
-        background_color: '#f7f8fc',
+        theme_color: '#fcfcfd',
+        background_color: '#fcfcfd',
         display: 'standalone',
         start_url: '/',
         scope: '/',
@@ -40,7 +39,7 @@ export default defineConfig({
         ],
         shortcuts: [
           { name: 'Catatan baru', short_name: 'Catat', url: '/journal' },
-          { name: 'Tugas', short_name: 'Tugas', url: '/tasks' },
+          { name: 'Jadwal mengajar', short_name: 'Jadwal', url: '/mengajar' },
         ],
       },
     }),

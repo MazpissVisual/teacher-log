@@ -1,17 +1,16 @@
 import { useState } from 'preact/hooks';
 import { useDB } from '../store';
 import { openPlan, openSchedule } from '../forms';
-import { KIND_LABEL } from '../agenda';
-import { agendaFor, sortSchedules } from '../agenda';
+import { agendaFor, KIND_LABEL, sortSchedules } from '../agenda';
 import { Empty, openModal } from '../ui';
 import { excerpt, todayIn } from '../util';
 import { CalendarCheck, ChevronLeft, ChevronRight, Plus } from 'lucide-preact';
 import { Icon } from '../icons';
-import { PageHead, PlanCard, ScheduleRow, SectionTabs } from './shared';
+import { PageHead, PlanCard, ScheduleRow } from './shared';
 
 const DAYS = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 
-/** Everything on one day: weekly classes and one-off plans. Opens when a calendar cell is tapped. */
+/** Everything on one day: weekly lessons and one-off plans. Opens when a calendar cell is tapped. */
 function DayDialog({ date }: { date: string }) {
   const db = useDB();
   const today = todayIn(db.profile.tz);
@@ -24,7 +23,7 @@ function DayDialog({ date }: { date: string }) {
         return (
           <div class="schedule-item">
             <span class="time">{a.time || '--:--'}</span>
-            <div class="details"><strong>{a.title}</strong><p>{[a.end && `${a.time}–${a.end}`, a.room, a.className].filter(Boolean).join(' · ') || 'Jadwal mingguan'}</p></div>
+            <div class="details"><strong>{a.title}</strong><p>{[a.end && `${a.time}–${a.end}`, a.room].filter(Boolean).join(' · ') || 'Jadwal mingguan'}</p></div>
             <button class="link" onClick={() => openSchedule(sc)}>Ubah</button>
           </div>
         );
@@ -35,7 +34,7 @@ function DayDialog({ date }: { date: string }) {
 }
 const openDay = (date: string) => openModal(new Date(date + 'T12:00:00Z').toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }), <DayDialog date={date} />);
 
-export function Planner() {
+export function Teaching() {
   const db = useDB();
   const today = todayIn(db.profile.tz);
   const [ty, tm] = today.split('-').map(Number);
@@ -54,8 +53,7 @@ export function Planner() {
 
   return (
     <>
-      <SectionTabs page="planner" />
-      <PageHead kicker="Seksi · Perencana" title="Perencana Kuliah" sub="Rencanakan minggumu, satu langkah pada satu waktu." action={<div class="compact-actions"><button class="btn secondary" onClick={() => openSchedule()}><Icon as={Plus} size={16} /> Jadwal mingguan</button><button class="btn" onClick={() => openPlan()}><Icon as={Plus} size={16} /> Rencana baru</button></div>} />
+      <PageHead kicker="Seksi · Mengajar" title="Mengajar" sub="Jadwal mingguan, ulangan, dan tugas dalam satu kalender." action={<div class="compact-actions"><button class="btn secondary" onClick={() => openSchedule()}><Icon as={Plus} size={16} /> Jadwal mingguan</button><button class="btn" onClick={() => openPlan()}><Icon as={Plus} size={16} /> Rencana baru</button></div>} />
       <div class="grid-main">
         <div class="panel">
           <div class="panel-head cal-head">
@@ -77,28 +75,28 @@ export function Planner() {
                 <button class={`day cell ${key === today ? 'today' : ''}`} onClick={() => openDay(key)}>
                   <strong>{d}</strong>
                   <span class="chips" aria-hidden="true">
-                    {dayPlans.slice(0, 2).map((x) => <span class="dot">{x.kind !== 'kuliah' ? x.kind.toUpperCase() + ' ' : ''}{excerpt(x.title, 9)}</span>)}
+                    {dayPlans.slice(0, 2).map((x) => <span class="dot">{x.kind !== 'pelajaran' ? KIND_LABEL[x.kind] + ' ' : ''}{excerpt(x.title, 9)}</span>)}
                     {dayPlans.length > 2 && <span class="dot more">+{dayPlans.length - 2}</span>}
                   </span>
                   <span class="pips" aria-hidden="true">
-                    {dayPlans.slice(0, 3).map((x) => <i class={'pip' + (x.kind !== 'kuliah' ? ' exam' : '')} />)}
+                    {dayPlans.slice(0, 3).map((x) => <i class={'pip' + (x.kind === 'ulangan' || x.kind === 'tugas' ? ' exam' : '')} />)}
                     {dayPlans.length > 3 && <span class="pip-more">+{dayPlans.length - 3}</span>}
                   </span>
-                  <span class="sr-only">{dayPlans.length ? dayPlans.map((x) => (x.kind !== 'kuliah' ? KIND_LABEL[x.kind] + ' ' : '') + x.title).join(', ') + '. ' : 'Tidak ada kegiatan. '}Buka hari ini</span>
+                  <span class="sr-only">{dayPlans.length ? dayPlans.map((x) => (x.kind !== 'pelajaran' ? KIND_LABEL[x.kind] + ' ' : '') + x.title).join(', ') + '. ' : 'Tidak ada kegiatan. '}Buka hari ini</span>
                 </button>
               );
             })}
           </div>
         </div>
         <div class="stack">
-        <div class="panel">
-          <div class="panel-head"><h2>Jadwal mingguan</h2><button class="link" onClick={() => openSchedule()}>Tambah +</button></div>
-          {db.schedules.length ? sortSchedules(db.schedules).map((s) => <ScheduleRow s={s} />) : <Empty title="Belum ada jadwal mingguan" action={{ label: 'Tambah jadwal kuliah', run: () => openSchedule() }} />}
-        </div>
-        <div class="panel">
-          <div class="panel-head"><h2>Rencana kuliah</h2><button class="link" onClick={() => openPlan()}>Tambah +</button></div>
-          {plans.length ? plans.map((p) => <PlanCard p={p} today={today} />) : <Empty title="Belum ada rencana kuliah" action={db.plans.length === 0 ? { label: 'Buat rencana pertama', run: () => openPlan() } : undefined} />}
-        </div>
+          <div class="panel">
+            <div class="panel-head"><h2>Jadwal mingguan</h2><button class="link" onClick={() => openSchedule()}>Tambah +</button></div>
+            {db.schedules.length ? sortSchedules(db.schedules).map((s) => <ScheduleRow s={s} />) : <Empty title="Belum ada jadwal mingguan" action={{ label: 'Tambah jadwal mengajar', run: () => openSchedule() }} />}
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h2>Rencana</h2><button class="link" onClick={() => openPlan()}>Tambah +</button></div>
+            {plans.length ? plans.map((p) => <PlanCard p={p} today={today} />) : <Empty title="Belum ada rencana" action={{ label: 'Buat rencana pertama', run: () => openPlan() }} />}
+          </div>
         </div>
       </div>
     </>

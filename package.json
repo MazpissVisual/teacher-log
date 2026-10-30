@@ -1,5 +1,5 @@
 {
-  "name": "ngampusnotes",
+  "name": "teachernotes",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -9,20 +9,17 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "logo": "node scripts/make-logo.mjs",
-    "functions:build": "rolldown src/reminders-core.ts --format esm --file supabase/functions/send-reminders/reminders-core.js",
     "test": "vitest run"
   },
   "dependencies": {
-    "@fontsource-variable/inter": "^5.3.0",
-    "@fontsource-variable/jetbrains-mono": "^5.3.0",
-    "@fontsource-variable/lora": "^5.3.0",
-    "@fontsource-variable/playfair-display": "^5.3.0",
+    "@fontsource-variable/host-grotesk": "^5.3.0",
+    "@fontsource-variable/instrument-sans": "^5.3.0",
     "@supabase/supabase-js": "^2.118.0",
     "lucide-preact": "^1.57.0",
     "preact": "^11.0.1"
   },
   "devDependencies": {
-    "@fontsource/playfair-display": "^5.3.0",
+    "@fontsource/host-grotesk": "^5.3.0",
     "@preact/preset-vite": "^2.10.6",
     "@types/node": "^26.6.5",
     "jsdom": "^29.1.1",

@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'preact/hooks';
-import { disablePush } from './push';
+import { useEffect, useState } from 'preact/hooks';
+
 import { clearImageCache, purgeImages } from './images';
 import type { Session } from '@supabase/supabase-js';
 import { actions, clearUserCache, getDB, hasUserCache, readLocalOnly, switchUser } from './store';
@@ -43,9 +43,9 @@ async function bootstrap(session: Session) {
     // Name chosen at sign-up (user_metadata) wins; otherwise fall back to the part of the email before "@".
     const um = session.user.user_metadata ?? {};
     const meta = [um.name, um.full_name].find((v): v is string => typeof v === 'string' && v.trim() !== '')?.trim().slice(0, 40) ?? '';
-    const name = meta || session.user.email?.split('@')[0] || 'Mahasiswa';
+    const name = meta || session.user.email?.split('@')[0] || 'Guru';
     const local = readLocalOnly();
-    const hasLocal = local && (local.journals.length || local.plans.length || local.resources.length || local.tasks.length);
+    const hasLocal = local && (local.journals.length || local.plans.length || local.resources.length || local.schedules.length);
     if (hasLocal && confirm('Unggah data yang ada di perangkat ini ke akun barumu?')) {
       actions.adopt({ ...local!, profile: { ...local!.profile, name } });
     } else {
@@ -93,7 +93,6 @@ export async function signOut(): Promise<boolean> {
   await flush();
   if (pendingCount() > 0 && !confirm('Ada perubahan yang belum tersinkron dan akan hilang jika keluar. Tetap keluar?')) return false;
   const uid = activeUser;
-  await disablePush(); // stop reminders for this account on this device while we still have a session
   clearImageCache();
   await supabase.auth.signOut();
   if (uid) { clearUserCache(uid); clearOutbox(uid); } // don't leave a teacher's data on a shared device
@@ -108,7 +107,6 @@ export async function deleteAccount(): Promise<void> {
   if (!supabase || !activeUser) throw new Error('Kamu belum masuk.');
   if (!navigator.onLine) throw new Error('Kamu sedang offline. Sambungkan internet untuk menghapus akun.');
   const uid = activeUser;
-  await disablePush(); // still signed in here, so the server row can be removed too
   await purgeImages(); // storage files are not covered by ON DELETE CASCADE
   stopSync(); // nothing queued may be pushed (or re-created) after this point
   clearOutbox(uid);
@@ -117,7 +115,7 @@ export async function deleteAccount(): Promise<void> {
     startSync(uid); // account still exists → resume normal syncing
     const m = (error.message ?? '').toLowerCase();
     throw new Error(m.includes('could not find') || m.includes('does not exist') || m.includes('schema cache')
-      ? 'Fitur hapus akun belum diaktifkan di server. Jalankan migrasi 0002 di Supabase.'
+      ? 'Fitur hapus akun belum diaktifkan di server. Jalankan migrasi SQL di Supabase.'
       : 'Gagal menghapus akun. Coba lagi sebentar lagi.');
   }
   await supabase.auth.signOut({ scope: 'local' }).catch(() => {}); // the server-side session is already gone

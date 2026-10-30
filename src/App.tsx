@@ -2,22 +2,14 @@ import { useEffect } from 'preact/hooks';
 import { setStorageErrorHandler, useDB } from './store';
 import type { Page } from './types';
 import { go, ModalRoot, pageAtom, Skeleton, Toast, toast } from './ui';
-import { openJournal } from './forms';
 import { firstChar, todayIn } from './util';
-import { CloudCheck, CloudOff, CalendarDays, GraduationCap, House, Library as LibraryIcon, NotebookPen, RefreshCw, Settings as SettingsIcon, TriangleAlert, type LucideIcon } from 'lucide-preact';
+import { CloudCheck, CloudOff, BookOpen, House, NotebookPen, RefreshCw, School, Settings as SettingsIcon, TriangleAlert, type LucideIcon } from 'lucide-preact';
 import { Icon } from './icons';
-import { SearchBox } from './SearchBox';
 import { Mark, Wordmark } from './Logo';
 import { Dashboard } from './views/Dashboard';
 import { Journal } from './views/Journal';
-import { Planner } from './views/Planner';
+import { Teaching } from './views/Teaching';
 import { Library } from './views/Library';
-import { Tasks } from './views/Tasks';
-import { Courses } from './views/Courses';
-import { Thesis } from './views/Thesis';
-import { GROUPS } from './views/shared';
-import { Journey } from './views/Journey';
-import { Search } from './views/Search';
 import { Settings } from './views/Settings';
 import { Login } from './views/Login';
 import { Privacy, Terms } from './views/Legal';
@@ -28,32 +20,29 @@ import { useSyncStatus } from './sync';
 const NAV: { page: Page; icon: LucideIcon; label: string; short?: string }[] = [
   { page: 'dashboard', icon: House, label: 'Beranda' },
   { page: 'journal', icon: NotebookPen, label: 'Jurnal' },
-  { page: 'planner', icon: CalendarDays, label: 'Perencana', short: 'Rencana' },
-  { page: 'courses', icon: GraduationCap, label: 'Kuliah' },
-  { page: 'library', icon: LibraryIcon, label: 'Bahan' },
+  { page: 'mengajar', icon: School, label: 'Mengajar' },
+  { page: 'bahan', icon: BookOpen, label: 'Bahan' },
 ];
 const SETTINGS = { page: 'settings' as Page, icon: SettingsIcon, label: 'Pengaturan', short: 'Atur' };
 const VIEWS: Record<Exclude<Page, 'privacy' | 'terms'>, () => preact.JSX.Element> = {
-  dashboard: Dashboard, journal: Journal, planner: Planner, library: Library,
-  tasks: Tasks, courses: Courses, thesis: Thesis, journey: Journey, search: Search, settings: Settings,
+  dashboard: Dashboard, journal: Journal, mengajar: Teaching, bahan: Library, settings: Settings,
 };
-const PAGE_NAMES: Record<Page, string> = { dashboard: 'Beranda', journal: 'Jurnal', planner: 'Perencana', library: 'Bahan', tasks: 'Tugas', courses: 'Kuliah', thesis: 'Tesis', journey: 'Perjalanan', search: 'Pencarian', settings: 'Pengaturan', privacy: 'Kebijakan Privasi', terms: 'Syarat Penggunaan' };
+const PAGE_NAMES: Record<Page, string> = { dashboard: 'Beranda', journal: 'Jurnal', mengajar: 'Mengajar', bahan: 'Bahan', settings: 'Pengaturan', privacy: 'Kebijakan Privasi', terms: 'Syarat Penggunaan' };
 
 function Shell() {
   const db = useDB();
   const page = pageAtom.use();
-    const View = VIEWS[page as keyof typeof VIEWS];
+  const View = VIEWS[page as keyof typeof VIEWS];
   const sync = useSyncStatus();
   const today = todayIn(db.profile.tz);
   const dateLong = new Date(today + 'T12:00:00Z').toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 
   useEffect(() => { setStorageErrorHandler(toast); }, []);
   // Keep the document title meaningful per section (screen readers announce it on navigation).
-  useEffect(() => { document.title = PAGE_NAMES[page] + ' — NgampusNotes'; }, [page]);
+  useEffect(() => { document.title = PAGE_NAMES[page] + ' — TeacherNotes'; }, [page]);
 
   const items = NAV;
-  // a menu entry stays highlighted on every page of its group (e.g. Perencana on /tasks)
-  const isActive = (p: Page) => p === page || !!GROUPS.find((g) => g[0] === p)?.includes(page);
+  const isActive = (p: Page) => p === page;
 
   const navBtn = (n: (typeof NAV)[number], compact = false) => (
     <button class={'nav ' + (isActive(n.page) ? 'active' : '')} aria-current={isActive(n.page) ? 'page' : undefined} aria-label={compact ? n.short ?? n.label : n.label} onClick={() => go(n.page)}>
@@ -61,49 +50,28 @@ function Shell() {
     </button>
   );
 
-  const searchInput = <SearchBox />;
-
   return (
     <div class="layout">
       <a class="skip" href="#main" onClick={(e) => { e.preventDefault(); document.getElementById('main')?.focus(); }}>Lompat ke konten</a>
-      <header class="masthead">
-        <div class="edition-bar">
-          <span class="label">{dateLong}</span>
+      <header class="topbar">
+        <div class="topbar-inner">
+          <a class="brand" href="/" aria-label="TeacherNotes, ke Beranda" onClick={(e) => { e.preventDefault(); go('dashboard'); }}><Wordmark /></a>
+          <nav class="topnav" aria-label="Navigasi utama">{items.map((n) => navBtn(n))}{navBtn(SETTINGS)}</nav>
           <span class="edition-right">
+            <span class="label date">{dateLong}</span>
             {cloudEnabled && <SyncChip s={sync} />}
             <button class="avatar" aria-label={'Pengaturan profil (' + db.profile.name + ')'} onClick={() => go('settings')}>{firstChar(db.profile.name)}</button>
           </span>
         </div>
-        <div class="nameplate">
-          <a class="nameplate-title" href="/" onClick={(e) => { e.preventDefault(); go('dashboard'); }}><Wordmark /></a>
-          <p class="nameplate-sub">Catatan kecil, perjalanan kuliah yang berarti</p>
-        </div>
       </header>
-      <div class="navrow">
-        <div class="navrow-inner">
-          <nav class="topnav" aria-label="Navigasi utama">{items.map((n) => navBtn(n))}{navBtn(SETTINGS)}</nav>
-          {searchInput}
-        </div>
-      </div>
       <main class="container" id="main" tabIndex={-1}>
-        <div class="mobile-search">{searchInput}</div>
         <div class="page" key={page}><View /></div>
-        <div class="ornament" aria-hidden="true">✧ ✧ ✧</div>
       </main>
-      <footer class="footer inverted">
+      <footer class="footer">
         <div class="footer-inner">
-          <div>
-            <span class="label">Pengingat kecil</span>
-            <blockquote>“Kamu tidak harus langsung paham semuanya, cukup terus belajar sedikit demi sedikit dari setiap kuliah.”</blockquote>
-          </div>
-          <div class="footer-cta">
-            <span class="label">Edisi hari ini</span>
-            <span class="num">{db.journals.length}</span>
-            <span class="muted">catatan kuliah tersimpan di edisimu</span>
-            <button class="btn sm" onClick={() => { go('journal'); openJournal(); }}>Tulis catatan</button>
-          </div>
-          <div class="footer-meta"><span class="footer-brand"><Mark size={28} /> Edisi: Vol 1.0</span>
-            <span class="footer-legal"><a href="/privacy" onClick={(e) => { e.preventDefault(); go('privacy'); }}>Privasi</a><a href="/terms" onClick={(e) => { e.preventDefault(); go('terms'); }}>Syarat</a></span><span>Dikembangkan oleh<br />Havidz Muhammad Iqbal, S.Kom.</span></div>
+          <span class="footer-brand"><Mark size={28} /> TeacherNotes</span>
+          <span class="footer-legal"><a href="/privacy" onClick={(e) => { e.preventDefault(); go('privacy'); }}>Privasi</a><a href="/terms" onClick={(e) => { e.preventDefault(); go('terms'); }}>Syarat</a></span>
+          <span class="footer-credit">Dikembangkan oleh Muhammad Al Adli Adabi, S.Pd.</span>
         </div>
       </footer>
       <nav class="bottom-nav" aria-label="Navigasi seluler">
@@ -128,7 +96,7 @@ function SyncChip({ s }: { s: ReturnType<typeof useSyncStatus> }) {
 export function App() {
   const auth = useAuth();
   const page = pageAtom.use();
-  useEffect(() => { if (page === 'privacy' || page === 'terms') document.title = PAGE_NAMES[page] + ' — NgampusNotes'; }, [page]);
+  useEffect(() => { if (page === 'privacy' || page === 'terms') document.title = PAGE_NAMES[page] + ' — TeacherNotes'; }, [page]);
   if (page === 'privacy') return <Privacy />;
   if (page === 'terms') return <Terms />;
   if (!cloudEnabled) return <Shell />;

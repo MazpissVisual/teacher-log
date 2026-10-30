@@ -11,7 +11,7 @@ import { maybeSweep } from './images';
  */
 
 type Entry = { kind: Collection | 'profile'; id: string; del: boolean };
-const TABLE: Record<Collection, string> = { journals: 'journals', plans: 'plans', resources: 'resources', tasks: 'tasks', schedules: 'schedules', stages: 'thesis_stages', guidance: 'thesis_guidance' };
+const TABLE: Record<Collection, string> = { journals: 'journals', plans: 'plans', resources: 'resources', schedules: 'schedules' };
 
 let userId: string | null = null;
 let outbox = new Map<string, Entry>();
@@ -38,7 +38,7 @@ export function useSyncStatus(): SyncStatus {
 }
 
 // ---------- outbox persistence ----------
-const obKey = () => `ngampusnotes-outbox:${userId}`;
+const obKey = () => `teachernotes-outbox:${userId}`;
 function saveOutbox() {
   try { localStorage.setItem(obKey(), JSON.stringify([...outbox.entries()])); } catch { /* quota/private mode: stays in memory */ }
 }
@@ -46,7 +46,7 @@ function loadOutbox() {
   try { outbox = new Map(JSON.parse(localStorage.getItem(obKey()) ?? '[]')); } catch { outbox = new Map(); }
 }
 export function clearOutbox(uid: string) {
-  try { localStorage.removeItem(`ngampusnotes-outbox:${uid}`); } catch { /* ignore */ }
+  try { localStorage.removeItem(`teachernotes-outbox:${uid}`); } catch { /* ignore */ }
 }
 
 function enqueue(ops: Op[]) {
@@ -67,22 +67,16 @@ function schedule(ms: number) {
 // ---------- row mapping ----------
 const dateOrNull = (d: string) => (d ? d : null);
 const toRow: Record<Collection, (x: any) => Record<string, unknown>> = {
-  journals: (j) => ({ id: j.id, date: dateOrNull(j.date), type: j.type, title: j.title, content: j.content, class_name: j.className, subject: j.subject, mood: j.mood, topic: j.topic, worked: j.worked, improve: j.improve, pinned: j.pinned }),
-  plans: (p) => ({ id: p.id, title: p.title, date: dateOrNull(p.date), time: p.time, class_name: p.className, subject: p.subject, objective: p.objective, activities: p.activities, kind: p.kind }),
-  resources: (r) => ({ id: r.id, title: r.title, type: r.type, subject: r.subject ?? '', description: r.description, url: r.url }),
-  tasks: (t) => ({ id: t.id, title: t.title, description: t.description ?? '', subject: t.subject ?? '', date: dateOrNull(t.date), priority: t.priority, done: t.done }),
-  schedules: (s) => ({ id: s.id, subject: s.subject, class_name: s.className, day: s.day, start_time: s.start, end_time: s.end, room: s.room, until: dateOrNull(s.until) }),
-  stages: (s) => ({ id: s.id, title: s.title, status: s.status, date: dateOrNull(s.date), note: s.note }),
-  guidance: (g) => ({ id: g.id, date: dateOrNull(g.date), lecturer: g.lecturer, notes: g.notes, followup: g.followup, followup_done: g.followupDone }),
+  journals: (j) => ({ id: j.id, date: dateOrNull(j.date), title: j.title, content: j.content, class_name: j.className }),
+  plans: (p) => ({ id: p.id, title: p.title, date: dateOrNull(p.date), time: p.time, class_name: p.className, notes: p.notes, kind: p.kind, done: p.done }),
+  resources: (r) => ({ id: r.id, title: r.title, type: r.type, class_name: r.className, description: r.description, url: r.url }),
+  schedules: (s) => ({ id: s.id, class_name: s.className, day: s.day, start_time: s.start, end_time: s.end, room: s.room, until: dateOrNull(s.until) }),
 };
 const fromRow = {
-  journals: (r: any) => ({ id: r.id, date: r.date ?? '', type: r.type, title: r.title, content: r.content, className: r.class_name, subject: r.subject, mood: r.mood, topic: r.topic, worked: r.worked, improve: r.improve, pinned: r.pinned }),
-  plans: (r: any) => ({ id: r.id, title: r.title, date: r.date ?? '', time: r.time, className: r.class_name, subject: r.subject, objective: r.objective, activities: r.activities, kind: r.kind }),
-  resources: (r: any) => ({ id: r.id, title: r.title, type: r.type, subject: r.subject ?? '', description: r.description, url: r.url }),
-  tasks: (r: any) => ({ id: r.id, title: r.title, description: r.description ?? '', subject: r.subject ?? '', date: r.date ?? '', priority: r.priority, done: r.done }),
-  schedules: (r: any) => ({ id: r.id, subject: r.subject, className: r.class_name, day: r.day, start: r.start_time, end: r.end_time, room: r.room, until: r.until ?? '' }),
-  stages: (r: any) => ({ id: r.id, title: r.title, status: r.status, date: r.date ?? '', note: r.note }),
-  guidance: (r: any) => ({ id: r.id, date: r.date ?? '', lecturer: r.lecturer, notes: r.notes, followup: r.followup, followupDone: r.followup_done }),
+  journals: (r: any) => ({ id: r.id, date: r.date ?? '', title: r.title, content: r.content, className: r.class_name }),
+  plans: (r: any) => ({ id: r.id, title: r.title, date: r.date ?? '', time: r.time, className: r.class_name, notes: r.notes, kind: r.kind, done: r.done }),
+  resources: (r: any) => ({ id: r.id, title: r.title, type: r.type, className: r.class_name, description: r.description, url: r.url }),
+  schedules: (r: any) => ({ id: r.id, className: r.class_name, day: r.day, start: r.start_time, end: r.end_time, room: r.room, until: r.until ?? '' }),
 };
 
 const errMsg = (e: unknown) => (e instanceof Error ? e.message : String((e as any)?.message ?? e));
@@ -124,7 +118,7 @@ export function flush(): Promise<void> {
 
       if (sent.some(([k]) => k === 'profile')) {
         const p = getDB();
-        const { error } = await supabase!.from('profiles').upsert({ user_id: userId, name: p.profile.name, tz: p.profile.tz, classes: p.classes, subjects: p.subjects }, { onConflict: 'user_id' });
+        const { error } = await supabase!.from('profiles').upsert({ user_id: userId, name: p.profile.name, tz: p.profile.tz, classes: p.classes }, { onConflict: 'user_id' });
         if (error) throw error;
         done.push('profile');
       }
@@ -150,30 +144,23 @@ export async function pull(): Promise<boolean> {
   if (outbox.size) return true; // never overwrite unsent edits
   setStatus({ state: 'syncing' });
   try {
-    const [p, j, pl, r, t, sc, st, gd] = await Promise.all([
+    const [p, j, pl, r, sc] = await Promise.all([
       supabase.from('profiles').select('*').maybeSingle(),
       supabase.from('journals').select('*'),
       supabase.from('plans').select('*'),
       supabase.from('resources').select('*'),
-      supabase.from('tasks').select('*'),
       supabase.from('schedules').select('*'),
-      supabase.from('thesis_stages').select('*'),
-      supabase.from('thesis_guidance').select('*'),
     ]);
-    for (const res of [p, j, pl, r, t, sc, st, gd]) if (res.error) throw res.error;
+    for (const res of [p, j, pl, r, sc]) if (res.error) throw res.error;
     if (outbox.size) return true; // user edited while we were fetching; try again later
     const hasProfile = !!p.data;
     const next: DB = normalize({
       profile: p.data ? { name: p.data.name, tz: p.data.tz } : getDB().profile,
       classes: p.data?.classes ?? [],
-      subjects: p.data?.subjects ?? [],
       journals: (j.data ?? []).map(fromRow.journals),
       plans: (pl.data ?? []).map(fromRow.plans),
       resources: (r.data ?? []).map(fromRow.resources),
-      tasks: (t.data ?? []).map(fromRow.tasks),
       schedules: (sc.data ?? []).map(fromRow.schedules),
-      stages: (st.data ?? []).map(fromRow.stages),
-      guidance: (gd.data ?? []).map(fromRow.guidance),
     });
     replaceFromRemote(next);
     setStatus({ state: 'idle', lastSync: Date.now(), error: undefined });

@@ -1,14 +1,14 @@
-// Builds every logo asset from the Playfair Display Black outlines (so nothing depends on a webfont).
+// Builds every logo asset from the Host Grotesk ExtraBold outlines (so nothing depends on a webfont).
 // Run: npm run logo   →  public/logo.svg, public/icon.svg, public/*.png, src/logo-paths.ts
 import opentype from 'opentype.js';
 import sharp from 'sharp';
 import { readFileSync, writeFileSync } from 'node:fs';
 
-const INK = '#111111';
-const PAPER = '#f9f9f7';
-const RED = '#cc0000';
+const INK = '#16191f';
+const PAPER = '#fcfcfd';
+const RED = '#074ce0'; // accent blue
 
-const buf = readFileSync('node_modules/@fontsource/playfair-display/files/playfair-display-latin-900-normal.woff');
+const buf = readFileSync('node_modules/@fontsource/host-grotesk/files/host-grotesk-latin-800-normal.woff');
 const font = opentype.parse(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength));
 const upm = font.unitsPerEm;
 
@@ -43,9 +43,9 @@ const bbox = (paths) => {
   const bs = paths.map((p) => p.getBoundingBox());
   return { x1: Math.min(...bs.map((b) => b.x1)), y1: Math.min(...bs.map((b) => b.y1)), x2: Math.max(...bs.map((b) => b.x2)), y2: Math.max(...bs.map((b) => b.y2)) };
 };
-// ---------- wordmark: "NgampusNotes" (ink) + "." (red) ----------
+// ---------- wordmark: "TeacherNotes" (ink) + "." (red) ----------
 const SIZE = 200;
-const parts = layout('NgampusNotes.', SIZE, -0.03);
+const parts = layout('TeacherNotes.', SIZE, -0.03);
 const inkParts = parts.slice(0, -1).map((p) => p.path);
 const dotPart = parts[parts.length - 1].path;
 const all = bbox([...inkParts, dotPart]);
@@ -53,25 +53,25 @@ const PAD = 6;
 const wmW = Math.ceil(all.x2 - all.x1 + PAD * 2);
 const wmH = Math.ceil(all.y2 - all.y1 + PAD * 2);
 const ox = PAD - all.x1, oy = PAD - all.y1;
-const placed = layout('NgampusNotes.', SIZE, -0.03, ox, oy);
+const placed = layout('TeacherNotes.', SIZE, -0.03, ox, oy);
 const wmInk = join(placed.slice(0, -1).map((p) => p.path));
 const wmDot = pathData(placed[placed.length - 1].path);
 if (/NaN/.test(wmInk + wmDot)) throw new Error('NaN in wordmark path');
 const wordmarkSvg = (ink, dot) =>
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${wmW} ${wmH}" role="img" aria-label="NgampusNotes"><path fill="${ink}" d="${wmInk}"/><path fill="${dot}" d="${wmDot}"/></svg>`;
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${wmW} ${wmH}" role="img" aria-label="TeacherNotes"><path fill="${ink}" d="${wmInk}"/><path fill="${dot}" d="${wmDot}"/></svg>`;
 writeFileSync('public/logo.svg', wordmarkSvg(INK, RED));
 
-// ---------- monogram: "N" + red full stop, centred on a paper tile ----------
+// ---------- monogram: "T" + red full stop, centred on a paper tile ----------
 function markSvg({ frame, glyphSize }) {
-  const g = layout('N.', glyphSize, -0.02);
+  const g = layout('T.', glyphSize, -0.02);
   const b = bbox(g.map((x) => x.path));
-  const placedG = layout('N.', glyphSize, -0.02, 256 - (b.x1 + b.x2) / 2, 256 - (b.y1 + b.y2) / 2);
+  const placedG = layout('T.', glyphSize, -0.02, 256 - (b.x1 + b.x2) / 2, 256 - (b.y1 + b.y2) / 2);
   const gInk = pathData(placedG[0].path);
   const gDot = pathData(placedG[1].path);
-  const border = frame ? `<rect x="30" y="30" width="452" height="452" fill="none" stroke="${INK}" stroke-width="10"/>` : '';
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="${PAPER}"/>${border}<path fill="${INK}" d="${gInk}"/><path fill="${RED}" d="${gDot}"/></svg>`;
+  const border = frame ? `<rect x="30" y="30" width="452" height="452" fill="none" stroke="${PAPER}" stroke-opacity=".35" stroke-width="6"/>` : '';
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="${RED}"/>${border}<path fill="${PAPER}" d="${gInk}"/><path fill="${PAPER}" d="${gDot}"/></svg>`;
 }
-const markAny = markSvg({ frame: true, glyphSize: 330 });       // favicon, "any" icons
+const markAny = markSvg({ frame: false, glyphSize: 330 });       // favicon, "any" icons
 const markMask = markSvg({ frame: false, glyphSize: 250 });     // maskable: keep inside the 80% safe zone
 writeFileSync('public/icon.svg', markAny);
 
@@ -90,9 +90,9 @@ await sharp(Buffer.from(markAny), { density: 300 }).resize(48, 48).png().toFile(
 
 // ---------- inline paths for the app (no extra request, recolourable via CSS) ----------
 const mk = (frame, glyphSize) => {
-  const g = layout('N.', glyphSize, -0.02);
+  const g = layout('T.', glyphSize, -0.02);
   const b = bbox(g.map((x) => x.path));
-  const pg = layout('N.', glyphSize, -0.02, 256 - (b.x1 + b.x2) / 2, 256 - (b.y1 + b.y2) / 2);
+  const pg = layout('T.', glyphSize, -0.02, 256 - (b.x1 + b.x2) / 2, 256 - (b.y1 + b.y2) / 2);
   return { ink: pathData(pg[0].path), dot: pathData(pg[1].path) };
 };
 const mono = mk(false, 330);
@@ -112,9 +112,7 @@ console.log(`wordmark ${wmW}x${wmH}`);
   const x = (1200 - w) / 2, y = (630 - h) / 2 - 6;
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
 <rect width="1200" height="630" fill="${PAPER}"/>
-<rect x="60" y="70" width="1080" height="8" fill="${INK}"/><rect x="60" y="86" width="1080" height="2" fill="${INK}"/>
 <g transform="translate(${x} ${y}) scale(${scale})"><path fill="${INK}" d="${wmInk}"/><path fill="${RED}" d="${wmDot}"/></g>
-<rect x="60" y="542" width="1080" height="2" fill="${INK}"/><rect x="60" y="552" width="1080" height="8" fill="${INK}"/>
 </svg>`;
   await sharp(Buffer.from(svg), { density: 96 }).png().toFile('public/og.png');
   console.log('wrote public/og.png');

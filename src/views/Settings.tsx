@@ -7,100 +7,29 @@ import { syncNow, useSyncStatus } from '../sync';
 import { todayIn } from '../util';
 import { useInstall } from '../pwa';
 import { PageHead } from './shared';
-import { setThesisMenu, useThesisMenu } from '../features';
-import { checkReminders, notificationsSupported, permissionState, requestPermission, savePrefs, showNotification, usePrefs } from '../notify';
 import { purgeImages } from '../images';
-import { disablePush, enablePush, pushSupported, usePushState } from '../push';
-import { Download, LogOut, RefreshCw, RotateCcw, Trash2, Upload, UserX } from 'lucide-preact';
+import { Download, LogOut, RefreshCw, Trash2, Upload, UserX } from 'lucide-preact';
 import { Icon } from '../icons';
 
-function NotificationSettings() {
-  const p = usePrefs();
-  const push = usePushState();
-  const [perm, setPerm] = useState(permissionState());
-  const [busy, setBusy] = useState(false);
-  const on = p.enabled && perm === 'granted';
-  const enable = async () => {
-    setBusy(true);
-    try {
-      if (pushSupported()) {
-        await enablePush();
-        setPerm(permissionState());
-        toast('Notifikasi aktif, juga saat aplikasi tertutup');
-      } else {
-        const r = await requestPermission();
-        setPerm(r);
-        if (r !== 'granted') return toast(r === 'denied' ? 'Izin ditolak. Ubah di pengaturan situs browser.' : 'Browser ini belum mendukung notifikasi');
-        savePrefs({ enabled: true });
-        checkReminders();
-        toast('Notifikasi aktif');
-      }
-    } catch (e) {
-      setPerm(permissionState());
-      toast(e instanceof Error ? e.message : 'Gagal mengaktifkan notifikasi');
-    } finally { setBusy(false); }
-  };
-  const disable = async () => { savePrefs({ enabled: false }); await disablePush(); };
-  const toggle = (k: 'deadlines' | 'classes' | 'thesis') => (
-    <label class="check-row"><input type="checkbox" checked={p[k]} disabled={!on} onChange={(e) => savePrefs({ [k]: e.currentTarget.checked })} /> {({ deadlines: 'Tugas, kuis, UTS/UAS, dan deadline', classes: 'Jadwal kuliah akan dimulai', thesis: 'Tahap dan bimbingan tesis' })[k]}</label>
-  );
-  return (
-    <div class="panel">
-      <h2>Notifikasi</h2>
-      {!notificationsSupported() ? (
-        <p class="muted" style="line-height:1.8">Browser ini belum mendukung notifikasi. Pengingat tetap tampil di Beranda.</p>
-      ) : (
-        <>
-          <p class="muted" style="line-height:1.7;margin-bottom:14px">
-            {on && push === 'on'
-              ? 'Pengingat dikirim ke perangkat ini, termasuk saat NgampusNotes tertutup.'
-              : pushSupported()
-                ? 'Aktifkan agar pengingat sampai ke perangkat ini, termasuk saat NgampusNotes tertutup.'
-                : 'Pengingat muncul saat NgampusNotes terbuka atau baru kamu buka. Notifikasi saat aplikasi tertutup butuh akun dan pengaturan server.'}
-            {' '}Di iPhone, pasang aplikasi ke Layar Utama dulu.
-          </p>
-          {!on ? (
-            <button class="btn" disabled={busy} onClick={() => { void enable(); }}>{perm === 'denied' ? 'Coba izinkan lagi' : 'Aktifkan notifikasi'}</button>
-          ) : (
-            <>
-              {toggle('deadlines')}{toggle('classes')}{toggle('thesis')}
-              <div class="form-group"><label for="n-lead">Ingatkan jadwal kuliah</label>
-                <select id="n-lead" class="field" value={String(p.leadMin)} onChange={(e) => savePrefs({ leadMin: Number(e.currentTarget.value) })}>
-                  {[5, 10, 15, 30, 60].map((m) => <option value={String(m)} selected={m === p.leadMin}>{m} menit sebelum mulai</option>)}
-                </select>
-              </div>
-              {pushSupported() && push === 'off' && <p class="legend" style="margin-bottom:12px">Perangkat ini belum terdaftar untuk push, jadi pengingat hanya muncul saat aplikasi terbuka. <button class="link" disabled={busy} onClick={() => { void enable(); }}>Daftarkan sekarang</button></p>}
-              <div class="compact-actions">
-                <button class="btn secondary" onClick={() => { void showNotification('NgampusNotes', 'Notifikasi berjalan dengan baik.', 'test'); }}>Coba notifikasi</button>
-                <button class="btn secondary" onClick={() => { void disable(); }}>Matikan</button>
-              </div>
-            </>
-          )}
-        </>
-      )}
-    </div>
-  );
-}
-
-function ListEditor({ kind, label, items }: { kind: 'classes' | 'subjects'; label: string; items: string[] }) {
+function ListEditor({ label, items }: { label: string; items: string[] }) {
   const [v, setV] = useState('');
   const add = (e: Event) => {
     e.preventDefault();
     if (!v.trim()) return;
-    actions.setList(kind, [...items, v]);
+    actions.setClasses([...items, v]);
     setV('');
   };
   return (
     <div class="form-group">
-      <label for={`add-${kind}`}>{label}</label>
+      <label for="add-class">{label}</label>
       <div class="chips">
         {items.map((c) => (
-          <span class="tag chip">{c}<button type="button" aria-label={`Hapus ${c}`} onClick={() => actions.setList(kind, items.filter((x) => x !== c))}>×</button></span>
+          <span class="tag chip">{c}<button type="button" aria-label={`Hapus ${c}`} onClick={() => actions.setClasses(items.filter((x) => x !== c))}>×</button></span>
         ))}
         {!items.length && <span class="muted small">Belum ada.</span>}
       </div>
       <form class="inline-form" onSubmit={add}>
-        <input id={`add-${kind}`} class="field" value={v} onInput={(e) => setV(e.currentTarget.value)} placeholder="Tambah baru..." />
+        <input id="add-class" class="field" value={v} onInput={(e) => setV(e.currentTarget.value)} placeholder="Contoh: Matematika 8B" />
         <button class="btn secondary" type="submit">Tambah</button>
       </form>
     </div>
@@ -123,8 +52,8 @@ function WipeConfirm({ cloud }: { cloud: boolean }) {
     <form onSubmit={submit}>
       <p>
         {cloud
-          ? 'Semua jurnal, rencana, jadwal, bahan, tugas, dan catatan tesis di akunmu akan terhapus permanen, di semua perangkat.'
-          : 'Semua jurnal, rencana, jadwal, bahan, tugas, dan catatan tesis di perangkat ini akan terhapus permanen.'}{' '}
+          ? 'Semua jurnal, rencana, bahan, dan jadwal di akunmu akan terhapus permanen, di semua perangkat.'
+          : 'Semua jurnal, rencana, bahan, dan jadwal di perangkat ini akan terhapus permanen.'}{' '}
         Tindakan ini tidak bisa dibatalkan.
       </p>
       <p class="muted small">Sebaiknya ekspor dulu sebagai cadangan.</p>
@@ -134,7 +63,7 @@ function WipeConfirm({ cloud }: { cloud: boolean }) {
       </div>
       <div class="compact-actions">
         <button class="btn danger" type="submit" disabled={!ok}>Hapus semua data</button>
-        <button class="btn secondary" type="button" onClick={() => { download('ngampusnotes-cadangan.json', exportJSON()); toast('Cadangan diunduh'); }}>Ekspor dulu</button>
+        <button class="btn secondary" type="button" onClick={() => { download('teachernotes-cadangan.json', exportJSON()); toast('Cadangan diunduh'); }}>Ekspor dulu</button>
         <button class="btn ghost" type="button" onClick={closeModal}>Batal</button>
       </div>
     </form>
@@ -162,7 +91,7 @@ function DeleteAccountConfirm({ email }: { email: string }) {
   };
   return (
     <form onSubmit={submit}>
-      <p>Akun <b class="break">{email}</b> dan <b>seluruh datanya</b> (jurnal, rencana, sumber, tugas) akan dihapus permanen dari server dan semua perangkat. Tindakan ini <b>tidak bisa dibatalkan</b>.</p>
+      <p>Akun <b class="break">{email}</b> dan <b>seluruh datanya</b> (jurnal, rencana, bahan, jadwal) akan dihapus permanen dari server dan semua perangkat. Tindakan ini <b>tidak bisa dibatalkan</b>.</p>
       <p class="muted small">Ekspor dulu kalau kamu masih membutuhkan catatanmu.</p>
       <div class="form-group">
         <label for="del-email">Ketik emailmu untuk melanjutkan</label>
@@ -171,7 +100,7 @@ function DeleteAccountConfirm({ email }: { email: string }) {
       {err && <div class="notice error" role="alert">{err}</div>}
       <div class="compact-actions">
         <button class="btn danger" type="submit" disabled={!ok || busy} aria-busy={busy}>{busy ? 'Menghapus…' : 'Hapus akun permanen'}</button>
-        <button class="btn secondary" type="button" onClick={() => { download('ngampusnotes-cadangan.json', exportJSON()); toast('Cadangan diunduh'); }}>Ekspor dulu</button>
+        <button class="btn secondary" type="button" onClick={() => { download('teachernotes-cadangan.json', exportJSON()); toast('Cadangan diunduh'); }}>Ekspor dulu</button>
         <button class="btn ghost" type="button" onClick={closeModal}>Batal</button>
       </div>
     </form>
@@ -180,7 +109,6 @@ function DeleteAccountConfirm({ email }: { email: string }) {
 
 export function Settings() {
   const db = useDB();
-  const thesisMenu = useThesisMenu(db);
   const [name, setName] = useState(db.profile.name);
   const [tz, setTz] = useState(db.profile.tz);
   const file = useRef<HTMLInputElement>(null);
@@ -198,13 +126,13 @@ export function Settings() {
       actions.importJSON(await f.text());
       toast('Data berhasil diimpor');
     } catch {
-      toast('File tidak valid. Gunakan file hasil ekspor NgampusNotes.');
+      toast('File tidak valid. Gunakan file hasil ekspor TeacherNotes.');
     }
   };
 
   return (
     <>
-      <PageHead kicker="Redaksi" title="Pengaturan" sub="Atur ruang kerja sesuai caramu belajar." />
+      <PageHead kicker="Redaksi" title="Pengaturan" sub="Atur ruang kerja sesuai caramu mengajar." />
       <div class="grid-main">
         <div class="stack">
           {cloudEnabled && (
@@ -226,7 +154,7 @@ export function Settings() {
               <h2>Pasang di perangkat</h2>
               {installState === 'available' && (
                 <>
-                  <p class="muted" style="line-height:1.7;margin-bottom:14px">Pasang NgampusNotes seperti aplikasi biasa: ikon di layar utama, tampil layar penuh, dan tetap bisa dibuka offline.</p>
+                  <p class="muted" style="line-height:1.7;margin-bottom:14px">Pasang TeacherNotes seperti aplikasi biasa: ikon di layar utama, tampil layar penuh, dan tetap bisa dibuka offline.</p>
                   <button class="btn" onClick={() => { void install(); }}><Icon as={Download} size={16} /> Pasang aplikasi</button>
                 </>
               )}
@@ -234,17 +162,11 @@ export function Settings() {
                 <p class="muted" style="line-height:1.8">Di iPhone/iPad: buka lewat <b>Safari</b>, ketuk tombol <b>Bagikan</b> (kotak dengan panah ke atas), lalu pilih <b>Tambah ke Layar Utama</b>.</p>
               )}
               {installState === 'unavailable' && (
-                <p class="muted" style="line-height:1.8">Opsi pasang belum tersedia di browser ini. Di Chrome/Edge, gunakan menu browser → <b>Instal NgampusNotes</b> atau <b>Tambahkan ke layar utama</b>.</p>
+                <p class="muted" style="line-height:1.8">Opsi pasang belum tersedia di browser ini. Di Chrome/Edge, gunakan menu browser → <b>Instal TeacherNotes</b> atau <b>Tambahkan ke layar utama</b>.</p>
               )}
             </div>
           )}
-          <div class="panel">
-            <h2>Tab Kuliah</h2>
-            <label class="check-row"><input type="checkbox" checked={thesisMenu.shown} disabled={thesisMenu.hasData} onChange={(e) => setThesisMenu(e.currentTarget.checked)} /> Tampilkan tab Tesis di menu Kuliah</label>
-            <p class="muted small">{thesisMenu.hasData ? 'Selalu tampil karena kamu sudah punya data tesis.' : 'Untuk mencatat tahapan dan bimbingan tesis. Bisa dimatikan kapan saja selama belum ada datanya.'}</p>
-          </div>
-          <NotificationSettings />
-          <form class="panel" onSubmit={(e) => { e.preventDefault(); actions.setProfile({ name: name.trim() || 'Mahasiswa', tz }); toast('Profil diperbarui'); }}>
+          <form class="panel" onSubmit={(e) => { e.preventDefault(); actions.setProfile({ name: name.trim() || 'Guru', tz }); toast('Profil diperbarui'); }}>
             <h2>Profil</h2>
             <div class="form-group"><label for="s-name">Nama panggilan</label><input id="s-name" class="field" value={name} onInput={(e) => setName(e.currentTarget.value)} placeholder="Nama atau panggilanmu" /></div>
             <div class="form-group"><label for="s-tz">Zona waktu</label>
@@ -257,10 +179,9 @@ export function Settings() {
             <button class="btn" type="submit">Simpan Profil</button>
           </form>
           <div class="panel">
-            <h2>Semester &amp; Mata Kuliah</h2>
-            <p class="muted small" style="margin-bottom:16px">Dipakai pada dropdown dan filter di jurnal dan perencana.</p>
-            <ListEditor kind="classes" label="Semester" items={db.classes} />
-            <ListEditor kind="subjects" label="Mata kuliah" items={db.subjects} />
+            <h2>Kelas</h2>
+            <p class="muted small" style="margin-bottom:16px">Dipakai pada pilihan dan filter di jurnal, rencana, dan jadwal. Tulis kelas beserta mapelnya, misalnya Matematika 8B.</p>
+            <ListEditor label="Daftar kelas" items={db.classes} />
           </div>
         </div>
         <div class="panel" style="align-self:start">
@@ -268,12 +189,11 @@ export function Settings() {
           <p class="small legal-inline"><a href="/privacy" onClick={(e) => { e.preventDefault(); go('privacy'); }}>Kebijakan Privasi</a> · <a href="/terms" onClick={(e) => { e.preventDefault(); go('terms'); }}>Syarat Penggunaan</a></p>
           <p class="muted" style="line-height:1.8">{cloudEnabled ? 'Datamu tersimpan di akunmu (terlindungi per pengguna) dan di-cache di perangkat ini agar bisa dipakai offline. Ekspor secara berkala sebagai cadangan tambahan.' : 'Data disimpan di browser perangkat ini (localStorage) tanpa akun. Ekspor secara berkala sebagai cadangan.'}</p>
           <div class="compact-actions">
-            <button class="btn secondary" onClick={() => { download(`ngampusnotes-data-${todayIn(db.profile.tz)}.json`, exportJSON()); toast('Data berhasil diekspor'); }}><Icon as={Download} size={16} /> Ekspor JSON</button>
+            <button class="btn secondary" onClick={() => { download(`teachernotes-data-${todayIn(db.profile.tz)}.json`, exportJSON()); toast('Data berhasil diekspor'); }}><Icon as={Download} size={16} /> Ekspor JSON</button>
             <button class="btn secondary" onClick={() => file.current?.click()}><Icon as={Upload} size={16} /> Impor JSON</button>
             <input ref={file} type="file" accept="application/json,.json" class="hidden" onChange={onImport} />
           </div>
           <div class="compact-actions" style="margin-top:12px">
-            {!cloudEnabled && <button class="btn danger" onClick={() => { if (confirm('Kembalikan data contoh? Semua perubahan akan hilang.')) { actions.reset(); setName('Mahasiswa'); toast('Data contoh dikembalikan'); } }}><Icon as={RotateCcw} size={16} /> Reset ke data contoh</button>}
             <button class="btn danger" onClick={() => openModal('Hapus semua data?', <WipeConfirm cloud={cloudEnabled} />)}><Icon as={Trash2} size={16} /> Hapus semua</button>
             {cloudEnabled && auth.session?.user.email && (
               <button class="btn danger" onClick={() => openModal('Hapus akun?', <DeleteAccountConfirm email={auth.session!.user.email!} />)}><Icon as={UserX} size={16} /> Hapus akun</button>

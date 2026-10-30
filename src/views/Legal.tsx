@@ -9,7 +9,7 @@ const CONTACT = (import.meta.env.NEXT_PUBLIC_CONTACT_EMAIL as string | undefined
 
 const Contact = () => CONTACT
   ? <>Hubungi kami di <a href={'mailto:' + CONTACT}>{CONTACT}</a>.</>
-  : <>Hubungi pengelola aplikasi yang membagikan tautan NgampusNotes kepadamu.</>;
+  : <>Hubungi pengelola aplikasi yang membagikan tautan TeacherNotes kepadamu.</>;
 
 function Shell({ title, kicker, children }: { title: string; kicker: string; children: preact.ComponentChildren }) {
   const back = () => { if (history.length > 1 && document.referrer.startsWith(location.origin)) history.back(); else go('dashboard'); };
@@ -36,15 +36,14 @@ function Shell({ title, kicker, children }: { title: string; kicker: string; chi
 export function Privacy() {
   return (
     <Shell kicker="Dokumen" title="Kebijakan Privasi">
-      <p class="legal-lead">NgampusNotes adalah buku catatan pribadi untuk mahasiswa. Kami menyimpan sedikit data, hanya untuk menjalankan aplikasi, dan tidak menjualnya.</p>
+      <p class="legal-lead">TeacherNotes adalah buku catatan pribadi untuk guru. Kami menyimpan sedikit data, hanya untuk menjalankan aplikasi, dan tidak menjualnya.</p>
 
       <h2>1. Data yang kami simpan</h2>
       <ul>
         <li><b>Akun:</b> alamat email, kata sandi (disimpan dalam bentuk terenkripsi/hash oleh penyedia autentikasi, bukan teks asli), dan nama panggilan jika kamu mengisinya.</li>
         <li><b>Masuk dengan Google:</b> nama dan alamat email dari akun Google-mu. Kami tidak mendapat kata sandi Google-mu.</li>
-        <li><b>Isi yang kamu tulis:</b> jurnal kuliah, rencana kuliah, jadwal mingguan, bahan kuliah, tugas, catatan tesis dan bimbingan, serta pengaturan seperti zona waktu, daftar semester, dan mata kuliah.</li>
+        <li><b>Isi yang kamu tulis:</b> jurnal mengajar (termasuk gambar yang kamu lampirkan), rencana, tugas, bahan mengajar, jadwal mingguan, serta pengaturan seperti zona waktu dan daftar kelas.</li>
         <li><b>Gambar (opsional):</b> gambar yang kamu sisipkan ke jurnal disimpan di penyimpanan pribadi akunmu, bukan di tempat umum. Sebelum diunggah, gambar diperkecil di perangkatmu dan data kamera atau lokasi di dalamnya dihapus. Batas 10 gambar per catatan dan 100 MB per akun. Gambar yang tidak dipakai lagi dihapus otomatis, dan semuanya terhapus saat kamu menghapus akun.</li>
-        <li><b>Notifikasi (opsional):</b> jika kamu mengaktifkannya, kami menyimpan alamat langganan push perangkatmu dan pilihan notifikasimu. Isi pengingat (misalnya judul tugas) dikirim ke perangkatmu lewat layanan push milik browser (Google, Apple, Mozilla, atau Microsoft) dalam bentuk terenkripsi. Kamu bisa mematikannya kapan saja di Pengaturan.</li>
       </ul>
       <p>Kami <b>tidak</b> mengumpulkan lokasi, kontak, foto, mikrofon, atau kamera, dan tidak memasang iklan atau pelacak pihak ketiga. Font dimuat dari server kami sendiri.</p>
 
@@ -60,7 +59,7 @@ export function Privacy() {
       </ul>
 
       <h2>4. Jangan menyimpan data pribadi orang lain</h2>
-      <p>NgampusNotes tidak dirancang untuk data sensitif. Hindari menulis nama lengkap dosen atau teman, alamat, nomor telepon, NIM, atau nilai yang dapat mengidentifikasi seseorang. Gunakan inisial atau catatan umum.</p>
+      <p>TeacherNotes tidak dirancang untuk data sensitif. Hindari menulis nama lengkap siswa, alamat, nomor telepon, NISN, atau nilai yang dapat mengidentifikasi seseorang. Gunakan inisial atau catatan umum.</p>
 
       <h2>5. Hakmu</h2>
       <ul>
@@ -71,10 +70,10 @@ export function Privacy() {
       <p>Cadangan sistem milik penyedia layanan, jika ada, dapat bertahan sementara sesuai kebijakan penyedia tersebut.</p>
 
       <h2>6. Penyimpanan di browser</h2>
-      <p>NgampusNotes memakai penyimpanan lokal browser untuk menyimpan sesi masuk dan salinan datamu. Kami tidak memakai cookie pelacak.</p>
+      <p>TeacherNotes memakai penyimpanan lokal browser untuk menyimpan sesi masuk dan salinan datamu. Kami tidak memakai cookie pelacak.</p>
 
       <h2>7. Pengguna anak-anak</h2>
-      <p>NgampusNotes ditujukan untuk mahasiswa dan pembelajar dewasa, bukan untuk anak-anak.</p>
+      <p>TeacherNotes ditujukan untuk guru dan pendidik dewasa, bukan untuk anak-anak.</p>
 
       <h2>8. Perubahan dan kontak</h2>
       <p>Jika kebijakan ini berubah secara berarti, kami akan memperbarui tanggal di atas dan memberi tahu di aplikasi. <Contact /></p>
@@ -85,16 +84,16 @@ export function Privacy() {
 export function Terms() {
   return (
     <Shell kicker="Dokumen" title="Syarat Penggunaan">
-      <p class="legal-lead">Dengan memakai NgampusNotes, kamu menyetujui syarat sederhana berikut.</p>
+      <p class="legal-lead">Dengan memakai TeacherNotes, kamu menyetujui syarat sederhana berikut.</p>
 
       <h2>1. Layanan</h2>
-      <p>NgampusNotes membantu mahasiswa mencatat kuliah, merencanakan jadwal dan deadline, dan menyimpan bahan belajar. Layanan diberikan <b>apa adanya</b>; kami berusaha menjaganya tetap berjalan tetapi tidak menjamin tersedia tanpa gangguan.</p>
+      <p>TeacherNotes membantu guru mencatat jurnal mengajar, merencanakan jadwal, ulangan, dan tugas. Layanan diberikan <b>apa adanya</b>; kami berusaha menjaganya tetap berjalan tetapi tidak menjamin tersedia tanpa gangguan.</p>
 
       <h2>2. Akunmu</h2>
       <ul>
         <li>Gunakan email yang kamu miliki dan jaga kerahasiaan kata sandimu.</li>
         <li>Kamu bertanggung jawab atas aktivitas di akunmu.</li>
-        <li>Satu akun untuk satu mahasiswa.</li>
+        <li>Satu akun untuk satu guru.</li>
       </ul>
 
       <h2>3. Isi yang kamu simpan</h2>
